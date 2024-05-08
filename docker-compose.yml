@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: ./
+    pull_policy: always
+    platform: linux/amd64
+    restart: always
+    container_name: 'frontend'
+    ports:
+      - target: 3000
+        published: 3000
+    env_file:
+      -  ./configs/envs/.env.common
