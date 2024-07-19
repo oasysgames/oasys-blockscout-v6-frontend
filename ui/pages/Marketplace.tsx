@@ -7,7 +7,6 @@ import type { TabItem } from 'ui/shared/Tabs/types';
 
 import config from 'configs/app';
 import throwOnResourceLoadError from 'lib/errors/throwOnResourceLoadError';
-import useFeatureValue from 'lib/growthbook/useFeatureValue';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import Banner from 'ui/marketplace/Banner';
 import ContractListModal from 'ui/marketplace/ContractListModal';
@@ -18,7 +17,7 @@ import MarketplaceListWithScores from 'ui/marketplace/MarketplaceListWithScores'
 import FilterInput from 'ui/shared/filters/FilterInput';
 import IconSvg from 'ui/shared/IconSvg';
 import type { IconName } from 'ui/shared/IconSvg';
-import LinkExternal from 'ui/shared/LinkExternal';
+import LinkExternal from 'ui/shared/links/LinkExternal';
 import PageTitle from 'ui/shared/Page/PageTitle';
 import RadioButtonGroup from 'ui/shared/radioButtonGroup/RadioButtonGroup';
 import TabsWithScroll from 'ui/shared/Tabs/TabsWithScroll';
@@ -74,7 +73,6 @@ const Marketplace = () => {
   } = useMarketplace();
 
   const isMobile = useIsMobile();
-  const { value: isExperiment } = useFeatureValue('security_score_exp', false);
 
   const categoryTabs = React.useMemo(() => {
     const tabs: Array<TabItem> = categories.map(category => ({
@@ -189,7 +187,7 @@ const Marketplace = () => {
       </Box>
 
       <Flex direction={{ base: 'column', lg: 'row' }} mb={{ base: 4, lg: 6 }} gap={{ base: 4, lg: 3 }}>
-        { (feature.securityReportsUrl && isExperiment) && (
+        { feature.securityReportsUrl && (
           <Skeleton isLoaded={ !isPlaceholderData }>
             <RadioButtonGroup<MarketplaceDisplayType>
               onChange={ onDisplayTypeChange }
@@ -226,12 +224,12 @@ const Marketplace = () => {
           onChange={ onSearchInputChange }
           placeholder="Find app by name or keyword..."
           isLoading={ isPlaceholderData }
-          size={ (feature.securityReportsUrl && isExperiment) ? 'xs' : 'sm' }
-          flex="1"
+          size={ feature.securityReportsUrl ? 'xs' : 'sm' }
+          w={{ base: '100%', lg: '350px' }}
         />
       </Flex>
 
-      { (selectedDisplayType === MarketplaceDisplayType.SCORES && feature.securityReportsUrl && isExperiment) ? (
+      { (selectedDisplayType === MarketplaceDisplayType.SCORES && feature.securityReportsUrl) ? (
         <MarketplaceListWithScores
           apps={ displayedApps }
           showAppInfo={ showAppInfo }

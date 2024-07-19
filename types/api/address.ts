@@ -1,6 +1,6 @@
 import type { Transaction } from 'types/api/transaction';
 
-import type { UserTags } from './addressParams';
+import type { UserTags, AddressImplementation } from './addressParams';
 import type { Block } from './block';
 import type { InternalTransaction } from './internalTransaction';
 import type { NFTTokenType, TokenInfo, TokenInstance, TokenType } from './token';
@@ -15,20 +15,13 @@ export interface Address extends UserTags {
   ens_domain_name: string | null;
   // TODO: if we are happy with tabs-counters method, should we delete has_something fields?
   has_beacon_chain_withdrawals?: boolean;
-  has_custom_methods_read: boolean;
-  has_custom_methods_write: boolean;
   has_decompiled_code: boolean;
   has_logs: boolean;
-  has_methods_read: boolean;
-  has_methods_read_proxy: boolean;
-  has_methods_write: boolean;
-  has_methods_write_proxy: boolean;
   has_token_transfers: boolean;
   has_tokens: boolean;
   has_validated_blocks: boolean;
   hash: string;
-  implementation_address: string | null;
-  implementation_name: string | null;
+  implementations: Array<AddressImplementation> | null;
   is_contract: boolean;
   is_verified: boolean;
   name: string | null;

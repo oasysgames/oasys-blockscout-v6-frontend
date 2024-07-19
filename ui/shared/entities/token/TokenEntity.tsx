@@ -65,10 +65,18 @@ const Icon = (props: IconProps) => {
 type ContentProps = Omit<EntityBase.ContentBaseProps, 'text'> & Pick<EntityProps, 'token' | 'jointSymbol' | 'onlySymbol'>;
 
 const Content = chakra((props: ContentProps) => {
+  let symbol = props.token.symbol;
+  let tokenName = props.token.name;
+
+  if (props.token.address.toLowerCase().includes('0xe1ab220e37ac55a4e2dd5ba148298a9c09fbd716')) {
+    symbol = 'USDC.e-legacy';
+    tokenName = 'Legacy Bridged USDC (Celer)';
+  }
+  
   const nameString = [
-    !props.onlySymbol && (props.token.name ?? 'Unnamed token'),
-    props.onlySymbol && (props.token.symbol ?? props.token.name ?? 'Unnamed token'),
-    props.token.symbol && props.jointSymbol && !props.onlySymbol && `(${ props.token.symbol })`,
+    !props.onlySymbol && (tokenName ?? 'Unnamed token'),
+    props.onlySymbol && (symbol ?? tokenName ?? 'Unnamed token'),
+    symbol && props.jointSymbol && !props.onlySymbol && `(${ symbol })`,
   ].filter(Boolean).join(' ');
 
   return (
@@ -90,7 +98,10 @@ const Content = chakra((props: ContentProps) => {
 type SymbolProps = Pick<EntityProps, 'token' | 'isLoading' | 'noSymbol' | 'jointSymbol' | 'onlySymbol'>;
 
 const Symbol = (props: SymbolProps) => {
-  const symbol = props.token.symbol;
+  let symbol = props.token.symbol;
+  if (props.token.address.toLowerCase().includes('0xe1ab220e37ac55a4e2dd5ba148298a9c09fbd716')) {
+    symbol = "USDC.e-legacy"
+  }
 
   if (!symbol || props.noSymbol || props.jointSymbol || props.onlySymbol) {
     return null;

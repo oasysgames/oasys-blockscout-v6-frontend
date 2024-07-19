@@ -8,11 +8,10 @@ import { route } from 'nextjs-routes';
 
 import config from 'configs/app';
 import { useAppContext } from 'lib/contexts/app';
-import useFeatureValue from 'lib/growthbook/useFeatureValue';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import IconSvg from 'ui/shared/IconSvg';
-import LinkExternal from 'ui/shared/LinkExternal';
-import LinkInternal from 'ui/shared/LinkInternal';
+import LinkExternal from 'ui/shared/links/LinkExternal';
+import LinkInternal from 'ui/shared/links/LinkInternal';
 import NetworkLogo from 'ui/snippets/networkMenu/NetworkLogo';
 import ProfileMenuDesktop from 'ui/snippets/profileMenu/ProfileMenuDesktop';
 import WalletMenuDesktop from 'ui/snippets/walletMenu/WalletMenuDesktop';
@@ -31,7 +30,6 @@ const MarketplaceAppTopBar = ({ data, isLoading, securityReport }: Props) => {
   const [ showContractList, setShowContractList ] = useBoolean(false);
   const appProps = useAppContext();
   const isMobile = useIsMobile();
-  const { value: isExperiment } = useFeatureValue('security_score_exp', false);
 
   const goBackUrl = React.useMemo(() => {
     if (appProps.referrer && appProps.referrer.includes('/apps') && !appProps.referrer.includes('/apps/')) {
@@ -72,7 +70,7 @@ const MarketplaceAppTopBar = ({ data, isLoading, securityReport }: Props) => {
         <Skeleton isLoaded={ !isLoading }>
           <MarketplaceAppInfo data={ data }/>
         </Skeleton>
-        { (isExperiment && (securityReport || isLoading)) && (
+        { (securityReport || isLoading) && (
           <AppSecurityReport
             id={ data?.id || '' }
             securityReport={ securityReport }

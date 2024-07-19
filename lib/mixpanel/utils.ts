@@ -105,6 +105,14 @@ Type extends EventTypes.PAGE_WIDGET ? (
   } | {
     'Type': 'Security score';
     'Source': 'Analyzed contracts popup';
+  } | {
+    'Type': 'Action button';
+    'Info': string;
+    'Source': 'Txn' | 'NFT collection' | 'NFT item';
+  } | {
+    'Type': 'Address tag';
+    'Info': string;
+    'URL': string;
   }
 ) :
 Type extends EventTypes.TX_INTERPRETATION_INTERACTION ? {
@@ -120,7 +128,7 @@ Type extends EventTypes.FILTERS ? {
   'Filter name': string;
 } :
 Type extends EventTypes.BUTTON_CLICK ? {
-  'Content': 'Swap button';
+  'Content': string;
   'Source': string;
 } :
 Type extends EventTypes.PROMO_BANNER ? {
