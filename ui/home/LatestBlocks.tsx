@@ -51,7 +51,11 @@ const LatestBlocks = () => {
       if (newData.some((block => block.height === payload.block.height))) {
         return newData;
       }
-
+      
+      if (payload.block.tx_count <= 1) {
+        return  newData;
+      }
+      
       return [ payload.block, ...newData ].sort((b1, b2) => b2.height - b1.height).slice(0, blocksMaxCount);
     });
   }, [ queryClient, blocksMaxCount ]);
