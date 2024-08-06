@@ -52,6 +52,7 @@ const LatestBlocks = () => {
         return newData;
       }
       
+      // In case there is 1 tx of op-node, it will not appear
       if (payload.block.tx_count <= 1) {
         return  newData;
       }
