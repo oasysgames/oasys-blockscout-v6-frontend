@@ -54,7 +54,7 @@ const LatestBlocks = () => {
       
       // In case there is 1 tx of op-node, it will not appear
       if (payload.block.tx_count <= 1) {
-        return  newData;
+        return newData;
       }
       
       return [ payload.block, ...newData ].sort((b1, b2) => b2.height - b1.height).slice(0, blocksMaxCount);
