@@ -6,13 +6,13 @@ import { route } from 'nextjs-routes';
 import useApiQuery from 'lib/api/useApiQuery';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import useIsMobile from 'lib/hooks/useIsMobile';
+import useNewHomeTxsSocket from 'lib/hooks/useNewHomeTxsSocket';
 import { TX } from 'stubs/tx';
 import LinkInternal from 'ui/shared/links/LinkInternal';
 import SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';
 
 import LatestTxsItem from './LatestTxsItem';
 import LatestTxsItemMobile from './LatestTxsItemMobile';
-import useNewHomeTxsSocket from 'lib/hooks/useNewHomeTxsSocket';
 
 const LatestTransactions = () => {
   const isMobile = useIsMobile();

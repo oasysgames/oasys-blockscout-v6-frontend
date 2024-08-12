@@ -72,7 +72,6 @@ const Content = chakra((props: ContentProps) => {
     symbol = 'USDC.e-legacy';
     tokenName = 'Legacy Bridged USDC (Celer)';
   }
-  
   const nameString = [
     !props.onlySymbol && (tokenName ?? 'Unnamed token'),
     props.onlySymbol && (symbol ?? tokenName ?? 'Unnamed token'),
@@ -100,7 +99,7 @@ type SymbolProps = Pick<EntityProps, 'token' | 'isLoading' | 'noSymbol' | 'joint
 const Symbol = (props: SymbolProps) => {
   let symbol = props.token.symbol;
   if (props.token.address.toLowerCase().includes('0xe1ab220e37ac55a4e2dd5ba148298a9c09fbd716')) {
-    symbol = "USDC.e-legacy"
+    symbol = 'USDC.e-legacy';
   }
 
   if (!symbol || props.noSymbol || props.jointSymbol || props.onlySymbol) {
