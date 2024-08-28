@@ -1,8 +1,10 @@
+import type * as bens from '@blockscout/bens-types';
+import type * as stats from '@blockscout/stats-types';
+import type * as visualizer from '@blockscout/visualizer-types';
 import { getFeaturePayload } from 'configs/app/features/types';
 import type {
   UserInfo,
   CustomAbis,
-  PublicTags,
   ApiKeys,
   VerifiedAddressResponse,
   TokenInfoApplicationConfig,
@@ -30,33 +32,43 @@ import type {
   AddressCollectionsResponse,
   AddressNFTTokensFilter,
   AddressCoinBalanceHistoryChartOld,
+  AddressMudTables,
+  AddressMudTablesFilter,
+  AddressMudRecords,
+  AddressMudRecordsFilter,
+  AddressMudRecordsSorting,
+  AddressMudRecord,
 } from 'types/api/address';
 import type { AddressesResponse } from 'types/api/addresses';
+import type { AddressMetadataInfo, PublicTagTypesResponse } from 'types/api/addressMetadata';
+import type {
+  ArbitrumL2MessagesResponse,
+  ArbitrumL2MessagesItem,
+  ArbitrumL2TxnBatch,
+  ArbitrumL2TxnBatchesResponse,
+  ArbitrumL2BatchTxs,
+  ArbitrumL2BatchBlocks,
+  ArbitrumL2TxnBatchesItem,
+} from 'types/api/arbitrumL2';
 import type { TxBlobs, Blob } from 'types/api/blobs';
-import type { BlocksResponse, BlockTransactionsResponse, Block, BlockFilters, BlockWithdrawalsResponse } from 'types/api/block';
+import type { BlocksResponse, BlockTransactionsResponse, Block, BlockFilters, BlockWithdrawalsResponse, BlockCountdownResponse } from 'types/api/block';
 import type { ChartMarketResponse, ChartSecondaryCoinPriceResponse, ChartTransactionResponse } from 'types/api/charts';
 import type { BackendVersionConfig } from 'types/api/configs';
 import type {
   SmartContract,
-  SmartContractReadMethod,
-  SmartContractWriteMethod,
-  SmartContractVerificationConfig,
-  SolidityscanReport,
+  SmartContractVerificationConfigRaw,
   SmartContractSecurityAudits,
 } from 'types/api/contract';
 import type { VerifiedContractsResponse, VerifiedContractsFilters, VerifiedContractsCounters } from 'types/api/contracts';
 import type {
   EnsAddressLookupFilters,
-  EnsAddressLookupResponse,
-  EnsDomainDetailed,
-  EnsDomainEventsResponse,
   EnsDomainLookupFilters,
-  EnsDomainLookupResponse,
   EnsLookupSorting,
 } from 'types/api/ens';
 import type { IndexingStatus } from 'types/api/indexingStatus';
 import type { InternalTransactionsResponse } from 'types/api/internalTransaction';
 import type { LogsResponseTx, LogsResponseAddress } from 'types/api/log';
+import type { MudWorldsResponse } from 'types/api/mudWorlds';
 import type { NovesAccountHistoryResponse, NovesDescribeTxsResponse, NovesResponseData } from 'types/api/noves';
 import type {
   OptimisticL2DepositsResponse,
@@ -64,11 +76,12 @@ import type {
   OptimisticL2OutputRootsResponse,
   OptimisticL2TxnBatchesResponse,
   OptimisticL2WithdrawalsResponse,
+  OptimisticL2DisputeGamesResponse,
 } from 'types/api/optimisticL2';
 import type { RawTracesResponse } from 'types/api/rawTrace';
 import type { SearchRedirectResult, SearchResult, SearchResultFilters, SearchResultItem } from 'types/api/search';
 import type { ShibariumWithdrawalsResponse, ShibariumDepositsResponse } from 'types/api/shibarium';
-import type { Counters, StatsCharts, StatsChart, HomeStats } from 'types/api/stats';
+import type { HomeStats } from 'types/api/stats';
 import type {
   TokenCounters,
   TokenInfo,
@@ -96,9 +109,15 @@ import type { TxStateChanges } from 'types/api/txStateChanges';
 import type { UserOpsResponse, UserOp, UserOpsFilters, UserOpsAccount } from 'types/api/userOps';
 import type { ValidatorsCountersResponse, ValidatorsFilters, ValidatorsResponse, ValidatorsSorting } from 'types/api/validators';
 import type { VerifiedContractsSorting } from 'types/api/verifiedContracts';
-import type { VisualizedContract } from 'types/api/visualization';
 import type { WithdrawalsResponse, WithdrawalsCounters } from 'types/api/withdrawals';
-import type { ZkEvmL2TxnBatch, ZkEvmL2TxnBatchesItem, ZkEvmL2TxnBatchesResponse, ZkEvmL2TxnBatchTxs } from 'types/api/zkEvmL2';
+import type {
+  ZkEvmL2DepositsResponse,
+  ZkEvmL2TxnBatch,
+  ZkEvmL2TxnBatchesItem,
+  ZkEvmL2TxnBatchesResponse,
+  ZkEvmL2TxnBatchTxs,
+  ZkEvmL2WithdrawalsResponse,
+} from 'types/api/zkEvmL2';
 import type { ZkSyncBatch, ZkSyncBatchesResponse, ZkSyncBatchTxs } from 'types/api/zkSyncL2';
 import type { MarketplaceAppOverview } from 'types/client/marketplace';
 import type { ArrayElement } from 'types/utils';
@@ -138,10 +157,6 @@ export const RESOURCES = {
     path: '/api/account/v2/user/watchlist/:id?',
     pathParams: [ 'id' as const ],
     filterFields: [ ],
-  },
-  public_tags: {
-    path: '/api/account/v2/user/public_tags/:id?',
-    pathParams: [ 'id' as const ],
   },
   private_tags_address: {
     path: '/api/account/v2/user/tags/address/:id?',
@@ -215,7 +230,13 @@ export const RESOURCES = {
     pathParams: [ 'chainId' as const ],
     endpoint: getFeaturePayload(config.features.nameService)?.api.endpoint,
     basePath: getFeaturePayload(config.features.nameService)?.api.basePath,
-    filterFields: [ 'address' as const, 'resolved_to' as const, 'owned_by' as const, 'only_active' as const ],
+    filterFields: [ 'address' as const, 'resolved_to' as const, 'owned_by' as const, 'only_active' as const, 'protocols' as const ],
+  },
+  address_domain: {
+    path: '/api/v1/:chainId/addresses/:address',
+    pathParams: [ 'chainId' as const, 'address' as const ],
+    endpoint: getFeaturePayload(config.features.nameService)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.nameService)?.api.basePath,
   },
   domain_info: {
     path: '/api/v1/:chainId/domains/:name',
@@ -234,7 +255,36 @@ export const RESOURCES = {
     pathParams: [ 'chainId' as const ],
     endpoint: getFeaturePayload(config.features.nameService)?.api.endpoint,
     basePath: getFeaturePayload(config.features.nameService)?.api.basePath,
-    filterFields: [ 'name' as const, 'only_active' as const ],
+    filterFields: [ 'name' as const, 'only_active' as const, 'protocols' as const ],
+  },
+  domain_protocols: {
+    path: '/api/v1/:chainId/protocols',
+    pathParams: [ 'chainId' as const ],
+    endpoint: getFeaturePayload(config.features.nameService)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.nameService)?.api.basePath,
+  },
+
+  // METADATA SERVICE & PUBLIC TAGS
+  address_metadata_info: {
+    path: '/api/v1/metadata',
+    endpoint: getFeaturePayload(config.features.addressMetadata)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.addressMetadata)?.api.basePath,
+  },
+  address_metadata_tag_search: {
+    path: '/api/v1/tags:search',
+    endpoint: getFeaturePayload(config.features.addressMetadata)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.addressMetadata)?.api.basePath,
+  },
+  address_metadata_tag_types: {
+    path: '/api/v1/public-tag-types',
+    endpoint: getFeaturePayload(config.features.addressMetadata)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.addressMetadata)?.api.basePath,
+  },
+  public_tag_application: {
+    path: '/api/v1/chains/:chainId/metadata-submissions/tag',
+    pathParams: [ 'chainId' as const ],
+    endpoint: getFeaturePayload(config.features.publicTagsSubmission)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.publicTagsSubmission)?.api.basePath,
   },
 
   // VISUALIZATION
@@ -428,26 +478,6 @@ export const RESOURCES = {
     path: '/api/v2/smart-contracts/:hash',
     pathParams: [ 'hash' as const ],
   },
-  contract_methods_read: {
-    path: '/api/v2/smart-contracts/:hash/methods-read',
-    pathParams: [ 'hash' as const ],
-  },
-  contract_methods_read_proxy: {
-    path: '/api/v2/smart-contracts/:hash/methods-read-proxy',
-    pathParams: [ 'hash' as const ],
-  },
-  contract_method_query: {
-    path: '/api/v2/smart-contracts/:hash/query-read-method',
-    pathParams: [ 'hash' as const ],
-  },
-  contract_methods_write: {
-    path: '/api/v2/smart-contracts/:hash/methods-write',
-    pathParams: [ 'hash' as const ],
-  },
-  contract_methods_write_proxy: {
-    path: '/api/v2/smart-contracts/:hash/methods-write-proxy',
-    pathParams: [ 'hash' as const ],
-  },
   contract_verification_config: {
     path: '/api/v2/smart-contracts/verification/config',
   },
@@ -455,7 +485,7 @@ export const RESOURCES = {
     path: '/api/v2/smart-contracts/:hash/verification/via/:method',
     pathParams: [ 'hash' as const, 'method' as const ],
   },
-  contract_solidityscan_report: {
+  contract_solidity_scan_report: {
     path: '/api/v2/smart-contracts/:hash/solidityscan-report',
     pathParams: [ 'hash' as const ],
   },
@@ -530,6 +560,11 @@ export const RESOURCES = {
     pathParams: [ 'hash' as const, 'id' as const ],
     filterFields: [],
   },
+  token_instance_refresh_metadata: {
+    path: '/api/v2/tokens/:hash/instances/:id/refetch-metadata',
+    pathParams: [ 'hash' as const, 'id' as const ],
+    filterFields: [],
+  },
 
   // APP STATS
   stats: {
@@ -552,14 +587,20 @@ export const RESOURCES = {
   homepage_blocks: {
     path: '/api/v2/main-page/blocks',
   },
-  homepage_deposits: {
+  homepage_optimistic_deposits: {
     path: '/api/v2/main-page/optimism-deposits',
+  },
+  homepage_arbitrum_deposits: {
+    path: '/api/v2/main-page/arbitrum/messages/to-rollup',
   },
   homepage_txs: {
     path: '/api/v2/main-page/transactions',
   },
   homepage_zkevm_l2_batches: {
     path: '/api/v2/main-page/zkevm/batches/confirmed',
+  },
+  homepage_arbitrum_l2_batches: {
+    path: '/api/v2/main-page/arbitrum/batches/committed',
   },
   homepage_txs_watchlist: {
     path: '/api/v2/main-page/transactions/watchlist',
@@ -572,6 +613,9 @@ export const RESOURCES = {
   },
   homepage_zksync_latest_batch: {
     path: '/api/v2/main-page/zksync/batches/latest-number',
+  },
+  homepage_arbitrum_latest_batch: {
+    path: '/api/v2/main-page/arbitrum/batches/latest-number',
   },
 
   // SEARCH
@@ -588,43 +632,136 @@ export const RESOURCES = {
   },
 
   // optimistic L2
-  l2_deposits: {
+  optimistic_l2_deposits: {
     path: '/api/v2/optimism/deposits',
     filterFields: [],
   },
 
-  l2_deposits_count: {
+  optimistic_l2_deposits_count: {
     path: '/api/v2/optimism/deposits/count',
   },
 
-  l2_withdrawals: {
+  optimistic_l2_withdrawals: {
     path: '/api/v2/optimism/withdrawals',
     filterFields: [],
   },
 
-  l2_withdrawals_count: {
+  optimistic_l2_withdrawals_count: {
     path: '/api/v2/optimism/withdrawals/count',
   },
 
-  l2_output_roots: {
+  optimistic_l2_output_roots: {
     path: '/api/v2/optimism/output-roots',
     filterFields: [],
   },
 
-  l2_output_roots_count: {
+  optimistic_l2_output_roots_count: {
     path: '/api/v2/optimism/output-roots/count',
   },
 
-  l2_txn_batches: {
+  optimistic_l2_txn_batches: {
     path: '/api/v2/optimism/txn-batches',
     filterFields: [],
   },
 
-  l2_txn_batches_count: {
+  optimistic_l2_txn_batches_count: {
     path: '/api/v2/optimism/txn-batches/count',
   },
 
+  optimistic_l2_dispute_games: {
+    path: '/api/v2/optimism/games',
+    filterFields: [],
+  },
+
+  optimistic_l2_dispute_games_count: {
+    path: '/api/v2/optimism/games/count',
+  },
+
+  // MUD worlds on optimism
+  mud_worlds: {
+    path: '/api/v2/mud/worlds',
+    filterFields: [],
+  },
+
+  address_mud_tables: {
+    path: '/api/v2/mud/worlds/:hash/tables',
+    pathParams: [ 'hash' as const ],
+    filterFields: [ 'q' as const ],
+  },
+
+  address_mud_tables_count: {
+    path: '/api/v2/mud/worlds/:hash/tables/count',
+    pathParams: [ 'hash' as const ],
+  },
+
+  address_mud_records: {
+    path: '/api/v2/mud/worlds/:hash/tables/:table_id/records',
+    pathParams: [ 'hash' as const, 'table_id' as const ],
+    filterFields: [ 'filter_key0' as const, 'filter_key1' as const ],
+  },
+
+  address_mud_record: {
+    path: '/api/v2/mud/worlds/:hash/tables/:table_id/records/:record_id',
+    pathParams: [ 'hash' as const, 'table_id' as const, 'record_id' as const ],
+  },
+
+  // arbitrum L2
+  arbitrum_l2_messages: {
+    path: '/api/v2/arbitrum/messages/:direction',
+    pathParams: [ 'direction' as const ],
+    filterFields: [],
+  },
+
+  arbitrum_l2_messages_count: {
+    path: '/api/v2/arbitrum/messages/:direction/count',
+    pathParams: [ 'direction' as const ],
+  },
+
+  arbitrum_l2_txn_batches: {
+    path: '/api/v2/arbitrum/batches',
+    filterFields: [],
+  },
+
+  arbitrum_l2_txn_batches_count: {
+    path: '/api/v2/arbitrum/batches/count',
+  },
+
+  arbitrum_l2_txn_batch: {
+    path: '/api/v2/arbitrum/batches/:number',
+    pathParams: [ 'number' as const ],
+  },
+
+  arbitrum_l2_txn_batch_txs: {
+    path: '/api/v2/transactions/arbitrum-batch/:number',
+    pathParams: [ 'number' as const ],
+    filterFields: [],
+  },
+
+  arbitrum_l2_txn_batch_blocks: {
+    path: '/api/v2/blocks/arbitrum-batch/:number',
+    pathParams: [ 'number' as const ],
+    filterFields: [],
+  },
+
   // zkEvm L2
+  zkevm_l2_deposits: {
+    path: '/api/v2/zkevm/deposits',
+    filterFields: [],
+  },
+
+  zkevm_l2_deposits_count: {
+    path: '/api/v2/zkevm/deposits/count',
+  },
+
+  zkevm_l2_withdrawals: {
+    path: '/api/v2/zkevm/withdrawals',
+    filterFields: [],
+  },
+
+  zkevm_l2_withdrawals_count: {
+    path: '/api/v2/zkevm/withdrawals/count',
+  },
+
   zkevm_l2_txn_batches: {
     path: '/api/v2/zkevm/batches',
     filterFields: [],
@@ -739,6 +876,12 @@ export const RESOURCES = {
     path: '/api/v2/config/backend-version',
   },
 
+  // CSV EXPORT
+  csv_export_token_holders: {
+    path: '/api/v2/tokens/:hash/holders/csv',
+    pathParams: [ 'hash' as const ],
+  },
+
   // OTHER
   api_v2_key: {
     path: '/api/v2/key',
@@ -759,6 +902,9 @@ export const RESOURCES = {
   },
   graphql: {
     path: '/api/v1/graphql',
+  },
+  block_countdown: {
+    path: '/api',
   },
 };
 
@@ -802,9 +948,12 @@ export type PaginatedResources = 'blocks' | 'block_txs' |
 'token_transfers' | 'token_holders' | 'token_inventory' | 'tokens' | 'tokens_bridged' |
 'token_instance_transfers' | 'token_instance_holders' |
 'verified_contracts' |
-'l2_output_roots' | 'l2_withdrawals' | 'l2_txn_batches' | 'l2_deposits' |
+'optimistic_l2_output_roots' | 'optimistic_l2_withdrawals' | 'optimistic_l2_txn_batches' | 'optimistic_l2_deposits' |
+'optimistic_l2_dispute_games' |
+'mud_worlds'| 'address_mud_tables' | 'address_mud_records' |
 'shibarium_deposits' | 'shibarium_withdrawals' |
-'zkevm_l2_txn_batches' | 'zkevm_l2_txn_batch_txs' |
+'arbitrum_l2_messages' | 'arbitrum_l2_txn_batches' | 'arbitrum_l2_txn_batch_txs' | 'arbitrum_l2_txn_batch_blocks' |
+'zkevm_l2_deposits' | 'zkevm_l2_withdrawals' | 'zkevm_l2_txn_batches' | 'zkevm_l2_txn_batch_txs' |
 'zksync_l2_txn_batches' | 'zksync_l2_txn_batch_txs' |
 'withdrawals' | 'address_withdrawals' | 'block_withdrawals' |
 'watchlist' | 'private_tags_address' | 'private_tags_tx' |
@@ -819,7 +968,6 @@ export type PaginatedResponse<Q extends PaginatedResources> = ResourcePayload<Q>
 export type ResourcePayloadA<Q extends ResourceName> =
 Q extends 'user_info' ? UserInfo :
 Q extends 'custom_abi' ? CustomAbis :
-Q extends 'public_tags' ? PublicTags :
 Q extends 'private_tags_address' ? AddressTagsResponse :
 Q extends 'private_tags_tx' ? TransactionTagsResponse :
 Q extends 'api_keys' ? ApiKeys :
@@ -834,16 +982,20 @@ Q extends 'stats_charts_secondary_coin_price' ? ChartSecondaryCoinPriceResponse 
 Q extends 'homepage_blocks' ? Array<Block> :
 Q extends 'homepage_txs' ? Array<Transaction> :
 Q extends 'homepage_txs_watchlist' ? Array<Transaction> :
-Q extends 'homepage_deposits' ? Array<OptimisticL2DepositsItem> :
+Q extends 'homepage_optimistic_deposits' ? Array<OptimisticL2DepositsItem> :
+Q extends 'homepage_arbitrum_deposits' ? { items: Array<ArbitrumL2MessagesItem> } :
 Q extends 'homepage_zkevm_l2_batches' ? { items: Array<ZkEvmL2TxnBatchesItem> } :
+Q extends 'homepage_arbitrum_l2_batches' ? { items: Array<ArbitrumL2TxnBatchesItem>} :
 Q extends 'homepage_indexing_status' ? IndexingStatus :
 Q extends 'homepage_zkevm_latest_batch' ? number :
 Q extends 'homepage_zksync_latest_batch' ? number :
-Q extends 'stats_counters' ? Counters :
-Q extends 'stats_lines' ? StatsCharts :
-Q extends 'stats_line' ? StatsChart :
+Q extends 'homepage_arbitrum_latest_batch' ? number :
+Q extends 'stats_counters' ? stats.Counters :
+Q extends 'stats_lines' ? stats.LineCharts :
+Q extends 'stats_line' ? stats.LineChart :
 Q extends 'blocks' ? BlocksResponse :
 Q extends 'block' ? Block :
+Q extends 'block_countdown' ? BlockCountdownResponse :
 Q extends 'block_txs' ? BlockTransactionsResponse :
 Q extends 'block_withdrawals' ? BlockWithdrawalsResponse :
 Q extends 'txs_stats' ? TransactionsStats :
@@ -891,30 +1043,21 @@ Q extends 'quick_search' ? Array<SearchResultItem> :
 Q extends 'search' ? SearchResult :
 Q extends 'search_check_redirect' ? SearchRedirectResult :
 Q extends 'contract' ? SmartContract :
-Q extends 'contract_methods_read' ? Array<SmartContractReadMethod> :
-Q extends 'contract_methods_read_proxy' ? Array<SmartContractReadMethod> :
-Q extends 'contract_methods_write' ? Array<SmartContractWriteMethod> :
-Q extends 'contract_methods_write_proxy' ? Array<SmartContractWriteMethod> :
-Q extends 'contract_solidityscan_report' ? SolidityscanReport :
+Q extends 'contract_solidity_scan_report' ? unknown :
 Q extends 'verified_contracts' ? VerifiedContractsResponse :
 Q extends 'verified_contracts_counters' ? VerifiedContractsCounters :
-Q extends 'visualize_sol2uml' ? VisualizedContract :
-Q extends 'contract_verification_config' ? SmartContractVerificationConfig :
-Q extends 'withdrawals' ? WithdrawalsResponse :
-Q extends 'withdrawals_counters' ? WithdrawalsCounters :
-Q extends 'l2_output_roots' ? OptimisticL2OutputRootsResponse :
-Q extends 'l2_withdrawals' ? OptimisticL2WithdrawalsResponse :
-Q extends 'l2_deposits' ? OptimisticL2DepositsResponse :
-Q extends 'l2_txn_batches' ? OptimisticL2TxnBatchesResponse :
-Q extends 'l2_output_roots_count' ? number :
-Q extends 'l2_withdrawals_count' ? number :
-Q extends 'l2_deposits_count' ? number :
-Q extends 'l2_txn_batches_count' ? number :
-Q extends 'zkevm_l2_txn_batches' ? ZkEvmL2TxnBatchesResponse :
-Q extends 'zkevm_l2_txn_batches_count' ? number :
-Q extends 'zkevm_l2_txn_batch' ? ZkEvmL2TxnBatch :
-Q extends 'zkevm_l2_txn_batch_txs' ? ZkEvmL2TxnBatchTxs :
-Q extends 'config_backend_version' ? BackendVersionConfig :
+Q extends 'visualize_sol2uml' ? visualizer.VisualizeResponse :
+Q extends 'contract_verification_config' ? SmartContractVerificationConfigRaw :
+Q extends 'optimistic_l2_output_roots' ? OptimisticL2OutputRootsResponse :
+Q extends 'optimistic_l2_withdrawals' ? OptimisticL2WithdrawalsResponse :
+Q extends 'optimistic_l2_deposits' ? OptimisticL2DepositsResponse :
+Q extends 'optimistic_l2_txn_batches' ? OptimisticL2TxnBatchesResponse :
+Q extends 'optimistic_l2_dispute_games' ? OptimisticL2DisputeGamesResponse :
+Q extends 'optimistic_l2_output_roots_count' ? number :
+Q extends 'optimistic_l2_withdrawals_count' ? number :
+Q extends 'optimistic_l2_deposits_count' ? number :
+Q extends 'optimistic_l2_txn_batches_count' ? number :
+Q extends 'optimistic_l2_dispute_games_count' ? number :
 never;
 // !!! IMPORTANT !!!
 // See comment above
@@ -922,6 +1065,9 @@ never;
 
 /* eslint-disable @typescript-eslint/indent */
 export type ResourcePayloadB<Q extends ResourceName> =
+Q extends 'config_backend_version' ? BackendVersionConfig :
+Q extends 'address_metadata_info' ? AddressMetadataInfo :
+Q extends 'address_metadata_tag_types' ? PublicTagTypesResponse :
 Q extends 'blob' ? Blob :
 Q extends 'marketplace_dapps' ? Array<MarketplaceAppOverview> :
 Q extends 'marketplace_dapp' ? MarketplaceAppOverview :
@@ -931,15 +1077,32 @@ Q extends 'shibarium_withdrawals' ? ShibariumWithdrawalsResponse :
 Q extends 'shibarium_deposits' ? ShibariumDepositsResponse :
 Q extends 'shibarium_withdrawals_count' ? number :
 Q extends 'shibarium_deposits_count' ? number :
+Q extends 'arbitrum_l2_messages' ? ArbitrumL2MessagesResponse :
+Q extends 'arbitrum_l2_messages_count' ? number :
+Q extends 'arbitrum_l2_txn_batches' ? ArbitrumL2TxnBatchesResponse :
+Q extends 'arbitrum_l2_txn_batches_count' ? number :
+Q extends 'arbitrum_l2_txn_batch' ? ArbitrumL2TxnBatch :
+Q extends 'arbitrum_l2_txn_batch_txs' ? ArbitrumL2BatchTxs :
+Q extends 'arbitrum_l2_txn_batch_blocks' ? ArbitrumL2BatchBlocks :
+Q extends 'zkevm_l2_deposits' ? ZkEvmL2DepositsResponse :
+Q extends 'zkevm_l2_deposits_count' ? number :
+Q extends 'zkevm_l2_withdrawals' ? ZkEvmL2WithdrawalsResponse :
+Q extends 'zkevm_l2_withdrawals_count' ? number :
+Q extends 'zkevm_l2_txn_batches' ? ZkEvmL2TxnBatchesResponse :
+Q extends 'zkevm_l2_txn_batches_count' ? number :
+Q extends 'zkevm_l2_txn_batch' ? ZkEvmL2TxnBatch :
+Q extends 'zkevm_l2_txn_batch_txs' ? ZkEvmL2TxnBatchTxs :
 Q extends 'zksync_l2_txn_batches' ? ZkSyncBatchesResponse :
 Q extends 'zksync_l2_txn_batches_count' ? number :
 Q extends 'zksync_l2_txn_batch' ? ZkSyncBatch :
 Q extends 'zksync_l2_txn_batch_txs' ? ZkSyncBatchTxs :
 Q extends 'contract_security_audits' ? SmartContractSecurityAudits :
-Q extends 'addresses_lookup' ? EnsAddressLookupResponse :
-Q extends 'domain_info' ? EnsDomainDetailed :
-Q extends 'domain_events' ? EnsDomainEventsResponse :
-Q extends 'domains_lookup' ? EnsDomainLookupResponse :
+Q extends 'addresses_lookup' ? bens.LookupAddressResponse :
+Q extends 'address_domain' ? bens.GetAddressResponse :
+Q extends 'domain_info' ? bens.DetailedDomain :
+Q extends 'domain_events' ? bens.ListDomainEventsResponse :
+Q extends 'domains_lookup' ? bens.LookupDomainNameResponse :
+Q extends 'domain_protocols' ? bens.GetProtocolsResponse :
 Q extends 'user_ops' ? UserOpsResponse :
 Q extends 'user_op' ? UserOp :
 Q extends 'user_ops_account' ? UserOpsAccount :
@@ -947,6 +1110,13 @@ Q extends 'user_op_interpretation'? TxInterpretationResponse :
 Q extends 'noves_transaction' ? NovesResponseData :
 Q extends 'noves_address_history' ? NovesAccountHistoryResponse :
 Q extends 'noves_describe_txs' ? NovesDescribeTxsResponse :
+Q extends 'mud_worlds' ? MudWorldsResponse :
+Q extends 'address_mud_tables' ? AddressMudTables :
+Q extends 'address_mud_tables_count' ? number :
+Q extends 'address_mud_records' ? AddressMudRecords :
+Q extends 'address_mud_record' ? AddressMudRecord :
+Q extends 'withdrawals' ? WithdrawalsResponse :
+Q extends 'withdrawals_counters' ? WithdrawalsCounters :
 never;
 /* eslint-enable @typescript-eslint/indent */
 
@@ -978,6 +1148,8 @@ Q extends 'addresses_lookup' ? EnsAddressLookupFilters :
 Q extends 'domains_lookup' ? EnsDomainLookupFilters :
 Q extends 'user_ops' ? UserOpsFilters :
 Q extends 'validators' ? ValidatorsFilters :
+Q extends 'address_mud_tables' ? AddressMudTablesFilter :
+Q extends 'address_mud_records' ? AddressMudRecordsFilter :
 never;
 /* eslint-enable @typescript-eslint/indent */
 
@@ -990,5 +1162,6 @@ Q extends 'address_txs' ? TransactionsSorting :
 Q extends 'addresses_lookup' ? EnsLookupSorting :
 Q extends 'domains_lookup' ? EnsLookupSorting :
 Q extends 'validators' ? ValidatorsSorting :
+Q extends 'address_mud_records' ? AddressMudRecordsSorting :
 never;
 /* eslint-enable @typescript-eslint/indent */

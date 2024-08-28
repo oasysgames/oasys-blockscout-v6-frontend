@@ -1,4 +1,5 @@
 import { chakra, Skeleton } from '@chakra-ui/react';
+import capitalize from 'lodash/capitalize';
 import { useRouter } from 'next/router';
 import React from 'react';
 
@@ -10,6 +11,7 @@ import { useAppContext } from 'lib/contexts/app';
 import throwOnAbsentParamError from 'lib/errors/throwOnAbsentParamError';
 import throwOnResourceLoadError from 'lib/errors/throwOnResourceLoadError';
 import useIsMobile from 'lib/hooks/useIsMobile';
+import getNetworkValidationActionText from 'lib/networks/getNetworkValidationActionText';
 import getQueryParamString from 'lib/router/getQueryParamString';
 import BlockDetails from 'ui/block/BlockDetails';
 import BlockWithdrawals from 'ui/block/BlockWithdrawals';
@@ -29,9 +31,11 @@ import TxsWithFrontendSorting from 'ui/txs/TxsWithFrontendSorting';
 
 const TAB_LIST_PROPS = {
   marginBottom: 0,
-  py: 5,
+  pt: 6,
+  pb: 6,
   marginTop: -5,
 };
+const TABS_HEIGHT = 88;
 
 const BlockPageContent = () => {
   const router = useRouter();
@@ -44,6 +48,11 @@ const BlockPageContent = () => {
   const blockTxsQuery = useBlockTxsQuery({ heightOrHash, blockQuery, tab });
   const blockWithdrawalsQuery = useBlockWithdrawalsQuery({ heightOrHash, blockQuery, tab });
   const blockBlobTxsQuery = useBlockBlobTxsQuery({ heightOrHash, blockQuery, tab });
+
+  const hasPagination = !isMobile && (
+    (tab === 'txs' && blockTxsQuery.pagination.isVisible) ||
+    (tab === 'withdrawals' && blockWithdrawalsQuery.pagination.isVisible)
+  );
 
   const tabs: Array<RoutedTab> = React.useMemo(() => ([
     {
@@ -62,7 +71,7 @@ const BlockPageContent = () => {
       component: (
         <>
           { blockTxsQuery.isDegradedData && <ServiceDegradationWarning isLoading={ blockTxsQuery.isPlaceholderData } mb={ 6 }/> }
-          <TxsWithFrontendSorting query={ blockTxsQuery } showBlockInfo={ false } showSocketInfo={ false }/>
+          <TxsWithFrontendSorting query={ blockTxsQuery } showBlockInfo={ false } showSocketInfo={ false } top={ hasPagination ? TABS_HEIGHT : 0 }/>
         </>
       ),
     },
@@ -85,12 +94,7 @@ const BlockPageContent = () => {
           </>
         ),
       } : null,
-  ].filter(Boolean)), [ blockBlobTxsQuery, blockQuery, blockTxsQuery, blockWithdrawalsQuery ]);
-
-  const hasPagination = !isMobile && (
-    (tab === 'txs' && blockTxsQuery.pagination.isVisible) ||
-    (tab === 'withdrawals' && blockWithdrawalsQuery.pagination.isVisible)
-  );
+  ].filter(Boolean)), [ blockBlobTxsQuery, blockQuery, blockTxsQuery, blockWithdrawalsQuery, hasPagination ]);
 
   let pagination;
   if (tab === 'txs') {
@@ -113,7 +117,15 @@ const BlockPageContent = () => {
   }, [ appProps.referrer ]);
 
   throwOnAbsentParamError(heightOrHash);
-  throwOnResourceLoadError(blockQuery);
+
+  if (blockQuery.isError) {
+    if (!blockQuery.isDegradedData && blockQuery.error.status === 404 && !heightOrHash.startsWith('0x')) {
+      router.push({ pathname: '/block/countdown/[height]', query: { height: heightOrHash } });
+      return null;
+    } else {
+      throwOnResourceLoadError(blockQuery);
+    }
+  }
 
   const title = (() => {
     switch (blockQuery.data?.type) {
@@ -139,7 +151,7 @@ const BlockPageContent = () => {
           fontWeight={ 500 }
         >
           <chakra.span flexShrink={ 0 }>
-            { config.chain.verificationType === 'validation' ? 'Validated by' : 'Mined by' }
+            { `${ capitalize(getNetworkValidationActionText()) } by` }
           </chakra.span>
           <AddressEntity address={ blockQuery.data?.miner }/>
         </Skeleton>

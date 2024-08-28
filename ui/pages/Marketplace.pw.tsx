@@ -1,20 +1,31 @@
+import { Box } from '@chakra-ui/react';
 import React from 'react';
 
 import { apps as appsMock } from 'mocks/apps/apps';
+import { ratings as ratingsMock } from 'mocks/apps/ratings';
 import { securityReports as securityReportsMock } from 'mocks/apps/securityReports';
 import { test, expect, devices } from 'playwright/lib';
 
 import Marketplace from './Marketplace';
 
 const MARKETPLACE_CONFIG_URL = 'http://localhost/marketplace-config.json';
+const MARKETPLACE_SECURITY_REPORTS_URL = 'https://marketplace-security-reports.json';
 
-test.beforeEach(async({ mockConfigResponse, mockEnvs, mockAssetResponse }) => {
+test.beforeEach(async({ mockConfigResponse, mockEnvs, mockAssetResponse, page }) => {
   await mockEnvs([
     [ 'NEXT_PUBLIC_MARKETPLACE_ENABLED', 'true' ],
     [ 'NEXT_PUBLIC_MARKETPLACE_CONFIG_URL', MARKETPLACE_CONFIG_URL ],
+    [ 'NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL ],
+    [ 'NEXT_PUBLIC_MARKETPLACE_RATING_AIRTABLE_API_KEY', 'test' ],
+    [ 'NEXT_PUBLIC_MARKETPLACE_RATING_AIRTABLE_BASE_ID', 'test' ],
   ]);
   await mockConfigResponse('NEXT_PUBLIC_MARKETPLACE_CONFIG_URL', MARKETPLACE_CONFIG_URL, JSON.stringify(appsMock));
+  await mockConfigResponse('NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL, JSON.stringify(securityReportsMock));
   await Promise.all(appsMock.map(app => mockAssetResponse(app.logo, './playwright/mocks/image_s.jpg')));
+  await page.route('https://api.airtable.com/v0/test/apps_ratings?fields%5B%5D=appId&fields%5B%5D=rating', (route) => route.fulfill({
+    status: 200,
+    body: JSON.stringify(ratingsMock),
+  }));
 });
 
 test('base view +@dark-mode', async({ render }) => {
@@ -46,28 +57,21 @@ test('with banner +@dark-mode', async({ render, mockEnvs, mockConfigResponse }) 
   await expect(component).toHaveScreenshot();
 });
 
-test('with scores +@dark-mode', async({ render, mockConfigResponse, mockEnvs, mockFeatures }) => {
-  const MARKETPLACE_SECURITY_REPORTS_URL = 'https://marketplace-security-reports.json';
-  await mockEnvs([
-    [ 'NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL ],
-  ]);
-  await mockFeatures([
-    [ 'security_score_exp', true ],
-  ]);
-  await mockConfigResponse('NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL, JSON.stringify(securityReportsMock));
-  const component = await render(<Marketplace/>);
-  await component.getByText('Apps scores').click();
-
-  await expect(component).toHaveScreenshot();
-});
-
 // I had a memory error while running tests in GH actions
 // separate run for mobile tests fixes it
 test.describe('mobile', () => {
   test.use({ viewport: devices['iPhone 13 Pro'].viewport });
 
   test('base view', async({ render }) => {
-    const component = await render(<Marketplace/>);
+    const component = await render(
+      <Box>
+        { /* Added a fake header because without the ActionBar works incorrectly without it */ }
+        <Box h="100px" backgroundColor="#dbdbdb" p={ 1 }>
+          Header
+        </Box>
+        <Marketplace/>
+      </Box>,
+    );
 
     await expect(component).toHaveScreenshot();
   });
@@ -91,21 +95,6 @@ test.describe('mobile', () => {
     ]);
     await mockConfigResponse('MARKETPLACE_BANNER_CONTENT_URL', MARKETPLACE_BANNER_CONTENT_URL, './playwright/mocks/page.html', true);
     const component = await render(<Marketplace/>);
-
-    await expect(component).toHaveScreenshot();
-  });
-
-  test('with scores', async({ render, mockConfigResponse, mockEnvs, mockFeatures }) => {
-    const MARKETPLACE_SECURITY_REPORTS_URL = 'https://marketplace-security-reports.json';
-    await mockEnvs([
-      [ 'NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL ],
-    ]);
-    await mockFeatures([
-      [ 'security_score_exp', true ],
-    ]);
-    await mockConfigResponse('NEXT_PUBLIC_MARKETPLACE_SECURITY_REPORTS_URL', MARKETPLACE_SECURITY_REPORTS_URL, JSON.stringify(securityReportsMock));
-    const component = await render(<Marketplace/>);
-    await component.getByText('Apps scores').click();
 
     await expect(component).toHaveScreenshot();
   });

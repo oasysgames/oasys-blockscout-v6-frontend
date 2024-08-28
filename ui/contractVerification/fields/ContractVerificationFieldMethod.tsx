@@ -1,7 +1,6 @@
 import {
   Link,
   chakra,
-  Popover,
   PopoverTrigger,
   Portal,
   PopoverContent,
@@ -18,9 +17,10 @@ import type { ControllerRenderProps, Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 
 import type { FormFields } from '../types';
-import type { SmartContractVerificationConfig, SmartContractVerificationMethod } from 'types/api/contract';
+import type { SmartContractVerificationMethod, SmartContractVerificationConfig } from 'types/client/contract';
 
 import useIsMobile from 'lib/hooks/useIsMobile';
+import Popover from 'ui/shared/chakra/Popover';
 import FancySelect from 'ui/shared/FancySelect/FancySelect';
 import IconSvg from 'ui/shared/IconSvg';
 
@@ -51,6 +51,7 @@ const ContractVerificationFieldMethod = ({ control, isDisabled, methods }: Props
         isDisabled={ isDisabled }
         isRequired
         isAsync={ false }
+        isReadOnly={ options.length === 1 }
       />
     );
   }, [ isDisabled, isMobile, options ]);
@@ -58,7 +59,7 @@ const ContractVerificationFieldMethod = ({ control, isDisabled, methods }: Props
   const renderPopoverListItem = React.useCallback((method: SmartContractVerificationMethod) => {
     switch (method) {
       case 'flattened-code':
-        return <ListItem key={ method }>Verification through flattened source code.</ListItem>;
+        return <ListItem key={ method }>Verification through a single file.</ListItem>;
       case 'multi-part':
         return <ListItem key={ method }>Verification of multi-part Solidity files.</ListItem>;
       case 'sourcify':
@@ -93,6 +94,10 @@ const ContractVerificationFieldMethod = ({ control, isDisabled, methods }: Props
             <span> file.</span>
           </ListItem>
         );
+      case 'solidity-hardhat':
+        return <ListItem key={ method }>Verification through Hardhat plugin.</ListItem>;
+      case 'solidity-foundry':
+        return <ListItem key={ method }>Verification through Foundry.</ListItem>;
     }
   }, []);
 
@@ -105,7 +110,7 @@ const ContractVerificationFieldMethod = ({ control, isDisabled, methods }: Props
         <Popover trigger="hover" isLazy placement={ isMobile ? 'bottom-end' : 'right-start' } offset={ [ -8, 8 ] }>
           <PopoverTrigger>
             <chakra.span display="inline-block" ml={ 1 } cursor="pointer" verticalAlign="middle" h="22px">
-              <IconSvg name="info" boxSize={ 5 } color="link" _hover={{ color: 'link_hovered' }}/>
+              <IconSvg name="info" boxSize={ 5 } color="icon_info" _hover={{ color: 'link_hovered' }}/>
             </chakra.span>
           </PopoverTrigger>
           <Portal>

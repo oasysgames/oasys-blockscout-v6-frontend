@@ -1,7 +1,6 @@
 import {
   Box,
   Portal,
-  Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
@@ -15,12 +14,14 @@ import type { FormEvent } from 'react';
 import React from 'react';
 import { Element } from 'react-scroll';
 
+import type { Route } from 'nextjs-routes';
 import { route } from 'nextjs-routes';
 
 import useIsMobile from 'lib/hooks/useIsMobile';
 import * as mixpanel from 'lib/mixpanel/index';
 import { getRecentSearchKeywords, saveToRecentKeywords } from 'lib/recentSearchKeywords';
-import LinkInternal from 'ui/shared/LinkInternal';
+import Popover from 'ui/shared/chakra/Popover';
+import LinkInternal from 'ui/shared/links/LinkInternal';
 
 import SearchBarBackdrop from './SearchBarBackdrop';
 import SearchBarInput from './SearchBarInput';
@@ -50,14 +51,15 @@ const SearchBar = ({ isHomepage }: Props) => {
   const handleSubmit = React.useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (searchTerm) {
-      const url = route({ pathname: '/search-results', query: { q: searchTerm } });
+      const resultRoute: Route = { pathname: '/search-results', query: { q: searchTerm, redirect: 'true' } };
+      const url = route(resultRoute);
       mixpanel.logEvent(mixpanel.EventTypes.SEARCH_QUERY, {
         'Search query': searchTerm,
         'Source page type': mixpanel.getPageType(pathname),
         'Result URL': url,
       });
       saveToRecentKeywords(searchTerm);
-      router.push({ pathname: '/search-results', query: { q: searchTerm } }, undefined, { shallow: true });
+      router.push(resultRoute, undefined, { shallow: true });
     }
   }, [ searchTerm, pathname, router ]);
 
@@ -95,7 +97,7 @@ const SearchBar = ({ isHomepage }: Props) => {
     onClose();
   }, [ pathname, searchTerm, onClose ]);
 
-  const menuPaddingX = isMobile && !isHomepage ? 32 : 0;
+  const menuPaddingX = isMobile && !isHomepage ? 24 : 0;
   const calculateMenuWidth = React.useCallback(() => {
     menuWidth.current = (inputRef.current?.getBoundingClientRect().width || 0) - menuPaddingX;
   }, [ menuPaddingX ]);
@@ -123,7 +125,7 @@ const SearchBar = ({ isHomepage }: Props) => {
         autoFocus={ false }
         onClose={ onClose }
         placement="bottom-start"
-        offset={ isMobile && !isHomepage ? [ 16, -4 ] : undefined }
+        offset={ isMobile && !isHomepage ? [ 12, -4 ] : [ 0, 8 ] }
         isLazy
       >
         <PopoverTrigger>

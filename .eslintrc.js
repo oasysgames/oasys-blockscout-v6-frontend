@@ -4,9 +4,20 @@ const RESTRICTED_MODULES = {
     { name: '@chakra-ui/icons', message: 'Using @chakra-ui/icons is prohibited. Please use regular svg-icon instead (see examples in "icons/" folder)' },
     { name: '@metamask/providers', message: 'Please lazy-load @metamask/providers or use useProvider hook instead' },
     { name: '@metamask/post-message-stream', message: 'Please lazy-load @metamask/post-message-stream or use useProvider hook instead' },
+    { name: 'playwright/TestApp', message: 'Please use render() fixture from test() function of playwright/lib module' },
+    {
+      name: '@chakra-ui/react',
+      importNames: [ 'Popover', 'Menu', 'useToast' ],
+      message: 'Please use corresponding component or hook from ui/shared/chakra component instead',
+    },
+    {
+      name: 'lodash',
+      message: 'Please use `import [package] from \'lodash/[package]\'` instead.',
+    },
   ],
   patterns: [
     'icons/*',
+    '!lodash/*',
   ],
 };
 

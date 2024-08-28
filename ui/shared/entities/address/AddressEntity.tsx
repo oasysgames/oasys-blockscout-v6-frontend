@@ -11,6 +11,7 @@ import { useAddressHighlightContext } from 'lib/contexts/addressHighlight';
 import * as EntityBase from 'ui/shared/entities/base/components';
 
 import { getIconProps } from '../base/utils';
+import AddressEntityContentProxy from './AddressEntityContentProxy';
 import AddressIdenticon from './AddressIdenticon';
 
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'address'>;
@@ -57,27 +58,18 @@ const Icon = (props: IconProps) => {
       );
     }
 
-    if (props.address.is_verified) {
-      return (
-        <Tooltip label="Verified contract">
-          <span>
-            <EntityBase.Icon
-              { ...props }
-              name="contract_verified"
-              color="green.500"
-              borderRadius={ 0 }
-            />
-          </span>
-        </Tooltip>
-      );
-    }
+    const isProxy = Boolean(props.address.implementations?.length);
+    const isVerified = isProxy ? props.address.is_verified && props.address.implementations?.every(({ name }) => Boolean(name)) : props.address.is_verified;
+    const contractIconName: EntityBase.IconBaseProps['name'] = props.address.is_verified ? 'contracts/verified' : 'contracts/regular';
+    const label = (isVerified ? 'verified ' : '') + (isProxy ? 'proxy contract' : 'contract');
 
     return (
-      <Tooltip label="Contract">
+      <Tooltip label={ label.slice(0, 1).toUpperCase() + label.slice(1) }>
         <span>
           <EntityBase.Icon
             { ...props }
-            name="contract"
+            name={ isProxy ? 'contracts/proxy' : contractIconName }
+            color={ isVerified ? 'green.500' : undefined }
             borderRadius={ 0 }
           />
         </span>
@@ -86,33 +78,39 @@ const Icon = (props: IconProps) => {
   }
 
   return (
-    <Tooltip label={ props.address.implementation_name }>
-      <Flex marginRight={ styles.marginRight }>
-        <AddressIdenticon
-          size={ props.iconSize === 'lg' ? 30 : 20 }
-          hash={ props.address.hash }
-        />
-      </Flex>
-    </Tooltip>
+    <Flex marginRight={ styles.marginRight }>
+      <AddressIdenticon
+        size={ props.iconSize === 'lg' ? 30 : 20 }
+        hash={ props.address.hash }
+      />
+    </Flex>
   );
 };
 
-type ContentProps = Omit<EntityBase.ContentBaseProps, 'text'> & Pick<EntityProps, 'address'>;
+export type ContentProps = Omit<EntityBase.ContentBaseProps, 'text'> & Pick<EntityProps, 'address'>;
 
 const Content = chakra((props: ContentProps) => {
-  if (props.address.name || props.address.ens_domain_name) {
-    const text = props.address.ens_domain_name || props.address.name;
+  const nameTag = props.address.metadata?.tags.find(tag => tag.tagType === 'name')?.name;
+  const nameText = nameTag || props.address.ens_domain_name || props.address.name;
+
+  const isProxy = props.address.implementations && props.address.implementations.length > 0;
+
+  if (isProxy) {
+    return <AddressEntityContentProxy { ...props }/>;
+  }
+
+  if (nameText) {
     const label = (
       <VStack gap={ 0 } py={ 1 } color="inherit">
-        <Box fontWeight={ 600 } whiteSpace="pre-wrap" wordBreak="break-word">{ text }</Box>
+        <Box fontWeight={ 600 } whiteSpace="pre-wrap" wordBreak="break-word">{ nameText }</Box>
         <Box whiteSpace="pre-wrap" wordBreak="break-word">{ props.address.hash }</Box>
       </VStack>
     );
 
     return (
-      <Tooltip label={ label } maxW={{ base: '100vw', lg: '400px' }}>
+      <Tooltip label={ label } maxW={{ base: 'calc(100vw - 8px)', lg: '400px' }}>
         <Skeleton isLoaded={ !props.isLoading } overflow="hidden" textOverflow="ellipsis" whiteSpace="nowrap" as="span">
-          { text }
+          { nameText }
         </Skeleton>
       </Tooltip>
     );
@@ -140,15 +138,18 @@ const Copy = (props: CopyProps) => {
 const Container = EntityBase.Container;
 
 export interface EntityProps extends EntityBase.EntityBaseProps {
-  address: Pick<AddressParam, 'hash' | 'name' | 'is_contract' | 'is_verified' | 'implementation_name' | 'ens_domain_name'>;
+  address: Pick<AddressParam,
+  'hash' | 'name' | 'is_contract' | 'is_verified' | 'implementations' | 'ens_domain_name' | 'metadata'
+  >;
   isSafeAddress?: boolean;
+  noHighlight?: boolean;
 }
 
 const AddressEntry = (props: EntityProps) => {
   const linkProps = _omit(props, [ 'className' ]);
   const partsProps = _omit(props, [ 'className', 'onClick' ]);
 
-  const context = useAddressHighlightContext();
+  const context = useAddressHighlightContext(props.noHighlight);
 
   return (
     <Container

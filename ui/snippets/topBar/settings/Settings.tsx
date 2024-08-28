@@ -1,6 +1,7 @@
-import { Box, IconButton, Popover, PopoverBody, PopoverContent, PopoverTrigger, useDisclosure } from '@chakra-ui/react';
+import { Box, IconButton, PopoverBody, PopoverContent, PopoverTrigger, useDisclosure } from '@chakra-ui/react';
 import React from 'react';
 
+import Popover from 'ui/shared/chakra/Popover';
 import IconSvg from 'ui/shared/IconSvg';
 
 import SettingsColorTheme from './SettingsColorTheme';
@@ -24,7 +25,7 @@ const Settings = () => {
       </PopoverTrigger>
       <PopoverContent overflowY="hidden" w="auto" fontSize="sm">
         <PopoverBody boxShadow="2xl" p={ 4 }>
-          <SettingsColorTheme/>
+          <SettingsColorTheme onSelect={ onClose }/>
           <Box borderColor="divider" borderWidth="1px" my={ 3 }/>
           <SettingsIdentIcon/>
         </PopoverBody>

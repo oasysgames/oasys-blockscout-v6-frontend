@@ -42,7 +42,7 @@ test('search by address hash +@mobile', async({ render, mockApiResponse }) => {
     },
   };
   const data = {
-    items: [ searchMock.address1 ],
+    items: [ searchMock.address1, searchMock.contract2 ],
     next_page_params: null,
   };
   await mockApiResponse('search', data, { queryParams: { q: searchMock.address1.address } });
@@ -100,7 +100,7 @@ test('search by tx hash +@mobile', async({ render, mockApiResponse }) => {
   await expect(component.locator('main')).toHaveScreenshot();
 });
 
-test('search by blob hash +@mobile', async({ render, mockApiResponse }) => {
+test('search by blob hash +@mobile', async({ render, mockApiResponse, mockEnvs }) => {
   const hooksConfig = {
     router: {
       query: { q: searchMock.blob1.blob_hash },
@@ -110,13 +110,14 @@ test('search by blob hash +@mobile', async({ render, mockApiResponse }) => {
     items: [ searchMock.blob1 ],
     next_page_params: null,
   };
+  await mockEnvs(ENVS_MAP.dataAvailability);
   await mockApiResponse('search', data, { queryParams: { q: searchMock.blob1.blob_hash } });
   const component = await render(<SearchResults/>, { hooksConfig });
 
   await expect(component.locator('main')).toHaveScreenshot();
 });
 
-test('search by domain name +@mobile', async({ render, mockApiResponse }) => {
+test('search by domain name +@mobile', async({ render, mockApiResponse, mockEnvs }) => {
   const hooksConfig = {
     router: {
       query: { q: searchMock.domain1.ens_info.name },
@@ -126,6 +127,7 @@ test('search by domain name +@mobile', async({ render, mockApiResponse }) => {
     items: [ searchMock.domain1 ],
     next_page_params: null,
   };
+  await mockEnvs(ENVS_MAP.nameService);
   await mockApiResponse('search', data, { queryParams: { q: searchMock.domain1.ens_info.name } });
   const component = await render(<SearchResults/>, { hooksConfig });
   await expect(component.locator('main')).toHaveScreenshot();
@@ -178,6 +180,33 @@ test.describe('with apps', () => {
     await mockConfigResponse('NEXT_PUBLIC_MARKETPLACE_CONFIG_URL', MARKETPLACE_CONFIG_URL, JSON.stringify(appsMock));
     await mockAssetResponse(appsMock[0].logo, './playwright/mocks/image_s.jpg');
     await mockAssetResponse(appsMock[1].logo, './playwright/mocks/image_s.jpg');
+    const component = await render(<SearchResults/>, { hooksConfig });
+
+    await expect(component.locator('main')).toHaveScreenshot();
+  });
+});
+
+test.describe('block countdown', () => {
+  const blockHeight = '1234567890';
+  const hooksConfig = {
+    router: {
+      query: { q: blockHeight },
+    },
+  };
+
+  test('no results', async({ render, mockApiResponse }) => {
+    await mockApiResponse('search', { items: [], next_page_params: null }, { queryParams: { q: blockHeight } });
+    const component = await render(<SearchResults/>, { hooksConfig });
+
+    await expect(component.locator('main')).toHaveScreenshot();
+  });
+
+  test('with results +@mobile', async({ render, mockApiResponse }) => {
+    await mockApiResponse(
+      'search',
+      { items: [ { ...searchMock.token1, name: '1234567890123456789' } ], next_page_params: null },
+      { queryParams: { q: blockHeight } },
+    );
     const component = await render(<SearchResults/>, { hooksConfig });
 
     await expect(component.locator('main')).toHaveScreenshot();

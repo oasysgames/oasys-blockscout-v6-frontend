@@ -1,14 +1,15 @@
 /* eslint-disable no-console */
 import { test as base } from '@playwright/experimental-ct-react';
 
-import * as textAdMock from 'mocks/ad/textAd';
-
 import * as injectMetaMaskProvider from './fixtures/injectMetaMaskProvider';
 import * as mockApiResponse from './fixtures/mockApiResponse';
 import * as mockAssetResponse from './fixtures/mockAssetResponse';
 import * as mockConfigResponse from './fixtures/mockConfigResponse';
+import * as mockContractReadResponse from './fixtures/mockContractReadResponse';
 import * as mockEnvs from './fixtures/mockEnvs';
 import * as mockFeatures from './fixtures/mockFeatures';
+import * as mockRpcResponse from './fixtures/mockRpcResponse';
+import * as mockTextAd from './fixtures/mockTextAd';
 import * as render from './fixtures/render';
 import * as socketServer from './fixtures/socketServer';
 
@@ -17,10 +18,13 @@ interface Fixtures {
   mockApiResponse: mockApiResponse.MockApiResponseFixture;
   mockAssetResponse: mockAssetResponse.MockAssetResponseFixture;
   mockConfigResponse: mockConfigResponse.MockConfigResponseFixture;
+  mockContractReadResponse: mockContractReadResponse.MockContractReadResponseFixture;
   mockEnvs: mockEnvs.MockEnvsFixture;
   mockFeatures: mockFeatures.MockFeaturesFixture;
+  mockRpcResponse: mockRpcResponse.MockRpcResponseFixture;
   createSocket: socketServer.CreateSocketFixture;
   injectMetaMaskProvider: injectMetaMaskProvider.InjectMetaMaskProvider;
+  mockTextAd: mockTextAd.MockTextAdFixture;
 }
 
 const test = base.extend<Fixtures>({
@@ -28,13 +32,19 @@ const test = base.extend<Fixtures>({
   mockApiResponse: mockApiResponse.default,
   mockAssetResponse: mockAssetResponse.default,
   mockConfigResponse: mockConfigResponse.default,
+  mockContractReadResponse: mockContractReadResponse.default,
   mockEnvs: mockEnvs.default,
   mockFeatures: mockFeatures.default,
+  mockRpcResponse: mockRpcResponse.default,
+  // FIXME: for some reason Playwright does not intercept requests to text ad provider when running multiple tests in parallel
+  // even if we have a global request interceptor (maybe it is related to service worker issue, maybe not)
+  // so we have to inject mockTextAd fixture in each test and mock the response where it is needed
+  mockTextAd: mockTextAd.default,
   createSocket: socketServer.createSocket,
   injectMetaMaskProvider: injectMetaMaskProvider.default,
 });
 
-test.beforeEach(async({ page }) => {
+test.beforeEach(async({ page, mockTextAd }) => {
   // debug
   const isDebug = process.env.PWDEBUG === '1';
 
@@ -56,16 +66,7 @@ test.beforeEach(async({ page }) => {
 
   // with few exceptions:
   //  1. mock text AD requests
-  await page.route('https://request-global.czilladx.com/serve/native.php?z=19260bf627546ab7242', (route) => route.fulfill({
-    status: 200,
-    body: JSON.stringify(textAdMock.duck),
-  }));
-  await page.route(textAdMock.duck.ad.thumbnail, (route) => {
-    return route.fulfill({
-      status: 200,
-      path: './playwright/mocks/image_s.jpg',
-    });
-  });
+  await mockTextAd();
 });
 
 export * from '@playwright/experimental-ct-react';

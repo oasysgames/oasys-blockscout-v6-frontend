@@ -2,7 +2,7 @@ import { chakra, Flex, Grid, Image, Box, Text, Skeleton, useColorMode, Tag } fro
 import React from 'react';
 import xss from 'xss';
 
-import type { SearchResultItem } from 'types/api/search';
+import type { SearchResultItem } from 'types/client/search';
 
 import { route } from 'nextjs-routes';
 
@@ -11,6 +11,7 @@ import highlightText from 'lib/highlightText';
 import * as mixpanel from 'lib/mixpanel/index';
 import { saveToRecentKeywords } from 'lib/recentSearchKeywords';
 import { ADDRESS_REGEXP } from 'lib/validations/address';
+import ContractCertifiedLabel from 'ui/shared/ContractCertifiedLabel';
 import * as AddressEntity from 'ui/shared/entities/address/AddressEntity';
 import * as BlobEntity from 'ui/shared/entities/blob/BlobEntity';
 import * as BlockEntity from 'ui/shared/entities/block/BlockEntity';
@@ -20,8 +21,8 @@ import * as TxEntity from 'ui/shared/entities/tx/TxEntity';
 import * as UserOpEntity from 'ui/shared/entities/userOp/UserOpEntity';
 import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 import IconSvg from 'ui/shared/IconSvg';
-import LinkExternal from 'ui/shared/LinkExternal';
-import LinkInternal from 'ui/shared/LinkInternal';
+import LinkExternal from 'ui/shared/links/LinkExternal';
+import LinkInternal from 'ui/shared/links/LinkInternal';
 import ListItemMobile from 'ui/shared/ListItemMobile/ListItemMobile';
 import type { SearchResultAppItem } from 'ui/shared/search/utils';
 import { getItemCategory, searchItemTitles } from 'ui/shared/search/utils';
@@ -69,7 +70,7 @@ const SearchResultListItem = ({ data, searchTerm, isLoading }: Props) => {
                 textOverflow="ellipsis"
               />
             </LinkInternal>
-            { data.is_verified_via_admin_panel && <IconSvg name="verified_token" boxSize={ 4 } ml={ 1 } color="green.500"/> }
+            { data.is_verified_via_admin_panel && <IconSvg name="certified" boxSize={ 4 } ml={ 1 } color="green.500"/> }
           </Flex>
         );
       }
@@ -82,7 +83,7 @@ const SearchResultListItem = ({ data, searchTerm, isLoading }: Props) => {
           is_contract: data.type === 'contract',
           is_verified: data.is_smart_contract_verified,
           name: null,
-          implementation_name: null,
+          implementations: null,
           ens_domain_name: null,
         };
 
@@ -161,23 +162,29 @@ const SearchResultListItem = ({ data, searchTerm, isLoading }: Props) => {
 
       case 'block': {
         const shouldHighlightHash = data.block_hash.toLowerCase() === searchTerm.toLowerCase();
+        const isFutureBlock = data.timestamp === undefined;
+        const href = isFutureBlock ?
+          route({ pathname: '/block/countdown/[height]', query: { height: String(data.block_number) } }) :
+          route({ pathname: '/block/[height_or_hash]', query: { height_or_hash: data.block_hash ?? String(data.block_number) } });
+
         return (
           <BlockEntity.Container>
-            <BlockEntity.Icon/>
+            <BlockEntity.Icon isLoading={ isLoading }/>
             <BlockEntity.Link
-              hash={ data.block_hash }
-              number={ Number(data.block_number) }
+              href={ href }
               onClick={ handleLinkClick }
+              isLoading={ isLoading }
             >
               <BlockEntity.Content
                 asProp={ shouldHighlightHash ? 'span' : 'mark' }
                 number={ Number(data.block_number) }
                 fontSize="sm"
                 fontWeight={ 700 }
+                isLoading={ isLoading }
               />
             </BlockEntity.Link>
-            { data.block_type === 'reorg' && <Tag ml={ 2 }>Reorg</Tag> }
-            { data.block_type === 'uncle' && <Tag ml={ 2 }>Uncle</Tag> }
+            { data.block_type === 'reorg' && !isLoading && <Tag ml={ 2 }>Reorg</Tag> }
+            { data.block_type === 'uncle' && !isLoading && <Tag ml={ 2 }>Uncle</Tag> }
           </BlockEntity.Container>
         );
       }
@@ -294,12 +301,20 @@ const SearchResultListItem = ({ data, searchTerm, isLoading }: Props) => {
       }
       case 'block': {
         const shouldHighlightHash = data.block_hash.toLowerCase() === searchTerm.toLowerCase();
+        const isFutureBlock = data.timestamp === undefined;
+
+        if (isFutureBlock) {
+          return <Skeleton isLoaded={ !isLoading }>Learn estimated time for this block to be created.</Skeleton>;
+        }
+
         return (
           <>
-            <Box as={ shouldHighlightHash ? 'mark' : 'span' } display="block" whiteSpace="nowrap" overflow="hidden" mb={ 1 }>
+            <Skeleton isLoaded={ !isLoading } as={ shouldHighlightHash ? 'mark' : 'span' } display="block" whiteSpace="nowrap" overflow="hidden" mb={ 1 }>
               <HashStringShortenDynamic hash={ data.block_hash }/>
-            </Box>
-            <Text variant="secondary" mr={ 2 }>{ dayjs(data.timestamp).format('llll') }</Text>
+            </Skeleton>
+            <Skeleton isLoaded={ !isLoading } color="text_secondary" mr={ 2 }>
+              <span>{ dayjs(data.timestamp).format('llll') }</span>
+            </Skeleton>
           </>
         );
       }
@@ -346,16 +361,21 @@ const SearchResultListItem = ({ data, searchTerm, isLoading }: Props) => {
         const expiresText = data.ens_info?.expiry_date ? ` (expires ${ dayjs(data.ens_info.expiry_date).fromNow() })` : '';
 
         return addressName ? (
-          <>
-            <span dangerouslySetInnerHTML={{ __html: shouldHighlightHash ? xss(addressName) : highlightText(addressName, searchTerm) }}/>
-            { data.ens_info &&
-              (
+          <Flex alignItems="center">
+            <Text
+              overflow="hidden"
+              whiteSpace="nowrap"
+              textOverflow="ellipsis"
+            >
+              <span dangerouslySetInnerHTML={{ __html: shouldHighlightHash ? xss(addressName) : highlightText(addressName, searchTerm) }}/>
+              { data.ens_info && (
                 data.ens_info.names_count > 1 ?
                   <chakra.span color="text_secondary"> ({ data.ens_info.names_count > 39 ? '40+' : `+${ data.ens_info.names_count - 1 }` })</chakra.span> :
                   <chakra.span color="text_secondary">{ expiresText }</chakra.span>
-              )
-            }
-          </>
+              ) }
+            </Text>
+            { data.certified && <ContractCertifiedLabel iconSize={ 5 } boxSize={ 5 } ml={ 1 }/> }
+          </Flex>
         ) :
           null;
       }

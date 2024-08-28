@@ -1,7 +1,6 @@
 import {
   Image,
   Button,
-  Popover,
   PopoverTrigger,
   PopoverBody,
   PopoverContent,
@@ -18,8 +17,9 @@ import type { NetworkExplorer as TNetworkExplorer } from 'types/networks';
 
 import config from 'configs/app';
 import stripTrailingSlash from 'lib/stripTrailingSlash';
+import Popover from 'ui/shared/chakra/Popover';
 import IconSvg from 'ui/shared/IconSvg';
-import LinkExternal from 'ui/shared/LinkExternal';
+import LinkExternal from 'ui/shared/links/LinkExternal';
 import PopoverTriggerTooltip from 'ui/shared/PopoverTriggerTooltip';
 
 interface Props {
@@ -62,6 +62,7 @@ const NetworkExplorers = ({ className, type, pathParam }: Props) => {
             variant="outline"
             colorScheme="gray"
             onClick={ onToggle }
+            isActive={ isOpen }
             aria-label="Verify in other explorers"
             fontWeight={ 500 }
             px={ 2 }

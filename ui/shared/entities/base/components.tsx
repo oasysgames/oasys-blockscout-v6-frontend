@@ -8,8 +8,8 @@ import HashStringShorten from 'ui/shared/HashStringShorten';
 import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';
 import type { IconName } from 'ui/shared/IconSvg';
 import IconSvg from 'ui/shared/IconSvg';
-import LinkExternal from 'ui/shared/LinkExternal';
-import LinkInternal from 'ui/shared/LinkInternal';
+import LinkExternal from 'ui/shared/links/LinkExternal';
+import LinkInternal from 'ui/shared/links/LinkInternal';
 
 import { getIconProps, type IconSize } from './utils';
 
@@ -142,6 +142,7 @@ const Content = chakra(({ className, isLoading, asProp, text, truncation = 'dyna
             tailLength={ tailLength }
           />
         );
+      case 'tail':
       case 'none':
         return <chakra.span as={ asProp }>{ text }</chakra.span>;
     }
@@ -153,6 +154,7 @@ const Content = chakra(({ className, isLoading, asProp, text, truncation = 'dyna
       isLoaded={ !isLoading }
       overflow="hidden"
       whiteSpace="nowrap"
+      textOverflow={ truncation === 'tail' ? 'ellipsis' : undefined }
     >
       { children }
     </Skeleton>

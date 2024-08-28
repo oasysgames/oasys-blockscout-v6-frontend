@@ -1,5 +1,7 @@
-import type { SmartContract, SolidityscanReport } from 'types/api/contract';
+import type { SmartContract } from 'types/api/contract';
 import type { VerifiedContract, VerifiedContractsCounters } from 'types/api/contracts';
+
+import type { SolidityScanReport } from 'lib/solidityScan/schema';
 
 import { ADDRESS_PARAMS } from './addressParams';
 
@@ -10,7 +12,22 @@ export const CONTRACT_CODE_UNVERIFIED = {
 } as SmartContract;
 
 export const CONTRACT_CODE_VERIFIED = {
-  abi: [],
+  abi: [
+    {
+      inputs: [],
+      name: 'symbol',
+      outputs: [ { internalType: 'string', name: '', type: 'string' } ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+    {
+      inputs: [ { internalType: 'address', name: 'newOwner', type: 'address' } ],
+      name: 'transferOwnership',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ],
   additional_sources: [],
   can_be_visualized_via_sol2uml: true,
   compiler_settings: {
@@ -63,7 +80,7 @@ export const VERIFIED_CONTRACTS_COUNTERS: VerifiedContractsCounters = {
   new_verified_smart_contracts_24h: '1234',
 };
 
-export const SOLIDITYSCAN_REPORT: SolidityscanReport = {
+export const SOLIDITY_SCAN_REPORT: SolidityScanReport = {
   scan_report: {
     contractname: 'BullRunners',
     scan_status: 'scan_done',
@@ -76,11 +93,7 @@ export const SOLIDITYSCAN_REPORT: SolidityscanReport = {
         low: 2,
         medium: 0,
       },
-      lines_analyzed_count: 18,
-      scan_time_taken: 1,
-      score: '3.61',
       score_v2: '72.22',
-      threat_score: '94.74',
     },
     scanner_reference_url: 'https://solidityscan.com/quickscan/0xc1EF7811FF2ebFB74F80ed7423f2AdAA37454be2/blockscout/eth-goerli?ref=blockscout',
   },
