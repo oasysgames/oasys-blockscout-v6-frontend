@@ -17,7 +17,7 @@ const TEST_URLS: Record<AdBannerProviders, string> = {
   adbutler: 'https://servedbyadbutler.com/app.js',
   hype: 'https://api.hypelab.com/v1/scripts/hp-sdk.js',
   // I don't have an url for getit to test
-  getit: DEFAULT_URL,
+  // getit: DEFAULT_URL,
   none: DEFAULT_URL,
 };
 
@@ -34,9 +34,13 @@ export default function useAdblockDetect() {
         method: 'HEAD',
         mode: 'no-cors',
         cache: 'no-store',
-      }).catch(() => {
-        cookies.set(cookies.NAMES.ADBLOCK_DETECTED, 'true', { expires: 1 });
-      });
+      })
+        .then(() => {
+          cookies.set(cookies.NAMES.ADBLOCK_DETECTED, 'false', { expires: 1 });
+        })
+        .catch(() => {
+          cookies.set(cookies.NAMES.ADBLOCK_DETECTED, 'true', { expires: 1 });
+        });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

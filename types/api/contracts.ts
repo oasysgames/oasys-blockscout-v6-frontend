@@ -3,6 +3,7 @@ import type { SmartContractLicenseType } from './contract';
 
 export interface VerifiedContract {
   address: AddressParam;
+  certified?: boolean;
   coin_balance: string;
   compiler_version: string;
   language: 'vyper' | 'yul' | 'solidity';
@@ -12,6 +13,7 @@ export interface VerifiedContract {
   verified_at: string;
   market_cap: string | null;
   license_type: SmartContractLicenseType | null;
+  zk_compiler_version?: string;
 }
 
 export interface VerifiedContractsResponse {

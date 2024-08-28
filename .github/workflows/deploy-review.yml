@@ -10,6 +10,11 @@ on:
           type: choice
           options:
             - none
+            - arbitrum
+            - arbitrum_nova
+            - base
+            - celo_alfajores
+            - garnet
             - gnosis
             - eth
             - eth_sepolia

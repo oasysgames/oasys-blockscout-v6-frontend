@@ -1,13 +1,13 @@
 import {
-  Box, Flex, Heading, IconButton, Image, Link, List, Modal, ModalBody,
+  Box, Flex, Heading, IconButton, Image, Link, Modal, ModalBody,
   ModalCloseButton, ModalContent, ModalFooter, ModalOverlay, Tag, Text, useColorModeValue,
 } from '@chakra-ui/react';
 import React, { useCallback } from 'react';
 
-import type { MarketplaceAppWithSecurityReport } from 'types/client/marketplace';
+import type { MarketplaceAppWithSecurityReport, AppRating } from 'types/client/marketplace';
 import { ContractListTypes } from 'types/client/marketplace';
 
-import useFeatureValue from 'lib/growthbook/useFeatureValue';
+import config from 'configs/app';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import { nbsp } from 'lib/html-entities';
 import * as mixpanel from 'lib/mixpanel/index';
@@ -15,8 +15,13 @@ import type { IconName } from 'ui/shared/IconSvg';
 import IconSvg from 'ui/shared/IconSvg';
 
 import AppSecurityReport from './AppSecurityReport';
-import ContractListButton, { ContractListButtonVariants } from './ContractListButton';
+import FavoriteIcon from './FavoriteIcon';
 import MarketplaceAppModalLink from './MarketplaceAppModalLink';
+import Rating from './Rating/Rating';
+import type { RateFunction } from './Rating/useRatings';
+
+const feature = config.features.marketplace;
+const isRatingEnabled = feature.isEnabled && feature.rating;
 
 type Props = {
   onClose: () => void;
@@ -24,6 +29,11 @@ type Props = {
   onFavoriteClick: (id: string, isFavorite: boolean, source: 'App modal') => void;
   data: MarketplaceAppWithSecurityReport;
   showContractList: (id: string, type: ContractListTypes, hasPreviousStep: boolean) => void;
+  userRating?: AppRating;
+  rateApp: RateFunction;
+  isRatingSending: boolean;
+  isRatingLoading: boolean;
+  canRate: boolean | undefined;
 }
 
 const MarketplaceAppModal = ({
@@ -32,10 +42,12 @@ const MarketplaceAppModal = ({
   onFavoriteClick,
   data,
   showContractList: showContractListProp,
+  userRating,
+  rateApp,
+  isRatingSending,
+  isRatingLoading,
+  canRate,
 }: Props) => {
-  const { value: isExperiment } = useFeatureValue('security_score_exp', false);
-  const starOutlineIconColor = useColorModeValue('gray.600', 'gray.300');
-
   const {
     id,
     title,
@@ -47,10 +59,12 @@ const MarketplaceAppModal = ({
     github,
     telegram,
     twitter,
+    discord,
     logo,
     logoDarkMode,
     categories,
     securityReport,
+    rating,
   } = data;
 
   const socialLinks = [
@@ -61,6 +75,10 @@ const MarketplaceAppModal = ({
     twitter ? {
       icon: 'social/twitter_filled' as IconName,
       url: twitter,
+    } : null,
+    discord ? {
+      icon: 'social/discord_filled' as IconName,
+      url: discord,
     } : null,
   ].filter(Boolean);
 
@@ -76,24 +94,15 @@ const MarketplaceAppModal = ({
     onFavoriteClick(id, isFavorite, 'App modal');
   }, [ onFavoriteClick, id, isFavorite ]);
 
-  const showContractList = useCallback((type: ContractListTypes) => {
+  const showContractList = useCallback((id: string, type: ContractListTypes) => {
     onClose();
     showContractListProp(id, type, true);
-  }, [ onClose, showContractListProp, id ]);
+  }, [ onClose, showContractListProp ]);
 
   const showAllContracts = React.useCallback(() => {
     mixpanel.logEvent(mixpanel.EventTypes.PAGE_WIDGET, { Type: 'Total contracts', Info: id, Source: 'App modal' });
-    showContractList(ContractListTypes.ALL);
+    showContractList(id, ContractListTypes.ALL);
   }, [ showContractList, id ]);
-
-  const showVerifiedContracts = React.useCallback(() => {
-    mixpanel.logEvent(mixpanel.EventTypes.PAGE_WIDGET, { Type: 'Verified contracts', Info: id, Source: 'App modal' });
-    showContractList(ContractListTypes.VERIFIED);
-  }, [ showContractList, id ]);
-
-  const showAnalyzedContracts = React.useCallback(() => {
-    showContractList(ContractListTypes.ANALYZED);
-  }, [ showContractList ]);
 
   const isMobile = useIsMobile();
   const logoUrl = useColorModeValue(logo, logoDarkMode || logo);
@@ -117,16 +126,16 @@ const MarketplaceAppModal = ({
         <Box
           display="grid"
           gridTemplateColumns={{ base: 'auto 1fr' }}
-          paddingRight={{ sm: 12 }}
-          marginBottom={{ base: 6, sm: 8 }}
+          paddingRight={{ md: 12 }}
+          marginBottom={{ base: 6, md: 8 }}
         >
           <Flex
             alignItems="center"
             justifyContent="center"
-            w={{ base: '72px', sm: '144px' }}
-            h={{ base: '72px', sm: '144px' }}
-            marginRight={{ base: 6, sm: 8 }}
-            gridRow={{ base: '1 / 3', sm: '1 / 4' }}
+            w={{ base: '72px', md: '144px' }}
+            h={{ base: '72px', md: '144px' }}
+            marginRight={{ base: 6, md: 8 }}
+            gridRow={{ base: '1 / 3', md: '1 / 5' }}
           >
             <Image
               src={ logoUrl }
@@ -138,10 +147,10 @@ const MarketplaceAppModal = ({
           <Heading
             as="h2"
             gridColumn={ 2 }
-            fontSize={{ base: '2xl', sm: '3xl' }}
+            fontSize={{ base: '2xl', md: '32px' }}
             fontWeight="medium"
-            lineHeight={ 1 }
-            color="blue.600"
+            lineHeight={{ md: 10 }}
+            mb={{ md: 2 }}
           >
             { title }
           </Heading>
@@ -149,19 +158,40 @@ const MarketplaceAppModal = ({
           <Text
             variant="secondary"
             gridColumn={ 2 }
-            fontSize="sm"
+            fontSize={{ base: 'sm', md: 'md' }}
             fontWeight="normal"
-            lineHeight={ 1 }
+            lineHeight={{ md: 6 }}
           >
             By{ nbsp }{ author }
           </Text>
 
+          { isRatingEnabled && (
+            <Box
+              gridColumn={{ base: '1 / 3', md: 2 }}
+              marginTop={{ base: 6, md: 3 }}
+              py={{ base: 0, md: 1.5 }}
+              width="fit-content"
+            >
+              <Rating
+                appId={ id }
+                rating={ rating }
+                userRating={ userRating }
+                rate={ rateApp }
+                isSending={ isRatingSending }
+                isLoading={ isRatingLoading }
+                fullView
+                canRate={ canRate }
+                source="App modal"
+              />
+            </Box>
+          ) }
+
           <Box
-            gridColumn={{ base: '1 / 3', sm: 2 }}
-            marginTop={{ base: 6, sm: 0 }}
+            gridColumn={{ base: '1 / 3', md: 2 }}
+            marginTop={{ base: 6, md: 3 }}
           >
             <Flex flexWrap="wrap" gap={ 6 }>
-              <Flex width={{ base: '100%', sm: 'auto' }}>
+              <Flex width={{ base: '100%', md: 'auto' }}>
                 <MarketplaceAppModalLink
                   id={ data.id }
                   url={ url }
@@ -177,131 +207,118 @@ const MarketplaceAppModal = ({
                   w={ 9 }
                   h={ 8 }
                   onClick={ handleFavoriteClick }
-                  icon={ isFavorite ?
-                    <IconSvg name="star_filled" w={ 5 } h={ 5 } color="yellow.400"/> :
-                    <IconSvg name="star_outline" w={ 5 } h={ 5 } color={ starOutlineIconColor }/> }
+                  icon={ <FavoriteIcon isFavorite={ isFavorite } color={ useColorModeValue('blue.700', 'gray.400') }/> }
                 />
               </Flex>
-
-              { (isExperiment && securityReport) && (
-                <Flex alignItems="center" gap={ 3 }>
-                  <AppSecurityReport
-                    id={ id }
-                    securityReport={ securityReport }
-                    showContractList={ showAnalyzedContracts }
-                    source="App modal"
-                  />
-                  <ContractListButton
-                    onClick={ showAllContracts }
-                    variant={ ContractListButtonVariants.ALL_CONTRACTS }
-                  >
-                    { securityReport.overallInfo.totalContractsNumber }
-                  </ContractListButton>
-                  <ContractListButton
-                    onClick={ showVerifiedContracts }
-                    variant={ ContractListButtonVariants.VERIFIED_CONTRACTS }
-                  >
-                    { securityReport.overallInfo.verifiedNumber }
-                  </ContractListButton>
-                </Flex>
-              ) }
             </Flex>
           </Box>
         </Box>
 
         <ModalCloseButton/>
 
-        <ModalBody>
-          <Heading
-            as="h3"
-            fontSize="2xl"
-            marginBottom={ 4 }
-          >
-            Overview
-          </Heading>
-
-          <Box marginBottom={ 2 }>
-            { categories.map((category) => (
-              <Tag
-                colorScheme="blue"
-                marginRight={ 2 }
-                marginBottom={ 2 }
-                key={ category }
-              >
-                { category }
-              </Tag>
-            )) }
-          </Box>
-
+        <ModalBody mb={ 6 }>
+          { securityReport && (
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              justifyContent={{ base: 'flex-start', md: 'space-between' }}
+              gap={ 3 }
+              fontSize="sm"
+              mb={ 6 }
+            >
+              <Flex alignItems="center" gap={ 2 } flexWrap="wrap">
+                <IconSvg name="contracts/verified_many" boxSize={ 5 } color="green.500"/>
+                <Text>Verified contracts</Text>
+                <Text fontWeight="500">
+                  { securityReport?.overallInfo.verifiedNumber ?? 0 } of { securityReport?.overallInfo.totalContractsNumber ?? 0 }
+                </Text>
+                <Link onClick={ showAllContracts } ml={ 1 }>
+                  View all contracts
+                </Link>
+              </Flex>
+              <Flex alignItems="center" gap={ 2 }>
+                <Text>Security level</Text>
+                <AppSecurityReport
+                  id={ id }
+                  securityReport={ securityReport }
+                  showContractList={ showContractList }
+                  source="App modal"
+                  popoverPlacement={ isMobile ? 'bottom-start' : 'left' }
+                />
+              </Flex>
+            </Flex>
+          ) }
           <Text>{ description }</Text>
         </ModalBody>
 
         <ModalFooter
           display="flex"
-          flexDirection={{ base: 'column', sm: 'row' }}
-          alignItems={{ base: 'flex-start', sm: 'center' }}
+          flexDirection={{ base: 'column', md: 'row' }}
+          justifyContent={{ base: 'flex-start', md: 'space-between' }}
+          alignItems={{ base: 'flex-start', md: 'center' }}
+          gap={ 3 }
         >
-          { site && (
-            <Link
-              isExternal
-              href={ site }
-              display="flex"
-              alignItems="center"
-              paddingRight={{ sm: 2 }}
-              marginBottom={{ base: 3, sm: 0 }}
-              maxW="100%"
-              overflow="hidden"
-            >
-              <IconSvg
-                name="link"
-                display="inline"
-                verticalAlign="baseline"
-                boxSize="18px"
-                marginRight={ 2 }
-              />
-
-              <Text
-                color="inherit"
-                whiteSpace="nowrap"
-                overflow="hidden"
-                textOverflow="ellipsis"
+          <Flex gap={ 2 }>
+            { categories.map((category) => (
+              <Tag
+                colorScheme="blue"
+                key={ category }
               >
-                { getHostname(site) }
-              </Text>
-            </Link>
-          ) }
+                { category }
+              </Tag>
+            )) }
+          </Flex>
 
-          { socialLinks.length > 0 && (
-            <List
-              marginLeft={{ sm: 'auto' }}
-              display="grid"
-              gridAutoFlow="column"
-              columnGap={ 2 }
-            >
-              { socialLinks.map(({ icon, url }) => (
-                <Link
-                  aria-label={ `Link to ${ url }` }
-                  title={ url }
-                  key={ url }
-                  href={ url }
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  isExternal
-                  w={ 10 }
-                  h={ 10 }
+          <Flex alignItems="center" gap={ 3 }>
+            { site && (
+              <Link
+                isExternal
+                href={ site }
+                display="flex"
+                alignItems="center"
+                fontSize="sm"
+              >
+                <IconSvg
+                  name="link"
+                  display="inline"
+                  verticalAlign="baseline"
+                  boxSize="18px"
+                  marginRight={ 2 }
+                />
+
+                <Text
+                  color="inherit"
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
                 >
-                  <IconSvg
-                    name={ icon }
-                    w="20px"
-                    h="20px"
-                    display="block"
-                    color="text_secondary"
-                  />
-                </Link>
-              )) }
-            </List>
-          ) }
+                  { getHostname(site) }
+                </Text>
+              </Link>
+            ) }
+
+            { socialLinks.map(({ icon, url }) => (
+              <Link
+                aria-label={ `Link to ${ url }` }
+                title={ url }
+                key={ url }
+                href={ url }
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                isExternal
+                w={ 5 }
+                h={ 5 }
+              >
+                <IconSvg
+                  name={ icon }
+                  w="20px"
+                  h="20px"
+                  display="block"
+                  color="text_secondary"
+                />
+              </Link>
+            )) }
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -20,6 +20,7 @@ export enum EventTypes {
   FILTERS = 'Filters',
   BUTTON_CLICK = 'Button click',
   PROMO_BANNER = 'Promo banner',
+  APP_FEEDBACK = 'App feedback',
 }
 
 /* eslint-disable @typescript-eslint/indent */
@@ -105,6 +106,14 @@ Type extends EventTypes.PAGE_WIDGET ? (
   } | {
     'Type': 'Security score';
     'Source': 'Analyzed contracts popup';
+  } | {
+    'Type': 'Action button';
+    'Info': string;
+    'Source': 'Txn' | 'NFT collection' | 'NFT item';
+  } | {
+    'Type': 'Address tag';
+    'Info': string;
+    'URL': string;
   }
 ) :
 Type extends EventTypes.TX_INTERPRETATION_INTERACTION ? {
@@ -120,12 +129,18 @@ Type extends EventTypes.FILTERS ? {
   'Filter name': string;
 } :
 Type extends EventTypes.BUTTON_CLICK ? {
-  'Content': 'Swap button';
+  'Content': string;
   'Source': string;
 } :
 Type extends EventTypes.PROMO_BANNER ? {
   'Source': 'Marketplace';
   'Link': string;
+} :
+Type extends EventTypes.APP_FEEDBACK ? {
+  'Action': 'Rating';
+  'Source': 'Discovery' | 'App modal' | 'App page';
+  'AppId': string;
+  'Score': number;
 } :
 undefined;
 /* eslint-enable @typescript-eslint/indent */

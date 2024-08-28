@@ -2,11 +2,15 @@ import { Box, Flex, useColorMode } from '@chakra-ui/react';
 import React from 'react';
 
 import * as cookies from 'lib/cookies';
+import { COLOR_THEMES } from 'lib/settings/colorTheme';
 
 import SettingsSample from './SettingsSample';
-import { COLOR_THEMES } from './utils';
 
-const SettingsColorTheme = () => {
+interface Props {
+  onSelect?: () => void;
+}
+
+const SettingsColorTheme = ({ onSelect }: Props) => {
   const { setColorMode } = useColorMode();
 
   const [ activeHex, setActiveHex ] = React.useState<string>();
@@ -58,7 +62,8 @@ const SettingsColorTheme = () => {
 
     setTheme(hex);
     setActiveHex(hex);
-  }, [ setTheme ]);
+    onSelect?.();
+  }, [ setTheme, onSelect ]);
 
   const activeTheme = COLOR_THEMES.find((theme) => theme.hex === activeHex);
 

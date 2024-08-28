@@ -1,10 +1,11 @@
 import type { IconButtonProps } from '@chakra-ui/react';
-import { Popover, PopoverContent, PopoverBody, PopoverTrigger, IconButton, Tooltip, Box, chakra } from '@chakra-ui/react';
+import { PopoverContent, PopoverBody, PopoverTrigger, IconButton, Tooltip, Box, chakra } from '@chakra-ui/react';
 import React from 'react';
 
 import useFetchProfileInfo from 'lib/hooks/useFetchProfileInfo';
 import useLoginUrl from 'lib/hooks/useLoginUrl';
 import * as mixpanel from 'lib/mixpanel/index';
+import Popover from 'ui/shared/chakra/Popover';
 import UserAvatar from 'ui/shared/UserAvatar';
 import ProfileMenuContent from 'ui/snippets/profileMenu/ProfileMenuContent';
 
@@ -14,9 +15,10 @@ type Props = {
   isHomePage?: boolean;
   className?: string;
   fallbackIconSize?: number;
+  buttonBoxSize?: string;
 };
 
-const ProfileMenuDesktop = ({ isHomePage, className, fallbackIconSize }: Props) => {
+const ProfileMenuDesktop = ({ isHomePage, className, fallbackIconSize, buttonBoxSize }: Props) => {
   const { data, error, isPending } = useFetchProfileInfo();
   const loginUrl = useLoginUrl();
   const { themedBackground, themedBorderColor, themedColor } = useMenuButtonColors();
@@ -88,7 +90,7 @@ const ProfileMenuDesktop = ({ isHomePage, className, fallbackIconSize }: Props) 
               icon={ <UserAvatar size={ 20 } fallbackIconSize={ fallbackIconSize }/> }
               variant={ variant }
               colorScheme="blue"
-              boxSize="40px"
+              boxSize={ buttonBoxSize ?? '40px' }
               flexShrink={ 0 }
               { ...iconButtonProps }
               { ...iconButtonStyles }
@@ -97,7 +99,7 @@ const ProfileMenuDesktop = ({ isHomePage, className, fallbackIconSize }: Props) 
         </Box>
       </Tooltip>
       { hasMenu && (
-        <PopoverContent w="212px">
+        <PopoverContent maxW="400px" minW="220px" w="min-content">
           <PopoverBody padding="24px 16px 16px 16px">
             <ProfileMenuContent data={ data }/>
           </PopoverBody>

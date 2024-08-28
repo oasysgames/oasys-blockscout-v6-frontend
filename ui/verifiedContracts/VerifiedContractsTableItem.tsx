@@ -6,11 +6,12 @@ import type { VerifiedContract } from 'types/api/contracts';
 
 import config from 'configs/app';
 import { CONTRACT_LICENSES } from 'lib/contracts/licenses';
-import dayjs from 'lib/date/dayjs';
+import ContractCertifiedLabel from 'ui/shared/ContractCertifiedLabel';
 import CopyToClipboard from 'ui/shared/CopyToClipboard';
 import AddressEntity from 'ui/shared/entities/address/AddressEntity';
 import HashStringShorten from 'ui/shared/HashStringShorten';
 import IconSvg from 'ui/shared/IconSvg';
+import TimeAgoWithTooltip from 'ui/shared/TimeAgoWithTooltip';
 
 interface Props {
   data: VerifiedContract;
@@ -34,13 +35,15 @@ const VerifiedContractsTableItem = ({ data, isLoading }: Props) => {
   return (
     <Tr>
       <Td>
-        <AddressEntity
-          address={ data.address }
-          isLoading={ isLoading }
-          query={{ tab: 'contract' }}
-          noCopy
-          mt={ 1 }
-        />
+        <Flex alignItems="center" mt={ 1 }>
+          <AddressEntity
+            address={ data.address }
+            isLoading={ isLoading }
+            query={{ tab: 'contract' }}
+            noCopy
+          />
+          { data.certified && <ContractCertifiedLabel iconSize={ 5 } boxSize={ 5 } ml={ 2 }/> }
+        </Flex>
         <Flex alignItems="center" ml={ 7 }>
           <Skeleton isLoaded={ !isLoading } color="text_secondary" my={ 1 }>
             <HashStringShorten hash={ data.address.hash } isTooltipDisabled/>
@@ -67,6 +70,14 @@ const VerifiedContractsTableItem = ({ data, isLoading }: Props) => {
             </Tooltip>
           </Skeleton>
         </Flex>
+        { data.zk_compiler_version && (
+          <Flex flexWrap="wrap" columnGap={ 2 } my={ 1 }>
+            <Skeleton isLoaded={ !isLoading } >ZK compiler</Skeleton>
+            <Skeleton isLoaded={ !isLoading } color="text_secondary" wordBreak="break-all">
+              <span>{ data.zk_compiler_version }</span>
+            </Skeleton>
+          </Flex>
+        ) }
       </Td>
       <Td>
         <Tooltip label={ isLoading ? undefined : 'Optimization' }>
@@ -87,9 +98,11 @@ const VerifiedContractsTableItem = ({ data, isLoading }: Props) => {
       <Td>
         <Flex alignItems="center" columnGap={ 2 } my={ 1 }>
           <IconSvg name="status/success" boxSize={ 4 } color="green.500" isLoading={ isLoading }/>
-          <Skeleton isLoaded={ !isLoading } color="text_secondary">
-            <span>{ dayjs(data.verified_at).fromNow() }</span>
-          </Skeleton>
+          <TimeAgoWithTooltip
+            timestamp={ data.verified_at }
+            isLoading={ isLoading }
+            color="text_secondary"
+          />
         </Flex>
       </Td>
       <Td>

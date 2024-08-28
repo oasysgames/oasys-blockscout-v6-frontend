@@ -4,7 +4,6 @@ import {
   chakra,
   Flex,
   IconButton, Link,
-  Menu,
   MenuButton,
   MenuItem,
   MenuList,
@@ -22,6 +21,7 @@ import type { TimeChartItem } from './types';
 import dayjs from 'lib/date/dayjs';
 import { apos } from 'lib/html-entities';
 import saveAsCSV from 'lib/saveAsCSV';
+import Menu from 'ui/shared/chakra/Menu';
 import IconSvg from 'ui/shared/IconSvg';
 
 import ChartWidgetGraph from './ChartWidgetGraph';
@@ -36,11 +36,12 @@ export type Props = {
   className?: string;
   isError: boolean;
   emptyText?: string;
+  noAnimation?: boolean;
 }
 
 const DOWNLOAD_IMAGE_SCALE = 5;
 
-const ChartWidget = ({ items, title, description, isLoading, className, isError, units, emptyText }: Props) => {
+const ChartWidget = ({ items, title, description, isLoading, className, isError, units, emptyText, noAnimation }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
   const [ isFullscreen, setIsFullscreen ] = useState(false);
   const [ isZoomResetInitial, setIsZoomResetInitial ] = React.useState(true);
@@ -148,6 +149,7 @@ const ChartWidget = ({ items, title, description, isLoading, className, isError,
           isZoomResetInitial={ isZoomResetInitial }
           title={ title }
           units={ units }
+          noAnimation={ noAnimation }
         />
       </Box>
     );
@@ -198,7 +200,7 @@ const ChartWidget = ({ items, title, description, isLoading, className, isError,
                 size="sm"
                 variant="outline"
                 onClick={ handleZoomResetClick }
-                icon={ <IconSvg name="repeat_arrow" w={ 4 } h={ 4 }/> }
+                icon={ <IconSvg name="repeat" w={ 4 } h={ 4 }/> }
               />
             </Tooltip>
 

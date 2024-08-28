@@ -1,12 +1,10 @@
-import type { BrowserContext } from '@playwright/test';
 import React from 'react';
 
 import * as blockMock from 'mocks/blocks/block';
 import * as statsMock from 'mocks/stats/index';
-import contextWithEnvs from 'playwright/fixtures/contextWithEnvs';
+import { ENVS_MAP } from 'playwright/fixtures/mockEnvs';
 import * as socketServer from 'playwright/fixtures/socketServer';
 import { test, expect, devices } from 'playwright/lib';
-import * as configs from 'playwright/utils/configs';
 
 import Blocks from './Blocks';
 
@@ -21,6 +19,10 @@ const hooksConfig = {
 // test cases which use socket cannot run in parallel since the socket server always run on the same port
 test.describe.configure({ mode: 'serial' });
 
+test.beforeEach(async({ mockTextAd }) => {
+  await mockTextAd();
+});
+
 test('base view +@dark-mode', async({ render, mockApiResponse }) => {
   await mockApiResponse('blocks', blockMock.baseListResponse, { queryParams: { type: 'block' } });
   await mockApiResponse('stats', statsMock.base);
@@ -30,11 +32,8 @@ test('base view +@dark-mode', async({ render, mockApiResponse }) => {
   await expect(component).toHaveScreenshot();
 });
 
-const hiddenFieldsTest = test.extend<{ context: BrowserContext }>({
-  context: contextWithEnvs(configs.viewsEnvs.block.hiddenFields),
-});
-
-hiddenFieldsTest('hidden fields', async({ render, mockApiResponse }) => {
+test('hidden fields', async({ render, mockApiResponse, mockEnvs }) => {
+  await mockEnvs(ENVS_MAP.blockHiddenFields);
   await mockApiResponse('blocks', blockMock.baseListResponse, { queryParams: { type: 'block' } });
   await mockApiResponse('stats', statsMock.base);
 
@@ -55,11 +54,8 @@ test.describe('mobile', () => {
     await expect(component).toHaveScreenshot();
   });
 
-  const hiddenFieldsTest = test.extend<{ context: BrowserContext }>({
-    context: contextWithEnvs(configs.viewsEnvs.block.hiddenFields),
-  });
-
-  hiddenFieldsTest('hidden fields', async({ render, mockApiResponse }) => {
+  test('hidden fields', async({ render, mockApiResponse, mockEnvs }) => {
+    await mockEnvs(ENVS_MAP.blockHiddenFields);
     await mockApiResponse('blocks', blockMock.baseListResponse, { queryParams: { type: 'block' } });
     await mockApiResponse('stats', statsMock.base);
 
