@@ -65,7 +65,7 @@ const LatestTransactions = () => {
           </Box>
         </AddressHighlightProvider>
         <Flex justifyContent="center">
-          <LinkInternal fontSize="sm" href={ txsUrl }>View all transactions123</LinkInternal>
+          <LinkInternal fontSize="sm" href={ txsUrl }>View all transactions</LinkInternal>
         </Flex>
       </>
     );
