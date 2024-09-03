@@ -121,6 +121,7 @@ Please be aware that all environment variables prefixed with `NEXT_PUBLIC_` will
 | NEXT_PUBLIC_HOMEPAGE_PLATE_TEXT_COLOR | `string` | Text color of the hero plate on the homepage (escape "#" symbol if you use HEX color codes or use rgba-value instead) | - | `white` | `\#DCFE76` | v1.0.x+ |
 | NEXT_PUBLIC_HOMEPAGE_PLATE_BACKGROUND | `string` | Background css value for hero plate on the homepage (escape "#" symbol if you use HEX color codes or use rgba-value instead) | - | `radial-gradient(103.03% 103.03% at 0% 0%, rgba(183, 148, 244, 0.8) 0%, rgba(0, 163, 196, 0.8) 100%), var(--chakra-colors-blue-400)` | `radial-gradient(at 15% 86%, hsla(350,65%,70%,1) 0px, transparent 50%)` \| `no-repeat bottom 20% right 0px/100% url(https://placekitten/1400/200)` | v1.1.0+ |
 | NEXT_PUBLIC_HOMEPAGE_SHOW_AVG_BLOCK_TIME | `boolean` | Set to false if average block time is useless for the network | - | `true` | `false` | v1.0.x+ |
+| NEXT_PUBLIC_HOMEPAGE_HIDDEN_OP_NODE_TXS | `boolean` | Set to true if op-node transactions will not appear | - | `true` | `false` | v6.7.x+ |
 
 &nbsp;
 

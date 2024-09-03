@@ -1,12 +1,14 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 
+import config from 'configs/app';
 import { route } from 'nextjs-routes';
 
 import useApiQuery from 'lib/api/useApiQuery';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import useIsMobile from 'lib/hooks/useIsMobile';
 import useNewTxsSocket from 'lib/hooks/useNewTxsSocket';
+import useNewHomeTxsSocket from 'lib/hooks/useNewHomeTxsSocket';
 import { TX } from 'stubs/tx';
 import LinkInternal from 'ui/shared/links/LinkInternal';
 import SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';
@@ -23,7 +25,15 @@ const LatestTransactions = () => {
     },
   });
 
-  const { num, socketAlert } = useNewTxsSocket();
+  const { num, socketAlert } = (() => {
+    // in case don't want to show tx of op-node
+    if (config.verse.opNode.isHiddenTxs) {
+      return useNewHomeTxsSocket();
+    } else {
+      // show all tx
+      return useNewTxsSocket();
+    }
+  })();
 
   if (isError) {
     return <Text mt={ 4 }>No data. Please reload the page.</Text>;
@@ -55,7 +65,7 @@ const LatestTransactions = () => {
           </Box>
         </AddressHighlightProvider>
         <Flex justifyContent="center">
-          <LinkInternal fontSize="sm" href={ txsUrl }>View all transactions</LinkInternal>
+          <LinkInternal fontSize="sm" href={ txsUrl }>View all transactions123</LinkInternal>
         </Flex>
       </>
     );

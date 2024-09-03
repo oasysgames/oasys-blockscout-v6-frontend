@@ -541,6 +541,7 @@ const schema = yup
     NEXT_PUBLIC_HOMEPAGE_PLATE_TEXT_COLOR: yup.string(),
     NEXT_PUBLIC_HOMEPAGE_PLATE_BACKGROUND: yup.string(),
     NEXT_PUBLIC_HOMEPAGE_SHOW_AVG_BLOCK_TIME: yup.boolean(),
+    NEXT_PUBLIC_HOMEPAGE_HIDDEN_OP_NODE_TXS: yup.boolean(),
 
     //     b. sidebar
     NEXT_PUBLIC_FEATURED_NETWORKS: yup
