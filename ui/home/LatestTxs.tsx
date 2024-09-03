@@ -1,14 +1,14 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-
 import config from 'configs/app';
+
 import { route } from 'nextjs-routes';
 
 import useApiQuery from 'lib/api/useApiQuery';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import useIsMobile from 'lib/hooks/useIsMobile';
-import useNewTxsSocket from 'lib/hooks/useNewTxsSocket';
 import useNewHomeTxsSocket from 'lib/hooks/useNewHomeTxsSocket';
+import useNewTxsSocket from 'lib/hooks/useNewTxsSocket';
 import { TX } from 'stubs/tx';
 import LinkInternal from 'ui/shared/links/LinkInternal';
 import SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';
