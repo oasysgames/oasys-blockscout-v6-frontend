@@ -1,9 +1,9 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import React from 'react';
-import config from 'configs/app';
 
 import { route } from 'nextjs-routes';
 
+import config from 'configs/app';
 import useApiQuery from 'lib/api/useApiQuery';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import useIsMobile from 'lib/hooks/useIsMobile';
@@ -25,15 +25,13 @@ const LatestTransactions = () => {
     },
   });
 
-  const { num, socketAlert } = (() => {
-    // in case don't want to show tx of op-node
-    if (config.verse.opNode.isHiddenTxs) {
-      return useNewHomeTxsSocket();
-    } else {
-      // show all tx
-      return useNewTxsSocket();
-    }
-  })();
+  // in case don't want to show tx of op-node
+  if (config.verse.opNode.isHiddenTxs) {
+    var { num, socketAlert } = useNewHomeTxsSocket();
+  } else {
+    // show all tx
+    var { num, socketAlert } =  useNewTxsSocket();
+  }
 
   if (isError) {
     return <Text mt={ 4 }>No data. Please reload the page.</Text>;
