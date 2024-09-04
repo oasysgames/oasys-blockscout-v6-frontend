@@ -25,14 +25,12 @@ const LatestTransactions = () => {
     },
   });
 
-  // in case don't want to show tx of op-node
-  if (config.verse.opNode.isHiddenTxs) {
-    var { num, socketAlert } = useNewHomeTxsSocket();
-  } else {
-    // show all tx
-    var { num, socketAlert } =  useNewTxsSocket();
-  }
+  const homeTxsSocket = useNewHomeTxsSocket();
+  const newTxsSocket = useNewTxsSocket();
 
+  // in case don't want to show tx of op-node
+  const { num, socketAlert } = config.verse.opNode.isHiddenTxs ? homeTxsSocket : newTxsSocket;
+  
   if (isError) {
     return <Text mt={ 4 }>No data. Please reload the page.</Text>;
   }
