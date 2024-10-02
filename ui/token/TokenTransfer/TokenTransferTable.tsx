@@ -1,6 +1,7 @@
 import { Table, Tbody, Tr, Th } from '@chakra-ui/react';
 import React from 'react';
 
+import config from 'configs/app';
 import type { TokenInfo } from 'types/api/token';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
@@ -25,6 +26,13 @@ interface Props {
 const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socketInfoNum, tokenId, isLoading, token }: Props) => {
   const tokenType = data[0].token.type;
 
+  let symbol = token?.symbol;
+  // in case tokens is updated name
+  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
+  if (updatedAddress.length > 0 && token?.address.toLowerCase().includes(updatedAddress)) {
+    symbol = config.verse.tokens.updatedSymbol;
+  }
+
   return (
     <AddressHighlightProvider>
       <Table variant="simple" size="sm" minW="950px">
@@ -38,7 +46,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
             }
             { (tokenType === 'ERC-20' || tokenType === 'ERC-1155' || tokenType === 'ERC-404') && (
               <Th width={ tokenType === 'ERC-20' ? '100%' : '50%' } isNumeric>
-                <TruncatedValue value={ `Value ${ token?.symbol || '' }` } w="100%" verticalAlign="middle"/>
+                <TruncatedValue value={ `Value ${ symbol || '' }` } w="100%" verticalAlign="middle"/>
               </Th>
             ) }
           </Tr>

@@ -1,6 +1,7 @@
 import { chakra, Box, Text, Flex } from '@chakra-ui/react';
 import React from 'react';
 
+import config from 'configs/app';
 import type { SearchResultAddressOrContract } from 'types/api/search';
 
 import dayjs from 'lib/date/dayjs';
@@ -31,7 +32,14 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm }: Props) => {
       }}
     />
   );
-  const addressName = data.name || data.ens_info?.name;
+  
+  let addressName = data.name || data.ens_info?.name;
+  // in case tokens is updated name
+  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
+  if (updatedAddress.length > 0 && data.address.toLowerCase().includes(updatedAddress)) {
+    addressName = config.verse.tokens.updatedName;
+  }
+
   const expiresText = data.ens_info?.expiry_date ? ` (expires ${ dayjs(data.ens_info.expiry_date).fromNow() })` : '';
 
   const nameEl = addressName && (

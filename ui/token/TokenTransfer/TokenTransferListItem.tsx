@@ -1,6 +1,7 @@
 import { Grid, Flex, Skeleton } from '@chakra-ui/react';
 import React from 'react';
 
+import config from 'configs/app';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
 import getCurrencyValue from 'lib/getCurrencyValue';
@@ -26,6 +27,13 @@ const TokenTransferListItem = ({
   tokenId,
   isLoading,
 }: Props) => {
+  let symbol = token.symbol;
+  // in case tokens is updated name
+  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
+  if (updatedAddress.length > 0 && token.address.toLowerCase().includes(updatedAddress)) {
+    symbol = config.verse.tokens.updatedSymbol;
+  }
+
   const { usd, valueStr } = 'value' in total && total.value !== null ? getCurrencyValue({
     value: total.value,
     exchangeRate: token.exchange_rate,
@@ -76,7 +84,7 @@ const TokenTransferListItem = ({
           >
             <span>{ valueStr }</span>
           </Skeleton>
-          { token.symbol && <TruncatedValue isLoading={ isLoading } value={ token.symbol }/> }
+          { symbol && <TruncatedValue isLoading={ isLoading } value={ symbol }/> }
           { usd && (
             <Skeleton
               isLoaded={ !isLoading }
