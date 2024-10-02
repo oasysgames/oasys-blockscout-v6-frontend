@@ -1,9 +1,9 @@
 import { chakra } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { TokenInfo } from 'types/api/token';
 
+import config from 'configs/app';
 import getCurrencyValue from 'lib/getCurrencyValue';
 import TokenEntity from 'ui/shared/entities/token/TokenEntity';
 

@@ -1,9 +1,9 @@
 import { Grid, Flex, Skeleton } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
+import config from 'configs/app';
 import getCurrencyValue from 'lib/getCurrencyValue';
 import { NFT_TOKEN_TYPE_IDS } from 'lib/token/tokenTypes';
 import AddressFromTo from 'ui/shared/address/AddressFromTo';

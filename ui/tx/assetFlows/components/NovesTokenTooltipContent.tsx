@@ -2,9 +2,9 @@ import { Box, Text, useColorModeValue } from '@chakra-ui/react';
 import type { FC } from 'react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { NovesNft, NovesToken } from 'types/api/noves';
 
+import config from 'configs/app';
 import { HEX_REGEXP } from 'lib/regexp';
 import CopyToClipboard from 'ui/shared/CopyToClipboard';
 

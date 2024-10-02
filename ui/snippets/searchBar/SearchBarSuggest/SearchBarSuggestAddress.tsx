@@ -1,9 +1,9 @@
 import { chakra, Box, Text, Flex } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { SearchResultAddressOrContract } from 'types/api/search';
 
+import config from 'configs/app';
 import dayjs from 'lib/date/dayjs';
 import highlightText from 'lib/highlightText';
 import { ADDRESS_REGEXP } from 'lib/validations/address';
@@ -32,7 +32,6 @@ const SearchBarSuggestAddress = ({ data, isMobile, searchTerm }: Props) => {
       }}
     />
   );
-  
   let addressName = data.name || data.ens_info?.name;
   // in case tokens is updated name
   const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();

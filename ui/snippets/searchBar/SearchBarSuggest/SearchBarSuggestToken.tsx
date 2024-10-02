@@ -1,9 +1,9 @@
 import { Grid, Text, Flex } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { SearchResultToken } from 'types/api/search';
 
+import config from 'configs/app';
 import highlightText from 'lib/highlightText';
 import * as TokenEntity from 'ui/shared/entities/token/TokenEntity';
 import HashStringShortenDynamic from 'ui/shared/HashStringShortenDynamic';

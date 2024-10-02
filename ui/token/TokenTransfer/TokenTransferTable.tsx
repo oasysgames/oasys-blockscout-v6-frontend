@@ -1,10 +1,10 @@
 import { Table, Tbody, Tr, Th } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { TokenInfo } from 'types/api/token';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
+import config from 'configs/app';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import { NFT_TOKEN_TYPE_IDS } from 'lib/token/tokenTypes';
 import * as SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';

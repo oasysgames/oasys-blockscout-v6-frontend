@@ -1,9 +1,9 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
 
-import config from 'configs/app';
 import type { TokenInfo, TokenInstance } from 'types/api/token';
 
+import config from 'configs/app';
 import { useAppContext } from 'lib/contexts/app';
 import * as regexp from 'lib/regexp';
 import { getTokenTypeName } from 'lib/token/tokenTypes';
