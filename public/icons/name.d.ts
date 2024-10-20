@@ -165,5 +165,7 @@
 	| "wallets/coinbase"
 	| "wallets/metamask"
 	| "wallets/token-pocket"
-	| "watchlist";
+	| "watchlist"
+	| "bridge";
+	
   
