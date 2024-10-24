@@ -571,6 +571,7 @@ const schema = yup
 
     // bridge
     NEXT_PUBLIC_MENU_BRIDGE_VISIBLE: yup.boolean(),
+    NEXT_PUBLIC_MENU_BRIDGE_URL: yup.string().test(urlTest),
 
     //     c. footer
     NEXT_PUBLIC_FOOTER_LINKS: yup

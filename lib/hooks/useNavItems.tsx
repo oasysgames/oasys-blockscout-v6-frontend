@@ -264,9 +264,8 @@ export default function useNavItems(): ReturnType {
       },
       config.verse.bridge.isVisible ? {
         text: 'Bridge',
-        nextRoute: { pathname: '/bridge' as const },
         icon: 'bridge',
-        isActive: pathname.startsWith('/bridge'),
+        url: config.verse.bridge.url,
       } : null,
     ].filter(Boolean);
 
