@@ -262,6 +262,11 @@ export default function useNavItems(): ReturnType {
         isActive: otherNavItems.flat().some(item => isInternalItem(item) && item.isActive),
         subItems: otherNavItems,
       },
+      config.verse.bridge.isVisible ? {
+        text: 'Bridge',
+        icon: 'bridge',
+        url: config.verse.bridge.url,
+      } : null,
     ].filter(Boolean);
 
     const accountNavItems: ReturnType['accountNavItems'] = [

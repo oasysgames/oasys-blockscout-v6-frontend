@@ -574,6 +574,10 @@ const schema = yup
     NEXT_PUBLIC_NETWORK_ICON: yup.string().test(urlTest),
     NEXT_PUBLIC_NETWORK_ICON_DARK: yup.string().test(urlTest),
 
+    // bridge
+    NEXT_PUBLIC_MENU_BRIDGE_VISIBLE: yup.boolean(),
+    NEXT_PUBLIC_MENU_BRIDGE_URL: yup.string().test(urlTest),
+
     //     c. footer
     NEXT_PUBLIC_FOOTER_LINKS: yup
       .array()

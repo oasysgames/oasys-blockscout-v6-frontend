@@ -22,6 +22,7 @@ const TEMPLATE_MAP: Record<Route['pathname'], string> = {
   '/apps': '%network_name% DApps - Explore top apps',
   '/apps/[id]': '%network_name% marketplace app',
   '/stats': '%network_name% stats - %network_name% network insights',
+  '/bridge': '%network_name% Explore Bridge',
   '/api-docs': '%network_name% API docs - %network_name% developer tools',
   '/graphiql': 'GraphQL for %network_name% - %network_name% data query',
   '/search-results': '%network_name% search result for %q%',
