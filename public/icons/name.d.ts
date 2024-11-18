@@ -26,6 +26,7 @@
 	| "brands/blockscout"
 	| "brands/safe"
 	| "brands/solidity_scan"
+	| "bridge"
 	| "burger"
 	| "certified"
 	| "check"
@@ -165,7 +166,5 @@
 	| "wallets/coinbase"
 	| "wallets/metamask"
 	| "wallets/token-pocket"
-	| "watchlist"
-	| "bridge";
-	
+	| "watchlist";
   
