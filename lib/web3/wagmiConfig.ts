@@ -1,13 +1,15 @@
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
+import { Oasys } from 'bridge/constants/chains';
 import { http } from 'viem';
 import { createConfig, type CreateConfigParameters } from 'wagmi';
 
 import config from 'configs/app';
 import currentChain from 'lib/web3/currentChain';
+
 const feature = config.features.blockchainInteraction;
 
 const wagmiConfig = (() => {
-  const chains: CreateConfigParameters['chains'] = [ currentChain ];
+  const chains: CreateConfigParameters['chains'] = [ currentChain, Oasys ];
 
   if (!feature.isEnabled) {
     const wagmiConfig = createConfig({
@@ -26,6 +28,7 @@ const wagmiConfig = (() => {
     chains,
     multiInjectedProviderDiscovery: true,
     transports: {
+      [Oasys.id]: http(),
       [currentChain.id]: http(),
     },
     projectId: feature.walletConnect.projectId,
