@@ -617,6 +617,15 @@ const schema = yup
       .of(yup.string<HomeStatsWidgetId>().oneOf(HOME_STATS_WIDGET_IDS)),
     NEXT_PUBLIC_HOMEPAGE_PLATE_TEXT_COLOR: yup.string(),
     NEXT_PUBLIC_HOMEPAGE_PLATE_BACKGROUND: yup.string(),
+    NEXT_PUBLIC_HOMEPAGE_HIDDEN_OP_NODE_TXS: yup.boolean(),
+    // Custom tokens
+    NEXT_PUBLIC_TOKENS_UPDATED_ADDRESS: yup.string(),
+    NEXT_PUBLIC_TOKENS_UPDATED_NAME: yup.string(),
+    NEXT_PUBLIC_TOKENS_UPDATED_SYMBOL: yup.string(),
+     // bridge
+    NEXT_PUBLIC_MENU_BRIDGE_VISIBLE: yup.boolean(),
+    NEXT_PUBLIC_MENU_BRIDGE_URL: yup.string().test(urlTest),
+    
     NEXT_PUBLIC_HOMEPAGE_HERO_BANNER_CONFIG: yup
       .mixed()
       .test(

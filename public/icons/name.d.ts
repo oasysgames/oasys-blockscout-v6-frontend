@@ -29,6 +29,7 @@
 	| "brands/graph"
 	| "brands/safe"
 	| "brands/solidity_scan"
+	| "bridge"
 	| "burger"
 	| "certified"
 	| "check"
