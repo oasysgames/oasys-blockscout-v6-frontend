@@ -14,7 +14,7 @@ import type { SelectListItem } from './SelectModal';
 import { SelectModal } from './SelectModal';
 
 // Get l2ChainId from .env
-const l2ChainId = Number(process.env.NEXT_PUBLIC_L2_CHAIN_ID) as ChainId;
+const l2ChainId = (Number(process.env.NEXT_PUBLIC_L2_CHAIN_ID) as ChainId) || ChainId.TCG;
 
 // Validation Only numbers with a decimal point
 const validateInput = (inputValue: string): boolean => {
