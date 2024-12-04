@@ -88,12 +88,6 @@ const TokenDetails = ({ tokenQuery }: Props) => {
   } = tokenQuery.data || {};
 
   let totalSupplyValue;
-  let symbolTxt = symbol;
-  // in case tokens is updated name
-  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
-  if (updatedAddress.length > 0 && tokenQuery.data?.address.toLowerCase().includes(updatedAddress)) {
-    symbolTxt = config.verse.tokens.updatedSymbol;
-  }
 
   if (decimals) {
     const totalValue = totalSupply ? getCurrencyValue({ value: totalSupply, accuracy: 3, accuracyUsd: 2, exchangeRate, decimals }) : undefined;
@@ -106,7 +100,7 @@ const TokenDetails = ({ tokenQuery }: Props) => {
     <Grid
       columnGap={ 8 }
       rowGap={{ base: 1, lg: 3 }}
-      templateColumns={{ base: 'minmax(0, 1fr)', lg: 'auto minmax(728px, auto)' }} overflow="hidden"
+      templateColumns={{ base: 'minmax(0, 1fr)', lg: 'auto minmax(0, 1fr)' }} overflow="hidden"
     >
       { exchangeRate && (
         <>
@@ -154,7 +148,7 @@ const TokenDetails = ({ tokenQuery }: Props) => {
         <Skeleton isLoaded={ !tokenQuery.isPlaceholderData } w="100%" display="flex">
           <TruncatedValue value={ totalSupplyValue || '0' } maxW="80%" flexShrink={ 0 }/>
           <Box flexShrink={ 0 }> </Box>
-          <TruncatedValue value={ symbolTxt || '' }/>
+          <TruncatedValue value={ symbol || '' }/>
         </Skeleton>
       </DetailsInfoItem.Value>
 

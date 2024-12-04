@@ -1,18 +1,16 @@
-import type { ChakraProps } from '@chakra-ui/react';
+import type { As } from '@chakra-ui/react';
 import { Image, Skeleton, chakra } from '@chakra-ui/react';
-import _omit from 'lodash/omit';
 import React from 'react';
 
 import type { TokenInfo } from 'types/api/token';
 
 import { route } from 'nextjs-routes';
 
-import config from 'configs/app';
 import * as EntityBase from 'ui/shared/entities/base/components';
 import TokenLogoPlaceholder from 'ui/shared/TokenLogoPlaceholder';
 import TruncatedTextTooltip from 'ui/shared/TruncatedTextTooltip';
 
-import { getIconProps } from '../base/utils';
+import { distributeEntityProps, getIconProps } from '../base/utils';
 
 type LinkProps = EntityBase.LinkBaseProps & Pick<EntityProps, 'token'>;
 
@@ -29,10 +27,7 @@ const Link = chakra((props: LinkProps) => {
   );
 });
 
-type IconProps = Pick<EntityProps, 'token' | 'isLoading' | 'iconSize' | 'noIcon' | 'className'> & {
-  marginRight?: ChakraProps['marginRight'];
-  boxSize?: ChakraProps['boxSize'];
-};
+type IconProps = Pick<EntityProps, 'token' | 'className'> & EntityBase.IconBaseProps;
 
 const Icon = (props: IconProps) => {
   if (props.noIcon) {
@@ -41,7 +36,7 @@ const Icon = (props: IconProps) => {
 
   const styles = {
     marginRight: props.marginRight ?? 2,
-    boxSize: props.boxSize ?? getIconProps(props.iconSize).boxSize,
+    boxSize: props.boxSize ?? getIconProps(props.size).boxSize,
     borderRadius: 'base',
     flexShrink: 0,
   };
@@ -66,19 +61,10 @@ const Icon = (props: IconProps) => {
 type ContentProps = Omit<EntityBase.ContentBaseProps, 'text'> & Pick<EntityProps, 'token' | 'jointSymbol' | 'onlySymbol'>;
 
 const Content = chakra((props: ContentProps) => {
-  let symbol = props.token.symbol;
-  let tokenName = props.token.name;
-  // in case tokens is updated name
-  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
-  if (updatedAddress.length > 0 && props.token.address.toLowerCase().includes(updatedAddress)) {
-    tokenName = config.verse.tokens.updatedName;
-    symbol = config.verse.tokens.updatedSymbol;
-  }
-
   const nameString = [
-    !props.onlySymbol && (tokenName ?? 'Unnamed token'),
-    props.onlySymbol && (symbol ?? tokenName ?? 'Unnamed token'),
-    symbol && props.jointSymbol && !props.onlySymbol && `(${ symbol })`,
+    !props.onlySymbol && (props.token.name ?? 'Unnamed token'),
+    props.onlySymbol && (props.token.symbol ?? props.token.name ?? 'Unnamed token'),
+    props.token.symbol && props.jointSymbol && !props.onlySymbol && `(${ props.token.symbol })`,
   ].filter(Boolean).join(' ');
 
   return (
@@ -100,12 +86,7 @@ const Content = chakra((props: ContentProps) => {
 type SymbolProps = Pick<EntityProps, 'token' | 'isLoading' | 'noSymbol' | 'jointSymbol' | 'onlySymbol'>;
 
 const Symbol = (props: SymbolProps) => {
-  let symbol = props.token.symbol;
-  // in case tokens is updated name
-  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
-  if (updatedAddress.length > 0 && props.token.address.toLowerCase().includes(updatedAddress)) {
-    symbol = config.verse.tokens.updatedSymbol;
-  }
+  const symbol = props.token.symbol;
 
   if (!symbol || props.noSymbol || props.jointSymbol || props.onlySymbol) {
     return null;
@@ -158,22 +139,21 @@ export interface EntityProps extends EntityBase.EntityBaseProps {
 }
 
 const TokenEntity = (props: EntityProps) => {
-  const linkProps = _omit(props, [ 'className' ]);
-  const partsProps = _omit(props, [ 'className', 'onClick' ]);
+  const partsProps = distributeEntityProps(props);
 
   return (
-    <Container className={ props.className } w="100%">
-      <Icon { ...partsProps }/>
-      <Link { ...linkProps }>
-        <Content { ...partsProps }/>
+    <Container w="100%" { ...partsProps.container }>
+      <Icon { ...partsProps.icon }/>
+      <Link { ...partsProps.link }>
+        <Content { ...partsProps.content }/>
       </Link>
-      <Symbol { ...partsProps }/>
-      <Copy { ...partsProps }/>
+      <Symbol { ...partsProps.symbol }/>
+      <Copy { ...partsProps.copy }/>
     </Container>
   );
 };
 
-export default React.memo(chakra(TokenEntity));
+export default React.memo(chakra<As, EntityProps>(TokenEntity));
 
 export {
   Container,

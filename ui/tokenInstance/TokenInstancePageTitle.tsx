@@ -3,7 +3,6 @@ import React from 'react';
 
 import type { TokenInfo, TokenInstance } from 'types/api/token';
 
-import config from 'configs/app';
 import { useAppContext } from 'lib/contexts/app';
 import * as regexp from 'lib/regexp';
 import { getTokenTypeName } from 'lib/token/tokenTypes';
@@ -35,15 +34,7 @@ const TokenInstancePageTitle = ({ isLoading, token, instance, hash }: Props) => 
     }
 
     if (token?.name || token?.symbol) {
-      let symbol = token.symbol;
-      let tokenName = token.name;
-      // in case tokens is updated name
-      const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
-      if (updatedAddress.length > 0 && token.address.toLowerCase().includes(updatedAddress)) {
-        tokenName = config.verse.tokens.updatedName;
-        symbol = config.verse.tokens.updatedSymbol;
-      }
-      return (tokenName || symbol) + ' #' + instance.id;
+      return (token.name || token.symbol) + ' #' + instance.id;
     }
 
     return `ID ${ instance.id }`;
@@ -82,7 +73,7 @@ const TokenInstancePageTitle = ({ isLoading, token, instance, hash }: Props) => 
     } catch (error) {
       return (
         <LinkExternal href={ instance.external_app_url } isLoading={ isLoading } ml={{ base: 0, lg: 'auto' }}>
-            View in app
+          View in app
         </LinkExternal>
       );
     }
@@ -98,21 +89,23 @@ const TokenInstancePageTitle = ({ isLoading, token, instance, hash }: Props) => 
 
   const titleSecondRow = (
     <Flex alignItems="center" w="100%" minW={ 0 } columnGap={ 2 } rowGap={ 2 } flexWrap={{ base: 'wrap', lg: 'nowrap' }}>
-      <TokenEntity
-        token={ token }
-        isLoading={ isLoading }
-        noSymbol
-        noCopy
-        jointSymbol
-        fontFamily="heading"
-        fontSize="lg"
-        fontWeight={ 500 }
-        w="auto"
-        maxW="700px"
-      />
+      { token && (
+        <TokenEntity
+          token={ token }
+          isLoading={ isLoading }
+          noSymbol
+          noCopy
+          jointSymbol
+          fontFamily="heading"
+          fontSize="lg"
+          fontWeight={ 500 }
+          w="auto"
+          maxW="700px"
+        />
+      ) }
       { !isLoading && <AddressAddToWallet token={ token } variant="button"/> }
       <AddressQrCode address={ address } isLoading={ isLoading }/>
-      <AccountActionsMenu isLoading={ isLoading } showUpdateMetadataItem={ Boolean(instance?.metadata) }/>
+      <AccountActionsMenu isLoading={ isLoading } showUpdateMetadataItem/>
       { appLink }
     </Flex>
   );

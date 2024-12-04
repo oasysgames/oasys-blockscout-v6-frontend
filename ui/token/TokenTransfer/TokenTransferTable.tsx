@@ -4,7 +4,6 @@ import React from 'react';
 import type { TokenInfo } from 'types/api/token';
 import type { TokenTransfer } from 'types/api/tokenTransfer';
 
-import config from 'configs/app';
 import { AddressHighlightProvider } from 'lib/contexts/addressHighlight';
 import { NFT_TOKEN_TYPE_IDS } from 'lib/token/tokenTypes';
 import * as SocketNewItemsNotice from 'ui/shared/SocketNewItemsNotice';
@@ -20,22 +19,16 @@ interface Props {
   socketInfoNum?: number;
   tokenId?: string;
   isLoading?: boolean;
-  token?: TokenInfo;
+  token: TokenInfo;
 }
 
 const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socketInfoNum, tokenId, isLoading, token }: Props) => {
-  const tokenType = data[0].token.type;
 
-  let symbol = token?.symbol;
-  // in case tokens is updated name
-  const updatedAddress = config.verse.tokens.updatedAddress.toLowerCase();
-  if (updatedAddress.length > 0 && token?.address.toLowerCase().includes(updatedAddress)) {
-    symbol = config.verse.tokens.updatedSymbol;
-  }
+  const tokenType = token.type;
 
   return (
     <AddressHighlightProvider>
-      <Table variant="simple" size="sm" minW="950px">
+      <Table minW="950px">
         <Thead top={ top }>
           <Tr>
             <Th width="280px">Txn hash</Th>
@@ -46,7 +39,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
             }
             { (tokenType === 'ERC-20' || tokenType === 'ERC-1155' || tokenType === 'ERC-404') && (
               <Th width={ tokenType === 'ERC-20' ? '100%' : '50%' } isNumeric>
-                <TruncatedValue value={ `Value ${ symbol || '' }` } w="100%" verticalAlign="middle"/>
+                <TruncatedValue value={ `Value ${ token?.symbol || '' }` } w="100%" verticalAlign="middle"/>
               </Th>
             ) }
           </Tr>
@@ -63,7 +56,7 @@ const TokenTransferTable = ({ data, top, showSocketInfo, socketInfoAlert, socket
           ) }
           { data.map((item, index) => (
             <TokenTransferTableItem
-              key={ item.tx_hash + item.block_hash + item.log_index + '_' + index }
+              key={ item.transaction_hash + item.block_hash + item.log_index + '_' + index }
               { ...item }
               tokenId={ tokenId }
               isLoading={ isLoading }
