@@ -11,6 +11,5 @@ export default Object.freeze({
   },
   bridge: {
     isVisible: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_VISIBLE') === 'true',
-    url: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_URL') || '/bridge',
   },
 });
