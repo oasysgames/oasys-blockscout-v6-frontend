@@ -12,9 +12,10 @@ import { useDepositWithdraw } from './hooks/useDepositWithdraw';
 import { LoadingIcon, LoadingModal } from './LoadingModal';
 import type { SelectListItem } from './SelectModal';
 import { SelectModal } from './SelectModal';
+import config from 'configs/app';
 
 // Get l2ChainId from .env
-const l2ChainId = (Number(process.env.NEXT_PUBLIC_L2_CHAIN_ID) as ChainId) || ChainId.TCG;
+const l2ChainId = Number(config.verse.bridge.l2ChainId) as ChainId;
 
 // Validation Only numbers with a decimal point
 const validateInput = (inputValue: string): boolean => {

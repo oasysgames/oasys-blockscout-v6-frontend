@@ -1,3 +1,4 @@
+import { ChainId } from 'bridge/constants/types';
 import { getEnvValue } from './utils';
 
 export default Object.freeze({
@@ -11,5 +12,8 @@ export default Object.freeze({
   },
   bridge: {
     isVisible: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_VISIBLE') === 'true',
+    l2ChainId: getEnvValue('NEXT_PUBLIC_L2_CHAIN_ID') || ChainId.TCG,
+    appUrl: getEnvValue('NEXT_PUBLIC_APP_URL') || 'http://localhost:3000',
+    connectProjectId: getEnvValue('NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID') || '',
   },
 });
