@@ -9,7 +9,7 @@ import currentChain from 'lib/web3/currentChain';
 const feature = config.features.blockchainInteraction;
 
 const wagmiConfig = (() => {
-  const chains: CreateConfigParameters['chains'] = [ currentChain, Oasys ];
+  const chains: CreateConfigParameters['chains'] = config.verse.bridge.isVisible ? [ currentChain, Oasys ] : [ currentChain ];
 
   if (!feature.isEnabled) {
     const wagmiConfig = createConfig({
