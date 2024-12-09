@@ -1,4 +1,5 @@
 import { ChainId } from 'bridge/constants/types';
+
 import { getEnvValue } from './utils';
 
 export default Object.freeze({
