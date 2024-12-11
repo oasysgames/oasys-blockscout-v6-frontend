@@ -44,13 +44,6 @@ export function useDepositWithdraw(): UseDepositWithdrawReturn {
 
       const l2Chain = getChainInfo(l2ChainId);
 
-      // stop then user need to do the operation again when switch chain
-      // (For mobile stability)
-      if (l1ChainId !== chainId) {
-        await switchChainAsync({ chainId: l1ChainId });
-        return;
-      }
-
       // ensure using the correct chain (when the current chain not recognized correctly)
       await switchChainAsync({ chainId: l1ChainId });
 
@@ -103,13 +96,6 @@ export function useDepositWithdraw(): UseDepositWithdrawReturn {
   const withdraw = useCallback(
     async(l1ChainId: ChainId, l2ChainId: ChainId, tokenInd: TokenIndex, amount: string) => {
       if (!address) {
-        return;
-      }
-
-      // stop then user need to do the operation again when switch chain
-      // (For mobile stability)
-      if (l2ChainId !== chainId) {
-        await switchChainAsync({ chainId: l2ChainId });
         return;
       }
 
