@@ -15,5 +15,5 @@ export default Object.freeze({
   },
   coinPrice: {
     isEnabled: getEnvValue('NEXT_PUBLIC_PRICE_TRACKER_ENABLED') === 'true',
-  }
+  },
 });
