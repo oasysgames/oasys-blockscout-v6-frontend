@@ -1,6 +1,7 @@
 import Image from 'next/image';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
+import { useSwitchChain } from 'wagmi';
 
 import { ChainId, TokenIndex } from './constants/types';
 
@@ -39,6 +40,13 @@ const BridgePage = () => {
   const handleSwap = () => {
     setIsDeposit((val) => !val);
   };
+
+  // switch chain when switch between deposit/withdraw
+  const { switchChainAsync } = useSwitchChain();
+  useEffect(() => {
+    const chainId = isDeposit ? ChainId.OASYS : l2ChainId
+    switchChainAsync({ chainId })
+  }, [isDeposit])
 
   const [ deposit, withdraw, loading, hash, error ] = useDepositWithdraw();
 
