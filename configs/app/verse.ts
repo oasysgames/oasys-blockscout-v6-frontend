@@ -14,6 +14,6 @@ export default Object.freeze({
     url: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_URL') || '/bridge',
   },
   coinPrice: {
-    isEnabled: getEnvValue('NEXT_PUBLIC_PRICE_TRACKER_ENABLED') === 'true',
+    isDisabled: getEnvValue('NEXT_PUBLIC_PRICE_TRACKER_DISABLE') === 'true',
   },
 });
