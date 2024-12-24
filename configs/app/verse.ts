@@ -1,3 +1,5 @@
+import { ChainId } from 'bridge/constants/types';
+
 import { getEnvValue } from './utils';
 
 export default Object.freeze({
@@ -11,7 +13,7 @@ export default Object.freeze({
   },
   bridge: {
     isVisible: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_VISIBLE') === 'true',
-    url: getEnvValue('NEXT_PUBLIC_MENU_BRIDGE_URL') || '/bridge',
+    l2ChainId: getEnvValue('NEXT_PUBLIC_L2_CHAIN_ID') || ChainId.TCG,
   },
   coinPrice: {
     isDisabled: getEnvValue('NEXT_PUBLIC_PRICE_TRACKER_DISABLE') === 'true',
