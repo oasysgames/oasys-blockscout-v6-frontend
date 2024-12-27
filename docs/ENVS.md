@@ -164,7 +164,6 @@ _Note_ Here, all values are arrays of up to two strings. The first string repres
 | NEXT_PUBLIC_NAVIGATION_HIGHLIGHTED_ROUTES | `Array<string>` | List of menu item routes that should have a lightning label | - | - | `['/accounts']` | v1.31.0+ |
 | NEXT_PUBLIC_NAVIGATION_LAYOUT | `vertical \| horizontal` | Navigation menu layout type | - | `vertical` | `horizontal` | v1.32.0+ |
 | NEXT_PUBLIC_MENU_BRIDGE_VISIBLE | `boolean` | Set to true to show bridged Token | - | - | `false` | v1.32.x+ |
-| NEXT_PUBLIC_MENU_BRIDGE_URL | `string` | Set to bridge url to in the navigation  | - | - | `false` | v1.32.x+ |
 | NEXT_PUBLIC_L2_CHAIN_ID | `number` | Chain id, see [https://chainlist.org](https://chainlist.org) for the reference | - | -  | `99` | v1.33.x+ |
 
 #### Featured network configuration properties
