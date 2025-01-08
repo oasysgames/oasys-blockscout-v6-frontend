@@ -281,6 +281,12 @@ export default function useNavItems(): ReturnType {
         nextRoute: { pathname: '/bridge' as const },
         isActive: pathname.startsWith('/bridge'),
       } : null,
+      {
+        text: 'Experiment',
+        icon: 'experiment',
+        nextRoute: { pathname: '/experiment' as const },
+        isActive: pathname.startsWith('/experiment'),
+      },
     ].filter(Boolean);
 
     const accountNavItems: ReturnType['accountNavItems'] = [
