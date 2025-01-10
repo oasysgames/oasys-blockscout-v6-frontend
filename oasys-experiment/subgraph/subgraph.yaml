@@ -1,0 +1,46 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema/schema.graphql
+dataSources:
+  - kind: ethereum
+    name: L1StandardBridge
+    network: oasys
+    source:
+      address: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
+      abi: L1StandardBridge
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgeTransaction
+      abis:
+        - name: L1StandardBridge
+          file: ./abis/L1StandardBridge.json
+      eventHandlers:
+        - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
+          handler: handleETHDeposit
+        - event: ETHWithdrawalFinalized(indexed address,indexed address,uint256,bytes)
+          handler: handleETHWithdrawal
+      file: ./src/mapping.ts
+  - kind: ethereum
+    name: Portal
+    network: oasys
+    source:
+      address: "0xd1F4638035B367D7874b6fdc118bFD44bF62FA42"
+      abi: Portal
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgeTransaction
+      abis:
+        - name: Portal
+          file: ./abis/Portal.json
+      eventHandlers:
+        - event: TransactionDeposited(indexed address,indexed address,uint256,uint64,uint256,bytes)
+          handler: handleTransactionDeposited
+      file: ./src/mapping.ts 

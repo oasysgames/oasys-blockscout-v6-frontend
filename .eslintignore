@@ -7,3 +7,4 @@ deploy/tools/feature-reporter/build/**
 deploy/tools/feature-reporter/index.js
 public/**
 bridge/**
+oasys-experiment/**/*
