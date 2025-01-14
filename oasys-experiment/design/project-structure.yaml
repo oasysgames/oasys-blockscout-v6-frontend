@@ -1,0 +1,96 @@
+project:
+  name: oasys-experiment
+  description: Oasysチェーンの実験的機能とデータ収集のためのプロジェクト
+
+directory_structure:
+  src:
+    description: ソースコードのルートディレクトリ
+    subdirectories:
+      api:
+        description: APIエンドポイントの実装
+        contents:
+          - routes/*.ts: 各APIエンドポイントのルート定義とハンドラー
+          - types/*.ts: APIで使用する型定義
+        purpose: |
+          - フロントエンドに必要なデータを提供するREST API
+          - ブリッジ統計、ブロック情報などのエンドポイントを提供
+
+      jobs:
+        description: バックグラウンドジョブの実装
+        contents:
+          - syncBlocks.ts: ブロック同期ジョブ
+          - syncBridgeTransactions.ts: ブリッジトランザクション同期ジョブ
+        purpose: |
+          - チェーンデータの定期的な同期
+          - ブリッジトランザクションの監視と統計収集
+          - データベースへの保存処理
+
+      scripts:
+        description: 一時的な実行スクリプトやユーティリティ
+        contents:
+          - getNFTStats.ts: NFT関連の統計収集スクリプト
+          - utils/*.ts: 共通ユーティリティ関数
+        purpose: |
+          - データ分析や一時的なデータ収集
+          - 開発用のユーティリティスクリプト
+          - テストやデバッグ用のツール
+
+      constants:
+        description: 定数定義
+        contents:
+          - abi.ts: コントラクトABI定義
+          - config.ts: 環境設定や定数
+        purpose: |
+          - スマートコントラクトのインターフェース定義
+          - 環境変数や設定値の一元管理
+
+  prisma:
+    description: Prismaデータベース関連
+    contents:
+      - schema.prisma: データベーススキーマ定義
+      - migrations/: データベースマイグレーションファイル
+    purpose: |
+      - データモデルの定義
+      - マイグレーション管理
+      - データベースクライアントの生成
+
+  subgraph:
+    description: The Graph用のサブグラフ定義
+    contents:
+      - schema.graphql: サブグラフのスキーマ定義
+      - src/mapping.ts: イベントハンドラーの実装
+      - abis/: コントラクトABIファイル
+    purpose: |
+      - ブリッジイベントのインデックス作成
+      - 履歴データの効率的なクエリ
+      - イベントデータの永続化
+
+  design:
+    description: プロジェクト設計ドキュメント
+    contents:
+      - project-structure.yaml: プロジェクト構造の定義
+      - api-spec.yaml: API仕様書
+    purpose: |
+      - プロジェクト構造の文書化
+      - API仕様の定義
+      - 設計判断の記録
+
+development:
+  setup:
+    - npm install: 依存パッケージのインストール
+    - prisma generate: Prismaクライアントの生成
+    - prisma migrate dev: データベースマイグレーションの実行
+  
+  commands:
+    - npm run dev: 開発サーバーの起動
+    - npm run build: プロジェクトのビルド
+    - npm run typecheck: 型チェックの実行
+
+dependencies:
+  main:
+    - "@prisma/client": データベースORM
+    - "ethers": Ethereum/Oasysチェーンとの対話
+    - "typescript": 型システム
+  dev:
+    - "prisma": データベース開発ツール
+    - "@graphprotocol/graph-cli": サブグラフ開発ツール 

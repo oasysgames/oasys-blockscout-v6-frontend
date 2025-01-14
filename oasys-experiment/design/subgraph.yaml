@@ -1,0 +1,98 @@
+subgraph:
+  name: oasys-bridge-stats
+  description: |
+    HubLayer MainnetでのL1StandardBridgeのETHDepositInitiatedイベントを追跡し、
+    各verseへのOASデポジット量を集計するサブグラフ
+
+entities:
+  BridgeDeposit:
+    description: 個々のブリッジデポジットイベント
+    fields:
+      id: ID! # トランザクションハッシュ + ログインデックス
+      verse: String! # verse名（Saakuru, TCGverse等）
+      from: Bytes! # 送信者アドレス
+      to: Bytes! # 受信者アドレス
+      amount: BigInt! # デポジット量（wei単位）
+      timestamp: BigInt! # タイムスタンプ
+      blockNumber: BigInt! # ブロック番号
+      transactionHash: Bytes! # トランザクションハッシュ
+
+  DailyBridgeStats:
+    description: 日次のブリッジ統計
+    fields:
+      id: ID! # verse名 + 日付（YYYY-MM-DD）
+      verse: String! # verse名
+      date: String! # 日付（YYYY-MM-DD）
+      totalAmount: BigInt! # その日の総デポジット量
+      depositCount: Int! # その日のデポジット回数
+
+contracts:
+  L1StandardBridge:
+    addresses:
+      Saakuru: "0x4FfA6d5745C2E78361ae91a36312524284F3D812"
+      TCGverse: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
+    events:
+      ETHDepositInitiated:
+        description: OASデポジットイベント
+        parameters:
+          - name: from
+            type: address
+            indexed: true
+          - name: to
+            type: address
+            indexed: true
+          - name: amount
+            type: uint256
+            indexed: false
+          - name: extraData
+            type: bytes
+            indexed: false
+
+mappings:
+  - event: ETHDepositInitiated
+    handler: handleETHDepositInitiated
+    entities:
+      - BridgeDeposit
+      - DailyBridgeStats
+    processing:
+      - イベントごとにBridgeDepositエンティティを作成
+      - 日付ごとにDailyBridgeStatsを更新
+      - verseごとに統計を分類
+
+queries:
+  - name: 期間指定のデポジット統計
+    description: |
+      指定された期間のデポジット統計を取得
+    example: |
+      {
+        dailyBridgeStats(
+          where: {
+            date_gte: "2024-01-01",
+            date_lte: "2024-01-31"
+          }
+          orderBy: date
+        ) {
+          verse
+          date
+          totalAmount
+          depositCount
+        }
+      }
+
+  - name: verse別の最新デポジット
+    description: |
+      各verseの最新のデポジットイベントを取得
+    example: |
+      {
+        bridgeDeposits(
+          first: 10,
+          orderBy: timestamp,
+          orderDirection: desc
+        ) {
+          verse
+          from
+          to
+          amount
+          timestamp
+        }
+      } 

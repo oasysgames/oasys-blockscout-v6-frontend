@@ -11,7 +11,7 @@ import {
   BigDecimal,
 } from "@graphprotocol/graph-ts";
 
-export class BridgeTransaction extends Entity {
+export class BridgeDeposit extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,26 +19,24 @@ export class BridgeTransaction extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save BridgeTransaction entity without an ID");
+    assert(id != null, "Cannot save BridgeDeposit entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type BridgeTransaction must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type BridgeDeposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("BridgeTransaction", id.toString(), this);
+      store.set("BridgeDeposit", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): BridgeTransaction | null {
-    return changetype<BridgeTransaction | null>(
-      store.get_in_block("BridgeTransaction", id),
+  static loadInBlock(id: string): BridgeDeposit | null {
+    return changetype<BridgeDeposit | null>(
+      store.get_in_block("BridgeDeposit", id),
     );
   }
 
-  static load(id: string): BridgeTransaction | null {
-    return changetype<BridgeTransaction | null>(
-      store.get("BridgeTransaction", id),
-    );
+  static load(id: string): BridgeDeposit | null {
+    return changetype<BridgeDeposit | null>(store.get("BridgeDeposit", id));
   }
 
   get id(): string {
@@ -52,6 +50,19 @@ export class BridgeTransaction extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get verse(): string {
+    let value = this.get("verse");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verse(value: string) {
+    this.set("verse", Value.fromString(value));
   }
 
   get from(): Bytes {
@@ -93,19 +104,6 @@ export class BridgeTransaction extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get data(): Bytes {
-    let value = this.get("data");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set data(value: Bytes) {
-    this.set("data", Value.fromBytes(value));
-  }
-
   get timestamp(): BigInt {
     let value = this.get("timestamp");
     if (!value || value.kind == ValueKind.NULL) {
@@ -145,8 +143,8 @@ export class BridgeTransaction extends Entity {
     this.set("transactionHash", Value.fromBytes(value));
   }
 
-  get type(): string {
-    let value = this.get("type");
+  get dailyStats(): string {
+    let value = this.get("dailyStats");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -154,7 +152,129 @@ export class BridgeTransaction extends Entity {
     }
   }
 
-  set type(value: string) {
-    this.set("type", Value.fromString(value));
+  set dailyStats(value: string) {
+    this.set("dailyStats", Value.fromString(value));
+  }
+}
+
+export class DailyBridgeStats extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save DailyBridgeStats entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type DailyBridgeStats must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("DailyBridgeStats", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): DailyBridgeStats | null {
+    return changetype<DailyBridgeStats | null>(
+      store.get_in_block("DailyBridgeStats", id),
+    );
+  }
+
+  static load(id: string): DailyBridgeStats | null {
+    return changetype<DailyBridgeStats | null>(
+      store.get("DailyBridgeStats", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get verse(): string {
+    let value = this.get("verse");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verse(value: string) {
+    this.set("verse", Value.fromString(value));
+  }
+
+  get date(): string {
+    let value = this.get("date");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set date(value: string) {
+    this.set("date", Value.fromString(value));
+  }
+
+  get totalAmount(): BigInt {
+    let value = this.get("totalAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAmount(value: BigInt) {
+    this.set("totalAmount", Value.fromBigInt(value));
+  }
+
+  get depositCount(): i32 {
+    let value = this.get("depositCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      return 0;
+    } else {
+      return value.toI32();
+    }
+  }
+
+  set depositCount(value: i32) {
+    this.set("depositCount", Value.fromI32(value));
+  }
+
+  get deposits(): BridgeDepositLoader {
+    return new BridgeDepositLoader(
+      "DailyBridgeStats",
+      this.get("id")!.toString(),
+      "deposits",
+    );
+  }
+}
+
+export class BridgeDepositLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): BridgeDeposit[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<BridgeDeposit[]>(value);
   }
 }

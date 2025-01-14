@@ -19,7 +19,7 @@ services:
       postgres_pass: let-me-in
       postgres_db: graph-node
       ipfs: 'http://ipfs:5001'
-      ethereum: 'oasys:https://rpc.mainnet.oasys.games'
+      ethereum: 'mainnet:https://rpc.mainnet.oasys.games'
       GRAPH_LOG: debug
       RUST_BACKTRACE: full
       GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'

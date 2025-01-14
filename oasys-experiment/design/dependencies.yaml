@@ -1,0 +1,74 @@
+dependencies:
+  subgraph:
+    core:
+      "@graphprotocol/graph-ts":
+        purpose: The Graphのコアライブラリ
+        usage:
+          - 型定義（BigInt, Bytes等）
+          - データ変換ユーティリティ
+          - イベントハンドリング基盤
+
+      "@graphprotocol/graph-cli":
+        purpose: サブグラフ開発ツール
+        features:
+          - コード生成
+          - スキーマのコンパイル
+          - デプロイ管理
+
+    generated:
+      description: |
+        graph codegen により自動生成されるコード
+      files:
+        - generated/schema.ts: エンティティの型定義
+        - generated/L1StandardBridge/: コントラクト関連の型定義
+
+  contracts:
+    L1StandardBridge:
+      description: |
+        各verseのブリッジコントラクト
+      events:
+        ETHDepositInitiated:
+          parameters:
+            - from: デポジット元アドレス
+            - to: デポジット先アドレス
+            - amount: デポジット量
+            - extraData: 追加データ
+
+  development:
+    tools:
+      graph-cli:
+        commands:
+          - graph init: プロジェクト初期化
+          - graph codegen: 型定義生成
+          - graph build: サブグラフのビルド
+          - graph deploy: デプロイ
+
+      typescript:
+        purpose: 型安全な開発環境
+        config:
+          target: es2020
+          module: commonjs
+
+  runtime:
+    environment: AssemblyScript
+    constraints:
+      - イミュータブルな変数のみ
+      - 限定的な標準ライブラリ
+      - WebAssemblyにコンパイル可能な機能のみ
+
+  deployment:
+    requirements:
+      - The Graphノードへのアクセス
+      - IPFS for スキーマ保存
+      - イーサリアムノード接続
+
+  monitoring:
+    metrics:
+      - インデックス進行状況
+      - エンティティ数
+      - クエリパフォーマンス
+
+    debugging:
+      - サブグラフのログ
+      - エラーイベント
+      - 同期ステータス 

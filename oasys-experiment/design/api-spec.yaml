@@ -1,0 +1,124 @@
+openapi: 3.0.0
+info:
+  title: Oasys Experiment API
+  version: 1.0.0
+  description: Oasysチェーンの実験的機能のためのAPI
+
+servers:
+  - url: /api
+    description: 開発サーバー
+
+paths:
+  /bridge-stats:
+    get:
+      summary: ブリッジ統計情報の取得
+      description: |
+        指定された期間のブリッジトランザクション統計を取得します。
+        デフォルトでは直近24時間のデータを1時間ごとに集計します。
+      parameters:
+        - name: from
+          in: query
+          description: 開始時刻（ISO 8601形式）
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: 終了時刻（ISO 8601形式）
+          schema:
+            type: string
+            format: date-time
+        - name: interval
+          in: query
+          description: 集計間隔（分）
+          schema:
+            type: integer
+            default: 60
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: データポイントの時刻
+                    amount:
+                      type: string
+                      description: 期間内の総トランザクション量（wei単位）
+        '400':
+          description: 不正なリクエストパラメータ
+        '500':
+          description: サーバーエラー
+
+  /blocks:
+    get:
+      summary: ブロック情報の取得
+      description: |
+        指定されたブロック範囲の情報を取得します。
+        デフォルトでは最新の100ブロックを返します。
+      parameters:
+        - name: from
+          in: query
+          description: 開始ブロック番号
+          schema:
+            type: integer
+        - name: to
+          in: query
+          description: 終了ブロック番号
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: 取得するブロック数の上限
+          schema:
+            type: integer
+            default: 100
+            maximum: 1000
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    number:
+                      type: integer
+                      description: ブロック番号
+                    hash:
+                      type: string
+                      description: ブロックハッシュ
+                    timestamp:
+                      type: string
+                      format: date-time
+                      description: ブロックのタイムスタンプ
+                    transactions:
+                      type: integer
+                      description: トランザクション数
+        '400':
+          description: 不正なリクエストパラメータ
+        '500':
+          description: サーバーエラー
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: エラーコード
+        message:
+          type: string
+          description: エラーメッセージ
+      required:
+        - code
+        - message 
