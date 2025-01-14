@@ -1,20 +1,16 @@
 type BridgeDeposit @entity {
   id: ID!
-  verse: String!
   from: Bytes!
   to: Bytes!
   amount: BigInt!
   timestamp: BigInt!
   blockNumber: BigInt!
   transactionHash: Bytes!
-  dailyStats: DailyBridgeStats!
 }
 
 type DailyBridgeStats @entity {
   id: ID!
-  verse: String!
   date: String!
   totalAmount: BigInt!
   depositCount: Int!
-  deposits: [BridgeDeposit!]! @derivedFrom(field: "dailyStats")
 } 

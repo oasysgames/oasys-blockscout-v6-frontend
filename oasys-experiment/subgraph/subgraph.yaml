@@ -3,32 +3,10 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: SaakuruBridge
-    network: mainnet
-    source:
-      address: "0x4FfA6d5745C2E78361ae91a36312524284F3D812"
-      abi: L1StandardBridge
-      startBlock: 0
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - BridgeDeposit
-        - DailyBridgeStats
-      abis:
-        - name: L1StandardBridge
-          file: ./abis/L1StandardBridge.json
-      eventHandlers:
-        - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
-          handler: handleETHDepositInitiated
-      file: ./src/mapping.ts
-
-  - kind: ethereum
     name: TCGverseBridge
     network: mainnet
     source:
-      address: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
+      address: "0xa34a5f2c9f4a47c6b3c5b199d9c0f82c7da0d404"
       abi: L1StandardBridge
       startBlock: 0
     mapping:
