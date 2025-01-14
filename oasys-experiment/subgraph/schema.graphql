@@ -6,6 +6,7 @@ type BridgeDeposit @entity {
   timestamp: BigInt!
   blockNumber: BigInt!
   transactionHash: Bytes!
+  version: String!
 }
 
 type DailyBridgeStats @entity {

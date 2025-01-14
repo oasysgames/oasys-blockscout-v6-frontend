@@ -2,13 +2,14 @@ specVersion: 0.0.5
 schema:
   file: ./schema.graphql
 dataSources:
+  # V0 Bridges
   - kind: ethereum
-    name: TCGverseBridge
+    name: SaakuruBridgeV0
     network: mainnet
     source:
-      address: "0xa34a5f2c9f4a47c6b3c5b199d9c0f82c7da0d404"
+      address: "0x4FfA6d5745C2E78361ae91a36312524284F3D812"
       abi: L1StandardBridge
-      startBlock: 0
+      startBlock: 4700000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -22,4 +23,68 @@ dataSources:
       eventHandlers:
         - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
           handler: handleETHDepositInitiated
+      file: ./src/mapping.ts
+  - kind: ethereum
+    name: TCGverseBridgeV0
+    network: mainnet
+    source:
+      address: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
+      abi: L1StandardBridge
+      startBlock: 4700000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgeDeposit
+        - DailyBridgeStats
+      abis:
+        - name: L1StandardBridge
+          file: ./abis/L1StandardBridge.json
+      eventHandlers:
+        - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
+          handler: handleETHDepositInitiated
+      file: ./src/mapping.ts
+  # V1 Bridges (Portal Contracts)
+  - kind: ethereum
+    name: SaakuruBridgeV1
+    network: mainnet
+    source:
+      address: "0xbA63529349fb6eC3D69bf1F7c988181d75484510"
+      abi: OptimismPortal
+      startBlock: 4700000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgeDeposit
+        - DailyBridgeStats
+      abis:
+        - name: OptimismPortal
+          file: ./abis/OptimismPortal.json
+      eventHandlers:
+        - event: TransactionDeposited(indexed address,indexed address,uint256,bytes)
+          handler: handleTransactionDeposited
+      file: ./src/mapping.ts
+  - kind: ethereum
+    name: SandverseBridgeV1
+    network: mainnet
+    source:
+      address: "0xd1F4638035B367D7874b6fdc118bFD44bF62FA42"
+      abi: OptimismPortal
+      startBlock: 4700000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - BridgeDeposit
+        - DailyBridgeStats
+      abis:
+        - name: OptimismPortal
+          file: ./abis/OptimismPortal.json
+      eventHandlers:
+        - event: TransactionDeposited(indexed address,indexed address,uint256,bytes)
+          handler: handleTransactionDeposited
       file: ./src/mapping.ts 

@@ -52,19 +52,6 @@ export class BridgeDeposit extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get verse(): string {
-    let value = this.get("verse");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set verse(value: string) {
-    this.set("verse", Value.fromString(value));
-  }
-
   get from(): Bytes {
     let value = this.get("from");
     if (!value || value.kind == ValueKind.NULL) {
@@ -143,8 +130,8 @@ export class BridgeDeposit extends Entity {
     this.set("transactionHash", Value.fromBytes(value));
   }
 
-  get dailyStats(): string {
-    let value = this.get("dailyStats");
+  get version(): string {
+    let value = this.get("version");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -152,8 +139,8 @@ export class BridgeDeposit extends Entity {
     }
   }
 
-  set dailyStats(value: string) {
-    this.set("dailyStats", Value.fromString(value));
+  set version(value: string) {
+    this.set("version", Value.fromString(value));
   }
 }
 
@@ -200,19 +187,6 @@ export class DailyBridgeStats extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get verse(): string {
-    let value = this.get("verse");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set verse(value: string) {
-    this.set("verse", Value.fromString(value));
-  }
-
   get date(): string {
     let value = this.get("date");
     if (!value || value.kind == ValueKind.NULL) {
@@ -250,31 +224,5 @@ export class DailyBridgeStats extends Entity {
 
   set depositCount(value: i32) {
     this.set("depositCount", Value.fromI32(value));
-  }
-
-  get deposits(): BridgeDepositLoader {
-    return new BridgeDepositLoader(
-      "DailyBridgeStats",
-      this.get("id")!.toString(),
-      "deposits",
-    );
-  }
-}
-
-export class BridgeDepositLoader extends Entity {
-  _entity: string;
-  _field: string;
-  _id: string;
-
-  constructor(entity: string, id: string, field: string) {
-    super();
-    this._entity = entity;
-    this._id = id;
-    this._field = field;
-  }
-
-  load(): BridgeDeposit[] {
-    let value = store.loadRelated(this._entity, this._id, this._field);
-    return changetype<BridgeDeposit[]>(value);
   }
 }
