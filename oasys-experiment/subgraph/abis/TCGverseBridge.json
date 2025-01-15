@@ -17,17 +17,17 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "value",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "bytes",
-        "name": "data",
+        "name": "extraData",
         "type": "bytes"
       }
     ],
-    "name": "TransactionDeposited",
+    "name": "ETHDepositInitiated",
     "type": "event"
   }
 ] 

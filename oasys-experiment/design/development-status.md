@@ -2,25 +2,16 @@
 
 ## インフラストラクチャ
 - [x] Docker Compose環境のセットアップ
-  - [x] Graph Node (v0.33.0)
-  - [x] IPFS (v0.10.0)
-  - [x] PostgreSQL
+- [x] Graph Nodeの起動確認
+- [x] IPFSの起動確認
+- [x] PostgreSQLの起動確認
 - [x] M1/M2 Mac (arm64)での互換性対応
   - [x] platform: linux/amd64の指定追加
   - [x] Rosetta 2による互換性確保
-  - [x] パフォーマンス影響の最小化確認
-- [x] メモリ管理の最適化
-  - [x] OOMKiller対策の実装
-  - [x] メモリ使用量のモニタリング設定
 
 ## サブグラフ開発
 - [x] サブグラフのデプロイ
-  - [x] マニフェストファイルの設定
-  - [x] エンティティの定義
-  - [x] マッピング関数の実装
 - [x] ブロック同期の確認
-  - [x] 2000ブロックずつの同期処理
-  - [x] 同期進捗のモニタリング
 - [x] イベント処理の確認
   - [x] ETHDepositInitiatedイベントの処理
   - [x] TCGverseBridgeとSaakuruBridgeの両方のイベントを検知

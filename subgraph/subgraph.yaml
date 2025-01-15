@@ -3,12 +3,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: TCGverseBridge
+    name: L1StandardBridge
     network: mainnet
     source:
-      address: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
-      abi: TCGverseBridge
-      startBlock: 3650000
+      abi: L1StandardBridge
+      address: "0x4FfA6d5745C2E78361ae91a36312524284F3D812"
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -17,8 +17,8 @@ dataSources:
         - BridgeDeposit
         - DailyBridgeStats
       abis:
-        - name: TCGverseBridge
-          file: ./abis/TCGverseBridge.json
+        - name: L1StandardBridge
+          file: ./abis/L1StandardBridge.json
       eventHandlers:
         - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
           handler: handleETHDepositInitiated

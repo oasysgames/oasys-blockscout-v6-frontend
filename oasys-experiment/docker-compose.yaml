@@ -1,7 +1,7 @@
 version: '3'
 services:
   graph-node:
-    image: graphprotocol/graph-node:v0.33.0
+    image: graphprotocol/graph-node:v0.35.1
     platform: linux/amd64
     ports:
       - '8000:8000'
@@ -21,9 +21,17 @@ services:
       postgres_db: graph-node
       ipfs: 'http://ipfs:5001'
       ethereum: 'mainnet:https://rpc.mainnet.oasys.games'
-      GRAPH_LOG: debug
-      RUST_BACKTRACE: full
-      GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'
+      # GRAPH_LOG: info
+      # RUST_BACKTRACE: full
+      # GRAPH_ALLOW_NON_DETERMINISTIC_IPFS: 'true'
+      # GRAPH_NODE_OPTIONS: "-Xmx4g"
+      # GRAPH_ETHEREUM_BLOCK_BATCH_SIZE: "10"
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+        reservations:
+          memory: 2G
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:

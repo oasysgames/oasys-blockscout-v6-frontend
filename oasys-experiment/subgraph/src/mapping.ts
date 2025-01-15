@@ -1,12 +1,13 @@
-import { BigInt, Bytes } from "@graphprotocol/graph-ts"
-import { ETHDepositInitiated } from "../generated/TCGverseBridgeV0/L1StandardBridge"
-import { TransactionDeposited } from "../generated/SaakuruBridgeV1/OptimismPortal"
+import { BigInt } from "@graphprotocol/graph-ts"
+import {
+  ETHDepositInitiated as ETHDepositInitiatedEvent
+} from "../generated/TCGverseBridge/TCGverseBridge"
 import { BridgeDeposit, DailyBridgeStats } from "../generated/schema"
 
-export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
-  // Create unique ID for the deposit
-  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
-  let deposit = new BridgeDeposit(id)
+export function handleETHDepositInitiated(event: ETHDepositInitiatedEvent): void {
+  // BridgeDepositエンティティの作成
+  let depositId = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
+  let deposit = new BridgeDeposit(depositId)
 
   deposit.from = event.params.from
   deposit.to = event.params.to
@@ -14,45 +15,29 @@ export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
   deposit.timestamp = event.block.timestamp
   deposit.blockNumber = event.block.number
   deposit.transactionHash = event.transaction.hash
-  deposit.version = "V0"
 
   deposit.save()
 
-  updateDailyStats(event.block.timestamp, event.params.amount)
-}
+  // 日付の取得（UTC）
+  let timestamp = event.block.timestamp.toI32()
+  let date = new Date(timestamp * 1000)
+  let month = (date.getUTCMonth() + 1).toString()
+  let day = date.getUTCDate().toString()
+  let dateString = date.getUTCFullYear().toString() + "-" +
+    (month.length == 1 ? "0" + month : month) + "-" +
+    (day.length == 1 ? "0" + day : day)
 
-export function handleTransactionDeposited(event: TransactionDeposited): void {
-  // Create unique ID for the deposit
-  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
-  let deposit = new BridgeDeposit(id)
-
-  deposit.from = event.params.from
-  deposit.to = event.params.to
-  deposit.amount = event.params.value
-  deposit.timestamp = event.block.timestamp
-  deposit.blockNumber = event.block.number
-  deposit.transactionHash = event.transaction.hash
-  deposit.version = "V1"
-
-  deposit.save()
-
-  updateDailyStats(event.block.timestamp, event.params.value)
-}
-
-function updateDailyStats(timestamp: BigInt, amount: BigInt): void {
-  let dayID = timestamp.toI32() / 86400
-  let dayStartTimestamp = dayID * 86400
-  let dailyStatsId = dayStartTimestamp.toString()
-
-  let dailyStats = DailyBridgeStats.load(dailyStatsId)
-  if (dailyStats == null) {
-    dailyStats = new DailyBridgeStats(dailyStatsId)
-    dailyStats.date = new Date(dayStartTimestamp * 1000).toISOString().slice(0, 10)
-    dailyStats.totalAmount = BigInt.fromI32(0)
-    dailyStats.depositCount = 0
+  // DailyBridgeStatsの更新
+  let statsId = dateString
+  let stats = DailyBridgeStats.load(statsId)
+  if (stats == null) {
+    stats = new DailyBridgeStats(statsId)
+    stats.date = dateString
+    stats.totalAmount = BigInt.fromI32(0)
+    stats.depositCount = 0
   }
 
-  dailyStats.totalAmount = dailyStats.totalAmount.plus(amount)
-  dailyStats.depositCount = dailyStats.depositCount + 1
-  dailyStats.save()
+  stats.totalAmount = stats.totalAmount.plus(event.params.amount)
+  stats.depositCount = stats.depositCount + 1
+  stats.save()
 } 

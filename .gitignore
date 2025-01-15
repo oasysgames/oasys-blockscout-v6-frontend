@@ -60,3 +60,7 @@ yarn-error.log*
 /tools/preset-sync/index.js
 
 .idea
+
+# Ignore subgraph directory
+**/subgraph/**/*
+oasys-experiment/subgraph/**/*

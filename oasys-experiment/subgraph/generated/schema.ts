@@ -8,7 +8,7 @@ import {
   store,
   Bytes,
   BigInt,
-  BigDecimal,
+  BigDecimal
 } from "@graphprotocol/graph-ts";
 
 export class BridgeDeposit extends Entity {
@@ -23,7 +23,7 @@ export class BridgeDeposit extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type BridgeDeposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type BridgeDeposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("BridgeDeposit", id.toString(), this);
     }
@@ -31,7 +31,7 @@ export class BridgeDeposit extends Entity {
 
   static loadInBlock(id: string): BridgeDeposit | null {
     return changetype<BridgeDeposit | null>(
-      store.get_in_block("BridgeDeposit", id),
+      store.get_in_block("BridgeDeposit", id)
     );
   }
 
@@ -129,19 +129,6 @@ export class BridgeDeposit extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
-
-  get version(): string {
-    let value = this.get("version");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toString();
-    }
-  }
-
-  set version(value: string) {
-    this.set("version", Value.fromString(value));
-  }
 }
 
 export class DailyBridgeStats extends Entity {
@@ -156,7 +143,7 @@ export class DailyBridgeStats extends Entity {
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type DailyBridgeStats must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type DailyBridgeStats must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
       store.set("DailyBridgeStats", id.toString(), this);
     }
@@ -164,13 +151,13 @@ export class DailyBridgeStats extends Entity {
 
   static loadInBlock(id: string): DailyBridgeStats | null {
     return changetype<DailyBridgeStats | null>(
-      store.get_in_block("DailyBridgeStats", id),
+      store.get_in_block("DailyBridgeStats", id)
     );
   }
 
   static load(id: string): DailyBridgeStats | null {
     return changetype<DailyBridgeStats | null>(
-      store.get("DailyBridgeStats", id),
+      store.get("DailyBridgeStats", id)
     );
   }
 

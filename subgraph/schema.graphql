@@ -1,5 +1,6 @@
 type BridgeDeposit @entity {
   id: ID!
+  verse: String!
   from: Bytes!
   to: Bytes!
   amount: BigInt!
@@ -10,6 +11,7 @@ type BridgeDeposit @entity {
 
 type DailyBridgeStats @entity {
   id: ID!
+  verse: String!
   date: String!
   totalAmount: BigInt!
   depositCount: Int!

@@ -7,19 +7,19 @@ import {
   Entity,
   Bytes,
   Address,
-  BigInt,
+  BigInt
 } from "@graphprotocol/graph-ts";
 
-export class TransactionDeposited extends ethereum.Event {
-  get params(): TransactionDeposited__Params {
-    return new TransactionDeposited__Params(this);
+export class ETHDepositInitiated extends ethereum.Event {
+  get params(): ETHDepositInitiated__Params {
+    return new ETHDepositInitiated__Params(this);
   }
 }
 
-export class TransactionDeposited__Params {
-  _event: TransactionDeposited;
+export class ETHDepositInitiated__Params {
+  _event: ETHDepositInitiated;
 
-  constructor(event: TransactionDeposited) {
+  constructor(event: ETHDepositInitiated) {
     this._event = event;
   }
 
@@ -31,17 +31,17 @@ export class TransactionDeposited__Params {
     return this._event.parameters[1].value.toAddress();
   }
 
-  get value(): BigInt {
+  get amount(): BigInt {
     return this._event.parameters[2].value.toBigInt();
   }
 
-  get data(): Bytes {
+  get extraData(): Bytes {
     return this._event.parameters[3].value.toBytes();
   }
 }
 
-export class OptimismPortal extends ethereum.SmartContract {
-  static bind(address: Address): OptimismPortal {
-    return new OptimismPortal("OptimismPortal", address);
+export class TCGverseBridge extends ethereum.SmartContract {
+  static bind(address: Address): TCGverseBridge {
+    return new TCGverseBridge("TCGverseBridge", address);
   }
 }
