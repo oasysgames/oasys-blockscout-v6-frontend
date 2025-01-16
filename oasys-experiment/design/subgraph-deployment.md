@@ -1,4 +1,4 @@
-# サブグラフデプ�イメント手順
+# サブグラフデプロイメント手順
 
 ## 環境セットアップ
 
@@ -34,14 +34,22 @@ services:
 docker compose up -d
 ```
 
-2. サブグラフの作成
+2. サブグラフのセットアップとデプロイ
 ```bash
-graph create --node http://localhost:8020/ oasys/bridge
-```
+# 依存関係のインストール
+cd subgraph
+yarn
 
-3. サブグラフのデプロイ
-```bash
-graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 oasys/bridge
+# コード生成とビルド
+yarn codegen
+yarn build
+
+# ローカルサブグラフの作成
+yarn create-local
+
+# サブグラフのデプロイ
+yarn deploy-local
+# バージョンラベルの入力を求められるので、手動で入力してください（例: v0.0.1）
 ```
 
 ## 動作確認
