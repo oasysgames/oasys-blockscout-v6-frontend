@@ -1,16 +1,19 @@
-type BridgeDeposit @entity {
+type BridgeEvent @entity {
   id: ID!
+  eventType: String!         # "DEPOSIT" or "WITHDRAW"
   from: Bytes!
   to: Bytes!
   amount: BigInt!
   timestamp: BigInt!
   blockNumber: BigInt!
   transactionHash: Bytes!
+  extraData: Bytes         # ウィズドローイベントの追加データ
 }
 
 type DailyBridgeStats @entity {
-  id: ID!
+  id: ID!                    # 日付_イベントタイプ
   date: String!
+  eventType: String!         # "DEPOSIT" or "WITHDRAW"
   totalAmount: BigInt!
-  depositCount: Int!
+  eventCount: Int!
 } 

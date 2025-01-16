@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class BridgeDeposit extends Entity {
+export class BridgeEvent extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -19,24 +19,24 @@ export class BridgeDeposit extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save BridgeDeposit entity without an ID");
+    assert(id != null, "Cannot save BridgeEvent entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type BridgeDeposit must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type BridgeEvent must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("BridgeDeposit", id.toString(), this);
+      store.set("BridgeEvent", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): BridgeDeposit | null {
-    return changetype<BridgeDeposit | null>(
-      store.get_in_block("BridgeDeposit", id)
+  static loadInBlock(id: string): BridgeEvent | null {
+    return changetype<BridgeEvent | null>(
+      store.get_in_block("BridgeEvent", id)
     );
   }
 
-  static load(id: string): BridgeDeposit | null {
-    return changetype<BridgeDeposit | null>(store.get("BridgeDeposit", id));
+  static load(id: string): BridgeEvent | null {
+    return changetype<BridgeEvent | null>(store.get("BridgeEvent", id));
   }
 
   get id(): string {
@@ -50,6 +50,19 @@ export class BridgeDeposit extends Entity {
 
   set id(value: string) {
     this.set("id", Value.fromString(value));
+  }
+
+  get eventType(): string {
+    let value = this.get("eventType");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set eventType(value: string) {
+    this.set("eventType", Value.fromString(value));
   }
 
   get from(): Bytes {
@@ -129,6 +142,23 @@ export class BridgeDeposit extends Entity {
   set transactionHash(value: Bytes) {
     this.set("transactionHash", Value.fromBytes(value));
   }
+
+  get extraData(): Bytes | null {
+    let value = this.get("extraData");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set extraData(value: Bytes | null) {
+    if (!value) {
+      this.unset("extraData");
+    } else {
+      this.set("extraData", Value.fromBytes(<Bytes>value));
+    }
+  }
 }
 
 export class DailyBridgeStats extends Entity {
@@ -187,6 +217,19 @@ export class DailyBridgeStats extends Entity {
     this.set("date", Value.fromString(value));
   }
 
+  get eventType(): string {
+    let value = this.get("eventType");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set eventType(value: string) {
+    this.set("eventType", Value.fromString(value));
+  }
+
   get totalAmount(): BigInt {
     let value = this.get("totalAmount");
     if (!value || value.kind == ValueKind.NULL) {
@@ -200,8 +243,8 @@ export class DailyBridgeStats extends Entity {
     this.set("totalAmount", Value.fromBigInt(value));
   }
 
-  get depositCount(): i32 {
-    let value = this.get("depositCount");
+  get eventCount(): i32 {
+    let value = this.get("eventCount");
     if (!value || value.kind == ValueKind.NULL) {
       return 0;
     } else {
@@ -209,7 +252,7 @@ export class DailyBridgeStats extends Entity {
     }
   }
 
-  set depositCount(value: i32) {
-    this.set("depositCount", Value.fromI32(value));
+  set eventCount(value: i32) {
+    this.set("eventCount", Value.fromI32(value));
   }
 }

@@ -14,7 +14,7 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - BridgeDeposit
+        - BridgeEvent
         - DailyBridgeStats
       abis:
         - name: TCGverseBridge
@@ -22,4 +22,8 @@ dataSources:
       eventHandlers:
         - event: ETHDepositInitiated(indexed address,indexed address,uint256,bytes)
           handler: handleETHDepositInitiated
+        - event: ETHBridgeFinalized(indexed address,indexed address,uint256,bytes)
+          handler: handleETHBridgeFinalized
+        - event: ETHWithdrawalFinalized(indexed address,indexed address,uint256,bytes)
+          handler: handleETHWithdrawalFinalized
       file: ./src/mapping.ts 

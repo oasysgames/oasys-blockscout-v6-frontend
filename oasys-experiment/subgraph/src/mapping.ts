@@ -1,43 +1,111 @@
-import { BigInt } from "@graphprotocol/graph-ts"
 import {
-  ETHDepositInitiated as ETHDepositInitiatedEvent
+  ETHDepositInitiated,
+  ETHBridgeFinalized,
+  ETHWithdrawalFinalized
 } from "../generated/TCGverseBridge/TCGverseBridge"
-import { BridgeDeposit, DailyBridgeStats } from "../generated/schema"
+import { BridgeEvent, DailyBridgeStats } from "../generated/schema"
+import { BigInt } from "@graphprotocol/graph-ts"
 
-export function handleETHDepositInitiated(event: ETHDepositInitiatedEvent): void {
-  // BridgeDepositエンティティの作成
-  let depositId = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
-  let deposit = new BridgeDeposit(depositId)
+function getDayId(timestamp: BigInt): string {
+  let date = new Date(timestamp.toI64() * 1000)
+  let year = date.getUTCFullYear()
+  let month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
+  let day = date.getUTCDate().toString().padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
-  deposit.from = event.params.from
-  deposit.to = event.params.to
-  deposit.amount = event.params.amount
-  deposit.timestamp = event.block.timestamp
-  deposit.blockNumber = event.block.number
-  deposit.transactionHash = event.transaction.hash
+export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
+  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
+  
+  let bridgeEvent = new BridgeEvent(id)
+  bridgeEvent.eventType = "DEPOSIT"
+  bridgeEvent.from = event.params.from
+  bridgeEvent.to = event.params.to
+  bridgeEvent.amount = event.params.amount
+  bridgeEvent.timestamp = event.block.timestamp
+  bridgeEvent.blockNumber = event.block.number
+  bridgeEvent.transactionHash = event.transaction.hash
+  bridgeEvent.extraData = event.params.extraData
+  bridgeEvent.save()
 
-  deposit.save()
-
-  // 日付の取得（UTC）
-  let timestamp = event.block.timestamp.toI32()
-  let date = new Date(timestamp * 1000)
-  let month = (date.getUTCMonth() + 1).toString()
-  let day = date.getUTCDate().toString()
-  let dateString = date.getUTCFullYear().toString() + "-" +
-    (month.length == 1 ? "0" + month : month) + "-" +
-    (day.length == 1 ? "0" + day : day)
-
-  // DailyBridgeStatsの更新
-  let statsId = dateString
-  let stats = DailyBridgeStats.load(statsId)
-  if (stats == null) {
-    stats = new DailyBridgeStats(statsId)
-    stats.date = dateString
-    stats.totalAmount = BigInt.fromI32(0)
-    stats.depositCount = 0
+  // 日次統計の更新
+  let dayId = getDayId(event.block.timestamp)
+  let dailyStatsId = dayId + "-DEPOSIT"
+  
+  let dailyStats = DailyBridgeStats.load(dailyStatsId)
+  if (dailyStats == null) {
+    dailyStats = new DailyBridgeStats(dailyStatsId)
+    dailyStats.date = dayId
+    dailyStats.eventType = "DEPOSIT"
+    dailyStats.totalAmount = BigInt.fromI32(0)
+    dailyStats.eventCount = 0
   }
+  
+  dailyStats.totalAmount = dailyStats.totalAmount.plus(event.params.amount)
+  dailyStats.eventCount = dailyStats.eventCount + 1
+  dailyStats.save()
+}
 
-  stats.totalAmount = stats.totalAmount.plus(event.params.amount)
-  stats.depositCount = stats.depositCount + 1
-  stats.save()
-} 
+export function handleETHBridgeFinalized(event: ETHBridgeFinalized): void {
+  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
+  
+  let bridgeEvent = new BridgeEvent(id)
+  bridgeEvent.eventType = "WITHDRAW"
+  bridgeEvent.from = event.params.from
+  bridgeEvent.to = event.params.to
+  bridgeEvent.amount = event.params.amount
+  bridgeEvent.timestamp = event.block.timestamp
+  bridgeEvent.blockNumber = event.block.number
+  bridgeEvent.transactionHash = event.transaction.hash
+  bridgeEvent.extraData = event.params.extraData
+  bridgeEvent.save()
+
+  // 日次統計の更新
+  let dayId = getDayId(event.block.timestamp)
+  let dailyStatsId = dayId + "-WITHDRAW"
+  
+  let dailyStats = DailyBridgeStats.load(dailyStatsId)
+  if (dailyStats == null) {
+    dailyStats = new DailyBridgeStats(dailyStatsId)
+    dailyStats.date = dayId
+    dailyStats.eventType = "WITHDRAW"
+    dailyStats.totalAmount = BigInt.fromI32(0)
+    dailyStats.eventCount = 0
+  }
+  
+  dailyStats.totalAmount = dailyStats.totalAmount.plus(event.params.amount)
+  dailyStats.eventCount = dailyStats.eventCount + 1
+  dailyStats.save()
+}
+
+export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): void {
+  let id = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
+  
+  let bridgeEvent = new BridgeEvent(id)
+  bridgeEvent.eventType = "WITHDRAW"
+  bridgeEvent.from = event.params.from
+  bridgeEvent.to = event.params.to
+  bridgeEvent.amount = event.params.amount
+  bridgeEvent.timestamp = event.block.timestamp
+  bridgeEvent.blockNumber = event.block.number
+  bridgeEvent.transactionHash = event.transaction.hash
+  bridgeEvent.extraData = event.params.extraData
+  bridgeEvent.save()
+
+  // 日次統計の更新
+  let dayId = getDayId(event.block.timestamp)
+  let dailyStatsId = dayId + "-WITHDRAW"
+  
+  let dailyStats = DailyBridgeStats.load(dailyStatsId)
+  if (dailyStats == null) {
+    dailyStats = new DailyBridgeStats(dailyStatsId)
+    dailyStats.date = dayId
+    dailyStats.eventType = "WITHDRAW"
+    dailyStats.totalAmount = BigInt.fromI32(0)
+    dailyStats.eventCount = 0
+  }
+  
+  dailyStats.totalAmount = dailyStats.totalAmount.plus(event.params.amount)
+  dailyStats.eventCount = dailyStats.eventCount + 1
+  dailyStats.save()
+}
