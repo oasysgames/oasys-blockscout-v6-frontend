@@ -2,25 +2,6 @@
 
 ## 環境セットアップ
 
-### Docker Compose設定
-```yaml
-services:
-  graph-node:
-    image: graphprotocol/graph-node:v0.33.0
-    platform: linux/amd64  # M1/M2 Mac対応
-    ports:
-      - '8000:8000'
-      - '8001:8001'
-      - '8020:8020'
-      - '8030:8030'
-      - '8040:8040'
-
-  ipfs:
-    image: ipfs/go-ipfs:v0.10.0
-    platform: linux/amd64  # M1/M2 Mac対応
-    ports:
-      - '5001:5001'
-```
 
 ### プラットフォーム互換性
 - M1/M2 Mac (arm64)での実行時は、`platform: linux/amd64`の指定が必要
