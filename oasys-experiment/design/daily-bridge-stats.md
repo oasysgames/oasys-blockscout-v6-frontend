@@ -1,8 +1,6 @@
-# ブリッジ統計仕様
+# 日次ブリッジ統計（DailyBridgeStats）仕様
 
-## 日次ブリッジ統計（DailyBridgeStats）
-
-### データベーススキーマ
+## データベーススキーマ
 
 ```sql
 create table daily_bridge_stats
@@ -18,15 +16,15 @@ create table daily_bridge_stats
 );
 ```
 
-### 集計ロジック
+## 集計ロジック
 
-#### 基本仕様
+### 基本仕様
 - 日付ごとに集計（YYYY-MM-DD形式）
 - イベントタイプ（DEPOSIT/WITHDRAW）ごとに別レコード
 - `total_amount`は同じ日の同じイベントタイプの合計
 - DEPOSITとWITHDRAWは別々のレコードで管理（相殺しない）
 
-#### 集計例
+### 集計例
 
 以下のイベントが発生した場合：
 ```
@@ -64,7 +62,7 @@ create table daily_bridge_stats
 }
 ```
 
-### インデックス
+## インデックス
 
 パフォーマンス最適化のため、以下のインデックスが作成されます：
 
@@ -97,7 +95,7 @@ create index attr_1_4_daily_bridge_stats_event_count
     on daily_bridge_stats (event_count);
 ```
 
-### 実装詳細
+## 実装詳細
 
 集計処理は`mapping.ts`で以下のように実装されています：
 
