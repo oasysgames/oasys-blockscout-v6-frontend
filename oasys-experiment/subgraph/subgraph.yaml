@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0xa34a85ecb19c88d4965EcAfB10019E63050a1098"
       abi: TCGverseBridge
-      startBlock: 3650000
+      startBlock: 0
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
