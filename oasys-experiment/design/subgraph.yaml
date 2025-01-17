@@ -1,17 +1,20 @@
 subgraph:
-  name: tcgverse-bridge-stats
+  name: oasys-bridge-stats
   description: |
-    TCGverse BridgeのETHDepositInitiatedイベントを追跡し、
+    OasysネットワークのL2（Verse）ブリッジイベントを追跡し、
     bridgeされたOAS量を集計するサブグラフ
 
 entities:
-  BridgeDeposit:
-    description: 個々のブリッジデポジットイベント
+  BridgeEvent:
+    description: ブリッジイベント（デポジット/出金）
     fields:
       id: ID! # トランザクションハッシュ + ログインデックス
+      verseId: Int! # VerseのID
+      chainName: String! # Verseの名前
+      eventType: String! # "DEPOSIT" or "WITHDRAWAL"
       from: Bytes! # 送信者アドレス
       to: Bytes! # 受信者アドレス
-      amount: BigInt! # デポジット量（wei単位）
+      amount: BigInt! # 量（wei単位）
       timestamp: BigInt! # タイムスタンプ
       blockNumber: BigInt! # ブロック番号
       transactionHash: Bytes! # トランザクションハッシュ
@@ -19,10 +22,13 @@ entities:
   DailyBridgeStats:
     description: 日次のブリッジ統計
     fields:
-      id: ID! # 日付（YYYY-MM-DD）
+      id: ID! # verseId + 日付（YYYY-MM-DD）
+      verseId: Int! # VerseのID
+      chainName: String! # Verseの名前
       date: String! # 日付（YYYY-MM-DD）
-      totalAmount: BigInt! # その日の総デポジット量
-      depositCount: Int! # その日のデポジット回数
+      eventType: String! # "DEPOSIT" or "WITHDRAWAL"
+      total_amount: BigInt! # その日の総量
+      count: Int! # その日のイベント数
 
 contracts:
   TCGverseBridge:
@@ -44,43 +50,70 @@ contracts:
             type: bytes
             indexed: false
 
+  SaakuruBridge:
+    address: "0x9999999999999999999999999999999999999999" # TODO: 実際のアドレスに更新
+    events:
+      ETHDepositInitiated:
+        description: OASデポジットイベント
+        parameters:
+          - name: from
+            type: address
+            indexed: true
+          - name: to
+            type: address
+            indexed: true
+          - name: amount
+            type: uint256
+            indexed: false
+          - name: extraData
+            type: bytes
+            indexed: false
+
 mappings:
   - event: ETHDepositInitiated
     handler: handleETHDepositInitiated
     entities:
-      - BridgeDeposit
+      - BridgeEvent
       - DailyBridgeStats
     processing:
-      - イベントごとにBridgeDepositエンティティを作成
+      - イベントごとにBridgeEventエンティティを作成
+      - verseIdとchainNameを設定
       - 日付ごとにDailyBridgeStatsを更新
 
 queries:
-  - name: 日次デポジット統計
+  - name: 日次ブリッジ統計
     description: |
-      日次のデポジット統計を取得
+      Verseごとの日次統計を取得
     example: |
       {
         dailyBridgeStats(
+          where: { verseId: 1 }
           orderBy: date,
           orderDirection: desc,
           first: 7
         ) {
           date
-          totalAmount
-          depositCount
+          verseId
+          chainName
+          eventType
+          total_amount
+          count
         }
       }
 
-  - name: 最新のデポジット履歴
+  - name: 最新のブリッジイベント
     description: |
-      最新のデポジットイベントを取得
+      最新のブリッジイベントを取得
     example: |
       {
-        bridgeDeposits(
+        bridgeEvents(
           first: 10,
           orderBy: timestamp,
           orderDirection: desc
         ) {
+          verseId
+          chainName
+          eventType
           from
           to
           amount
