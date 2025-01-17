@@ -52,6 +52,32 @@ export class BridgeEvent extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get verseId(): string {
+    let value = this.get("verseId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verseId(value: string) {
+    this.set("verseId", Value.fromString(value));
+  }
+
+  get chainName(): string {
+    let value = this.get("chainName");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set chainName(value: string) {
+    this.set("chainName", Value.fromString(value));
+  }
+
   get eventType(): string {
     let value = this.get("eventType");
     if (!value || value.kind == ValueKind.NULL) {
@@ -143,21 +169,17 @@ export class BridgeEvent extends Entity {
     this.set("transactionHash", Value.fromBytes(value));
   }
 
-  get extraData(): Bytes | null {
+  get extraData(): Bytes {
     let value = this.get("extraData");
     if (!value || value.kind == ValueKind.NULL) {
-      return null;
+      throw new Error("Cannot return null for a required field.");
     } else {
       return value.toBytes();
     }
   }
 
-  set extraData(value: Bytes | null) {
-    if (!value) {
-      this.unset("extraData");
-    } else {
-      this.set("extraData", Value.fromBytes(<Bytes>value));
-    }
+  set extraData(value: Bytes) {
+    this.set("extraData", Value.fromBytes(value));
   }
 }
 
@@ -204,6 +226,32 @@ export class DailyBridgeStats extends Entity {
     this.set("id", Value.fromString(value));
   }
 
+  get verseId(): string {
+    let value = this.get("verseId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verseId(value: string) {
+    this.set("verseId", Value.fromString(value));
+  }
+
+  get chainName(): string {
+    let value = this.get("chainName");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set chainName(value: string) {
+    this.set("chainName", Value.fromString(value));
+  }
+
   get date(): string {
     let value = this.get("date");
     if (!value || value.kind == ValueKind.NULL) {
@@ -230,8 +278,8 @@ export class DailyBridgeStats extends Entity {
     this.set("eventType", Value.fromString(value));
   }
 
-  get totalAmount(): BigInt {
-    let value = this.get("totalAmount");
+  get total_amount(): BigInt {
+    let value = this.get("total_amount");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -239,20 +287,138 @@ export class DailyBridgeStats extends Entity {
     }
   }
 
-  set totalAmount(value: BigInt) {
-    this.set("totalAmount", Value.fromBigInt(value));
+  set total_amount(value: BigInt) {
+    this.set("total_amount", Value.fromBigInt(value));
   }
 
-  get eventCount(): i32 {
-    let value = this.get("eventCount");
+  get count(): BigInt {
+    let value = this.get("count");
     if (!value || value.kind == ValueKind.NULL) {
-      return 0;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toI32();
+      return value.toBigInt();
     }
   }
 
-  set eventCount(value: i32) {
-    this.set("eventCount", Value.fromI32(value));
+  set count(value: BigInt) {
+    this.set("count", Value.fromBigInt(value));
+  }
+}
+
+export class VerseInfo extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save VerseInfo entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type VerseInfo must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("VerseInfo", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): VerseInfo | null {
+    return changetype<VerseInfo | null>(store.get_in_block("VerseInfo", id));
+  }
+
+  static load(id: string): VerseInfo | null {
+    return changetype<VerseInfo | null>(store.get("VerseInfo", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get verseName(): string {
+    let value = this.get("verseName");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verseName(value: string) {
+    this.set("verseName", Value.fromString(value));
+  }
+
+  get verseChain(): string {
+    let value = this.get("verseChain");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verseChain(value: string) {
+    this.set("verseChain", Value.fromString(value));
+  }
+
+  get verseRpc(): string {
+    let value = this.get("verseRpc");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set verseRpc(value: string) {
+    this.set("verseRpc", Value.fromString(value));
+  }
+
+  get bridgeAddress(): Bytes {
+    let value = this.get("bridgeAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set bridgeAddress(value: Bytes) {
+    this.set("bridgeAddress", Value.fromBytes(value));
+  }
+
+  get isActive(): boolean {
+    let value = this.get("isActive");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isActive(value: boolean) {
+    this.set("isActive", Value.fromBoolean(value));
+  }
+
+  get lastUpdated(): BigInt {
+    let value = this.get("lastUpdated");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set lastUpdated(value: BigInt) {
+    this.set("lastUpdated", Value.fromBigInt(value));
   }
 }

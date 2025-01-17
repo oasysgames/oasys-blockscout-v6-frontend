@@ -2,7 +2,6 @@
 
 ## 環境セットアップ
 
-
 ### プラットフォーム互換性
 - M1/M2 Mac (arm64)での実行時は、`platform: linux/amd64`の指定が必要
 - Rosetta 2による互換性変換を利用
@@ -28,10 +27,21 @@ yarn build
 # ローカルサブグラフの作成
 yarn create-local
 
-# サブグラフのデプロイ
-yarn deploy-local
-# バージョンラベルの入力を求められるので、手動で入力してください（例: v0.0.1）
+# サブグラフのデプロイ（バージョンラベルを指定）
+echo "v0.0.1" | yarn deploy-local
 ```
+
+## バージョン管理
+
+### バージョニング規則
+- セマンティックバージョニング（vX.Y.Z）を採用
+- X: メジャーバージョン（互換性のない変更）
+- Y: マイナーバージョン（後方互換性のある機能追加）
+- Z: パッチバージョン（バグ修正）
+
+### バージョン履歴
+- v0.0.1: 初期実装（基本的なイベント追跡）
+- v0.0.2: chain name追加（L2の名前を保存）
 
 ## 動作確認
 
@@ -46,6 +56,36 @@ yarn deploy-local
 - [x] PostgreSQLの接続
 - [x] ブロック同期の進行
 - [x] イベント処理の状態
+
+### データ検証
+1. イベントの取得
+```graphql
+{
+  bridgeEvents(first: 5) {
+    id
+    verseId
+    chainName
+    eventType
+    amount
+    timestamp
+  }
+}
+```
+
+2. 日次統計の確認
+```graphql
+{
+  dailyBridgeStats(first: 5) {
+    id
+    date
+    verseId
+    chainName
+    eventType
+    total_amount
+    count
+  }
+}
+```
 
 ## トラブルシューティング
 
@@ -64,4 +104,4 @@ yarn deploy-local
 2. ネットワーク接続の確認
 3. RPC エンドポイントの状態確認
 
-最終更新: 2024年1月14日 
+最終更新: 2024年1月17日 

@@ -1,19 +1,33 @@
 type BridgeEvent @entity {
   id: ID!
-  eventType: String!         # "DEPOSIT" or "WITHDRAW"
+  verseId: String!
+  chainName: String!
+  eventType: String!
   from: Bytes!
   to: Bytes!
   amount: BigInt!
   timestamp: BigInt!
   blockNumber: BigInt!
   transactionHash: Bytes!
-  extraData: Bytes         # ウィズドローイベントの追加データ
+  extraData: Bytes!
 }
 
 type DailyBridgeStats @entity {
-  id: ID!                    # 日付_イベントタイプ
+  id: ID!
+  verseId: String!
+  chainName: String!
   date: String!
-  eventType: String!         # "DEPOSIT" or "WITHDRAW"
-  totalAmount: BigInt!
-  eventCount: Int!
+  eventType: String!
+  total_amount: BigInt!
+  count: BigInt!
+}
+
+type VerseInfo @entity {
+  id: ID!
+  verseName: String!
+  verseChain: String!
+  verseRpc: String!
+  bridgeAddress: Bytes!
+  isActive: Boolean!
+  lastUpdated: BigInt!
 } 
