@@ -40,10 +40,13 @@ function getVerseInfo(verseId: string): VerseInfo {
 }
 
 function getDayId(timestamp: BigInt): string {
-  let date = new Date(timestamp.toI32() * 1000)
+  let unixTime = timestamp.toString()
+  let date = new Date(parseInt(unixTime) * 1000)
+  
   let year = date.getUTCFullYear()
   let month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
   let day = date.getUTCDate().toString().padStart(2, '0')
+  
   return `${year}-${month}-${day}`
 }
 
