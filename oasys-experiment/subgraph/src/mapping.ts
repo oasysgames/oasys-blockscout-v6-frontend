@@ -41,7 +41,8 @@ function getVerseInfo(verseId: string): VerseInfo {
 
 function getDayId(timestamp: BigInt): string {
   let unixTime = timestamp.toString()
-  let date = new Date(parseInt(unixTime) * 1000)
+  let timestampMs = BigInt.fromString(unixTime).times(BigInt.fromI32(1000))
+  let date = new Date(timestampMs.toI64())
   
   let year = date.getUTCFullYear()
   let month = (date.getUTCMonth() + 1).toString().padStart(2, '0')
