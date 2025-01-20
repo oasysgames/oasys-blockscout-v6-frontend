@@ -1,7 +1,6 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts"
 import {
   ETHDepositInitiated,
-  ETHBridgeFinalized,
   ETHWithdrawalFinalized
 } from "../generated/ChainVerseBridge/BridgeABI"
 import { BridgeEvent, DailyBridgeStats, VerseInfo } from "../generated/schema"
@@ -88,28 +87,6 @@ export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
 
   let date = getDayId(event.block.timestamp)
   updateDailyStats(verseId, chainName, date, "DEPOSIT", event.params.amount)
-}
-
-export function handleETHBridgeFinalized(event: ETHBridgeFinalized): void {
-  let verseId = event.address.toHexString()
-  let chainName = getChainName(verseId)
-  let eventId = event.transaction.hash.toHexString() + "-" + event.logIndex.toString()
-  
-  let bridgeEvent = new BridgeEvent(eventId)
-  bridgeEvent.verseId = verseId
-  bridgeEvent.chainName = chainName
-  bridgeEvent.eventType = "WITHDRAW"
-  bridgeEvent.from = event.params.from
-  bridgeEvent.to = event.params.to
-  bridgeEvent.amount = event.params.amount
-  bridgeEvent.timestamp = event.block.timestamp
-  bridgeEvent.blockNumber = event.block.number
-  bridgeEvent.transactionHash = event.transaction.hash
-  bridgeEvent.extraData = event.params.extraData
-  bridgeEvent.save()
-
-  let date = getDayId(event.block.timestamp)
-  updateDailyStats(verseId, chainName, date, "WITHDRAW", event.params.amount)
 }
 
 export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): void {
