@@ -5,6 +5,9 @@
 - Docker と Docker Compose
 - Node.js と Yarn
 - @graphprotocol/graph-cli
+- Python 3.8以上
+- Node.js 16以上
+- Graph CLI
 
 ## 環境構築手順
 
@@ -102,3 +105,39 @@ curl http://localhost:5001/api/v0/version
 3. PostgreSQL接続エラー
    - データベース接続設定の確認
    - ポート競合の確認
+
+## Python環境のセットアップ
+
+### 1. 仮想環境の作成
+
+```bash
+# oasys-experimentディレクトリに移動
+cd oasys-experiment
+
+# 仮想環境の作成
+python3 -m venv venv
+
+# 仮想環境の有効化
+source venv/bin/activate  # Unix/macOS
+# または
+.\venv\Scripts\activate   # Windows
+```
+
+### 2. 依存パッケージのインストール
+
+```bash
+# 仮想環境が有効化されていることを確認 (プロンプトに (venv) が表示される)
+pip install -r query/requirements.txt
+```
+
+### 3. 仮想環境の管理
+
+- 有効化: `source venv/bin/activate` (Unix/macOS) または `.\venv\Scripts\activate` (Windows)
+- 無効化: `deactivate`
+- 状態確認: プロンプトに `(venv)` が表示されているか確認
+
+注意: 新しいターミナルセッションを開始した場合は、再度仮想環境を有効化する必要があります。
+
+## Graph Node環境のセットアップ
+
+(既存のセットアップ手順...)

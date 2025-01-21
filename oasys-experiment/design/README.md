@@ -33,15 +33,19 @@ docs/
    - `docs/02-specifications/`で最新の仕様を確認
    - 変更が必要な場合は仕様書を更新
 
-2. 実装・テスト
+2. 環境セットアップ
+   - `docs/01-getting-started/setup-guide.md`に従って開発環境を構築
+   - Python仮想環境のセットアップと依存パッケージのインストール
+
+3. 実装・テスト
    - `docs/03-development/`のガイドラインに従って実装
    - テスト方針に基づいて検証
 
-3. デプロイ・確認
+4. デプロイ・確認
    - `docs/01-getting-started/deployment-guide.md`に従ってデプロイ
    - `docs/04-operations/`の手順で動作確認
 
-4. 運用・監視
+5. 運用・監視
    - `docs/04-operations/`の方針に従って運用
 
 ## バージョン管理
