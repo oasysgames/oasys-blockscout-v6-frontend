@@ -19,7 +19,14 @@ type DailyBridgeStats @entity {
   date: String!
   eventType: String!
   total_amount: BigInt!
+  accumulated_amount: BigInt!
   count: BigInt!
+}
+
+type VerseLatestAccumulatedAmount @entity {
+  id: ID! # verseId
+  amount: BigInt!
+  timestamp: BigInt!
 }
 
 type VerseInfo @entity {

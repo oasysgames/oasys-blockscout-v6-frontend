@@ -3,7 +3,7 @@ import {
   ETHDepositInitiated,
   ETHWithdrawalFinalized
 } from "../generated/ChainVerseBridge/BridgeABI"
-import { BridgeEvent, DailyBridgeStats, VerseInfo } from "../generated/schema"
+import { BridgeEvent, DailyBridgeStats, VerseInfo, VerseLatestAccumulatedAmount } from "../generated/schema"
 
 // Chain name mapping
 const VERSE_NAMES = new Map<string, string>()
@@ -50,7 +50,21 @@ function getDayId(timestamp: BigInt): string {
   return `${year}-${month}-${day}`
 }
 
-function updateDailyStats(verseId: string, chainName: string, date: string, eventType: string, amount: BigInt): void {
+function updateLatestAccumulated(verseId: string, amount: BigInt, timestamp: BigInt): BigInt {
+  let latest = VerseLatestAccumulatedAmount.load(verseId)
+  if (!latest) {
+    latest = new VerseLatestAccumulatedAmount(verseId)
+    latest.amount = BigInt.fromI32(0)
+  }
+
+  latest.amount = latest.amount.plus(amount)
+  latest.timestamp = timestamp
+  latest.save()
+
+  return latest.amount
+}
+
+function updateDailyStats(verseId: string, chainName: string, date: string, eventType: string, amount: BigInt, accumulated: BigInt): void {
   let id = `${date}-${verseId}-${eventType}`
   let stats = DailyBridgeStats.load(id)
   if (!stats) {
@@ -63,6 +77,7 @@ function updateDailyStats(verseId: string, chainName: string, date: string, even
     stats.count = BigInt.fromI32(0)
   }
   stats.total_amount = stats.total_amount.plus(amount)
+  stats.accumulated_amount = accumulated
   stats.count = stats.count.plus(BigInt.fromI32(1))
   stats.save()
 }
@@ -86,7 +101,8 @@ export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
   bridgeEvent.save()
 
   let date = getDayId(event.block.timestamp)
-  updateDailyStats(verseId, chainName, date, "DEPOSIT", event.params.amount)
+  const accumulated = updateLatestAccumulated(verseId, event.params.amount, event.block.timestamp)
+  updateDailyStats(verseId, chainName, date, "DEPOSIT", event.params.amount, accumulated)
 }
 
 export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): void {
@@ -108,5 +124,6 @@ export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): voi
   bridgeEvent.save()
 
   let date = getDayId(event.block.timestamp)
-  updateDailyStats(verseId, chainName, date, "WITHDRAW", event.params.amount)
+  const accumulated = updateLatestAccumulated(verseId, BigInt.fromI32(0).minus(event.params.amount), event.block.timestamp)
+  updateDailyStats(verseId, chainName, date, "WITHDRAW", event.params.amount, accumulated)
 }
