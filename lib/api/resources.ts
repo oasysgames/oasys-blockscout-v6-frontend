@@ -275,6 +275,24 @@ export const RESOURCES = {
     basePath: getFeaturePayload(config.features.stats)?.api.basePath,
   },
 
+  // EXPERIMENT MICROSERVICE API
+  experiment_counters: {
+    path: '/api/v1/counters',
+    endpoint: getFeaturePayload(config.features.experiment)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.experiment)?.api.basePath,
+  },
+  experiment_lines: {
+    path: '/api/v1/lines',
+    endpoint: getFeaturePayload(config.features.experiment)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.experiment)?.api.basePath,
+  },
+  experiment_line: {
+    path: '/api/v1/lines/:id',
+    pathParams: [ 'id' as const ],
+    endpoint: getFeaturePayload(config.features.experiment)?.api.endpoint,
+    basePath: getFeaturePayload(config.features.experiment)?.api.basePath,
+  },
+
   // NAME SERVICE
   addresses_lookup: {
     path: '/api/v1/:chainId/addresses\\:lookup',
