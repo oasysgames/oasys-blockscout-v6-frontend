@@ -21,6 +21,7 @@ type DailyBridgeStat @entity {
   total_amount: BigInt!
   accumulated_amount: BigInt!
   count: BigInt!
+  blockTime: BigInt!
 }
 
 type VerseLatestAccumulatedAmount @entity {

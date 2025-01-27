@@ -65,7 +65,15 @@ function updateLatestAccumulated(verseId: string, amount: BigInt, timestamp: Big
   return latest.amount
 }
 
-function updateDailyStats(verseId: string, chainName: string, date: string, eventType: string, amount: BigInt, accumulated: BigInt): void {
+function updateDailyStats(
+  verseId: string,
+  chainName: string,
+  date: string,
+  eventType: string,
+  amount: BigInt,
+  accumulated: BigInt,
+  blockTime: BigInt
+): void {
   let id = `${date}-${verseId}-${eventType}`
   let stats = DailyBridgeStat.load(id)
   if (!stats) {
@@ -76,10 +84,14 @@ function updateDailyStats(verseId: string, chainName: string, date: string, even
     stats.eventType = eventType
     stats.total_amount = BigInt.fromI32(0)
     stats.count = BigInt.fromI32(0)
+    stats.blockTime = blockTime
   }
+
+  stats.count = stats.count.plus(BigInt.fromI32(1))
   stats.total_amount = stats.total_amount.plus(amount)
   stats.accumulated_amount = accumulated
-  stats.count = stats.count.plus(BigInt.fromI32(1))
+  stats.blockTime = blockTime
+
   stats.save()
 }
 
@@ -103,7 +115,15 @@ export function handleETHDepositInitiated(event: ETHDepositInitiated): void {
 
   let date = getDayId(event.block.timestamp)
   const accumulated = updateLatestAccumulated(verseId, event.params.amount, event.block.timestamp)
-  updateDailyStats(verseId, chainName, date, "DEPOSIT", event.params.amount, accumulated)
+  updateDailyStats(
+    verseId,
+    chainName,
+    date,
+    "DEPOSIT",
+    event.params.amount,
+    accumulated,
+    event.block.timestamp
+  )
 }
 
 export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): void {
@@ -126,5 +146,13 @@ export function handleETHWithdrawalFinalized(event: ETHWithdrawalFinalized): voi
 
   let date = getDayId(event.block.timestamp)
   const accumulated = updateLatestAccumulated(verseId, BigInt.fromI32(0).minus(event.params.amount), event.block.timestamp)
-  updateDailyStats(verseId, chainName, date, "WITHDRAW", event.params.amount, accumulated)
+  updateDailyStats(
+    verseId,
+    chainName,
+    date,
+    "WITHDRAW",
+    event.params.amount,
+    accumulated,
+    event.block.timestamp
+  )
 }

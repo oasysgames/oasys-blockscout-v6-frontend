@@ -314,6 +314,19 @@ export class DailyBridgeStat extends Entity {
   set count(value: BigInt) {
     this.set("count", Value.fromBigInt(value));
   }
+
+  get blockTime(): BigInt {
+    let value = this.get("blockTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTime(value: BigInt) {
+    this.set("blockTime", Value.fromBigInt(value));
+  }
 }
 
 export class VerseLatestAccumulatedAmount extends Entity {

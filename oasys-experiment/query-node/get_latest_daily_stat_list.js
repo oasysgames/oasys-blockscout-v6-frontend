@@ -76,8 +76,8 @@ async function getDailyStatsList() {
       first: 1000,
       orderBy: "date",
       orderDirection: "desc",
-      startDate: "2025-01-26",
-      endDate: "2025-01-26"
+      startDate: "2022-12-20",
+      endDate: "2022-12-26"
     };
     
     // console.log("クエリ変数:", JSON.stringify(variables, null, 2));
@@ -104,8 +104,8 @@ function formatAmount(weiString) {
 // 6) メイン処理
 async function main() {
   // 単一ID取得のテスト
-  const dateStr = "2025-01-26";
-  const addr    = "0x0cc5366be800cf73dab2dbfde031c255a6f1e3cc";
+  const dateStr = "2022-12-08";
+  const addr    = "0xa16517a9796bac73efa7d07269f9818b7978dc2a";
   const evt     = "DEPOSIT";
 
   // Python版 build_daily_bridge_stats_id と同様
