@@ -10,7 +10,7 @@ const client = new GraphQLClient(endpoint);
 // 3) 単一ID用のクエリ (Python版でいう detail_query 相当)
 const detailQuery = gql`
   query GetDailyStats($id: ID!) {
-    dailyBridgeStats(id: $id) {
+    dailyBridgeStat(id: $id) {
       id
       chainName
       date
@@ -18,6 +18,7 @@ const detailQuery = gql`
       total_amount
       accumulated_amount
       count
+      blockTime
     }
   }
 `;
@@ -48,6 +49,7 @@ const listQuery = gql`
       total_amount
       accumulated_amount
       count
+      blockTime
     }
   }
 `;
@@ -125,6 +127,7 @@ async function main() {
     console.log(`Count: ${record.count}`);
     console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} ETH`);
     console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} ETH`);
+    console.log(`Block Time: ${new Date(Number(record.blockTime) * 1000).toISOString()}`);
   }
 
   // リスト取得のテスト
@@ -141,6 +144,7 @@ async function main() {
       console.log(`Count: ${record.count}`);
       console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} ETH`);
       console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} ETH`);
+      console.log(`Block Time: ${new Date(Number(record.blockTime) * 1000).toISOString()}`);
     });
   }
 }
