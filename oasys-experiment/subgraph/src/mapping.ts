@@ -3,7 +3,7 @@ import {
   ETHDepositInitiated,
   ETHWithdrawalFinalized
 } from "../generated/ChainVerseBridge/BridgeABI"
-import { BridgeEvent, DailyBridgeStats, VerseInfo, VerseLatestAccumulatedAmount } from "../generated/schema"
+import { BridgeEvent, DailyBridgeStat, VerseInfo, VerseLatestAccumulatedAmount } from "../generated/schema"
 
 // Chain name mapping
 const VERSE_NAMES = new Map<string, string>()
@@ -39,6 +39,7 @@ function getVerseInfo(verseId: string): VerseInfo {
 }
 
 function getDayId(timestamp: BigInt): string {
+
   let unixTime = timestamp.toString()
   let timestampMs = BigInt.fromString(unixTime).times(BigInt.fromI32(1000))
   let date = new Date(timestampMs.toI64())
@@ -66,9 +67,9 @@ function updateLatestAccumulated(verseId: string, amount: BigInt, timestamp: Big
 
 function updateDailyStats(verseId: string, chainName: string, date: string, eventType: string, amount: BigInt, accumulated: BigInt): void {
   let id = `${date}-${verseId}-${eventType}`
-  let stats = DailyBridgeStats.load(id)
+  let stats = DailyBridgeStat.load(id)
   if (!stats) {
-    stats = new DailyBridgeStats(id)
+    stats = new DailyBridgeStat(id)
     stats.verseId = verseId
     stats.chainName = chainName
     stats.date = date

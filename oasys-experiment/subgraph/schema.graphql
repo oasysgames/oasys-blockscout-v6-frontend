@@ -12,7 +12,7 @@ type BridgeEvent @entity {
   extraData: Bytes!
 }
 
-type DailyBridgeStats @entity {
+type DailyBridgeStat @entity {
   id: ID!
   verseId: String!
   chainName: String!

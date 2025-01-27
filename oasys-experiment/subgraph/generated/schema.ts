@@ -183,7 +183,7 @@ export class BridgeEvent extends Entity {
   }
 }
 
-export class DailyBridgeStats extends Entity {
+export class DailyBridgeStat extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -191,26 +191,24 @@ export class DailyBridgeStats extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save DailyBridgeStats entity without an ID");
+    assert(id != null, "Cannot save DailyBridgeStat entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type DailyBridgeStats must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type DailyBridgeStat must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("DailyBridgeStats", id.toString(), this);
+      store.set("DailyBridgeStat", id.toString(), this);
     }
   }
 
-  static loadInBlock(id: string): DailyBridgeStats | null {
-    return changetype<DailyBridgeStats | null>(
-      store.get_in_block("DailyBridgeStats", id)
+  static loadInBlock(id: string): DailyBridgeStat | null {
+    return changetype<DailyBridgeStat | null>(
+      store.get_in_block("DailyBridgeStat", id)
     );
   }
 
-  static load(id: string): DailyBridgeStats | null {
-    return changetype<DailyBridgeStats | null>(
-      store.get("DailyBridgeStats", id)
-    );
+  static load(id: string): DailyBridgeStat | null {
+    return changetype<DailyBridgeStat | null>(store.get("DailyBridgeStat", id));
   }
 
   get id(): string {
