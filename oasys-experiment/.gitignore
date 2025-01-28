@@ -41,3 +41,10 @@ postgres_data/
 *.tsbuildinfo 
 
 .env
+
+# Subgraph
+subgraph/generated/
+subgraph/build/
+subgraph/node_modules/
+subgraph/dump/
+
