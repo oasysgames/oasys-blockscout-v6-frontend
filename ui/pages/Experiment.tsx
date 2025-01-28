@@ -4,23 +4,23 @@ import React from 'react';
 import config from 'configs/app';
 import PageTitle from 'ui/shared/Page/PageTitle';
 
-// import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
-import ExperimentFilters from '../experiment/ExperimentFilters';
+import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
 import NumberWidgetsList from '../experiment/NumberWidgetsList';
+import ExperimentFilters from '../experiment/ExperimentFilters';
 import useExperiment from '../experiment/useExperiment';
 
 const Experiment = () => {
   const {
     isPlaceholderData,
-    // isError,
+    isError,
     sections,
     currentSection,
     handleSectionChange,
     interval,
     handleIntervalChange,
     handleFilterChange,
-    // displayedCharts,
-    // filterQuery,
+    displayedCharts,
+    filterQuery,
     initialFilterQuery,
   } = useExperiment();
 

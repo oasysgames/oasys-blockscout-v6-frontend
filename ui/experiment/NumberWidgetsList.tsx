@@ -1,8 +1,8 @@
 import { Grid } from '@chakra-ui/react';
 import React from 'react';
 
-// import useApiQuery from 'lib/api/useApiQuery';
-// import { STATS_COUNTER } from 'stubs/stats';
+import useApiQuery from 'lib/api/useApiQuery';
+import { STATS_COUNTER } from 'stubs/stats';
 import StatsWidget from 'ui/shared/stats/StatsWidget';
 
 import DataFetchAlert from '../shared/DataFetchAlert';
