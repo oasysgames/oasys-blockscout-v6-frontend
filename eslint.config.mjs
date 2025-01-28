@@ -58,7 +58,7 @@ export default tseslint.config(
     '.git/',
     'theme/webpack.config.js',
     'next.config.js',
-    'bridge/',
+    'bridge/', 'ui',
   ] },
 
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
