@@ -8,6 +8,8 @@ import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
 import NumberWidgetsList from '../experiment/NumberWidgetsList';
 import ExperimentFilters from '../experiment/ExperimentFilters';
 import useExperiment from '../experiment/useExperiment';
+import TotalDepositsBox from '../experiment/TotalDepositsBox';
+import DepositHistoryChart from '../experiment/DepositHistoryChart';
 
 const Experiment = () => {
   const {
@@ -32,6 +34,14 @@ const Experiment = () => {
 
       <Box mb={{ base: 6, sm: 8 }}>
         <NumberWidgetsList/>
+      </Box>
+
+      <Box mb={{ base: 6, sm: 8 }}>
+        <TotalDepositsBox />
+      </Box>
+
+      <Box mb={{ base: 6, sm: 8 }}>
+        <DepositHistoryChart />
       </Box>
 
       <Box mb={{ base: 6, sm: 8 }}>
