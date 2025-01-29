@@ -19,7 +19,6 @@
     "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.93.1",
     "@graphprotocol/graph-ts": "^0.37.0"
   },
   "description": "",

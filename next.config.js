@@ -42,7 +42,19 @@ const moduleExports = {
   // https://github.com/blockscout/frontend/discussions/167
   rewrites,
   redirects,
-  headers,
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; connect-src 'self' http://localhost:8000 ws://localhost:3000/_next/webpack-hmr; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
+          }
+        ]
+      }
+    ];
+  },
   output: 'standalone',
   productionBrowserSourceMaps: true,
   experimental: {

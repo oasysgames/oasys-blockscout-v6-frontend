@@ -1,19 +1,22 @@
 import { Box, Flex, Text, Skeleton, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
-import useSWR from 'swr';
 
-interface ChainDeposit {
+interface DailyBridgeStat {
   id: string;
-  name: string;
-  totalDeposits: string;
+  chainName: string;
+  date: string;
+  eventType: string;
+  total_amount: string;
+  count: string;
 }
 
-interface TotalDepositsResponse {
-  chains: ChainDeposit[];
+interface TotalDepositsBoxProps {
+  data: DailyBridgeStat[];
+  isLoading: boolean;
+  error: Error | null;
 }
 
-const TotalDepositsBox = () => {
-  const { data, error, isLoading } = useSWR<TotalDepositsResponse>('/api/bridge-deposits/total-deposits');
+const TotalDepositsBox: React.FC<TotalDepositsBoxProps> = ({ data, isLoading, error }) => {
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
   if (error) {
@@ -24,6 +27,26 @@ const TotalDepositsBox = () => {
     );
   }
 
+  const chainTotals = React.useMemo(() => {
+    const totals = new Map<string, { total: number, count: number }>();
+    
+    data.forEach(stat => {
+      if (stat.eventType === 'DEPOSIT') {
+        const current = totals.get(stat.chainName) || { total: 0, count: 0 };
+        totals.set(stat.chainName, {
+          total: current.total + Number(stat.total_amount) / 1e18,
+          count: current.count + Number(stat.count)
+        });
+      }
+    });
+
+    return Array.from(totals.entries()).map(([chainName, stats]) => ({
+      chainName,
+      total: stats.total,
+      count: stats.count
+    }));
+  }, [data]);
+
   return (
     <Box p={4} borderRadius="lg" border="1px" borderColor={borderColor}>
       <Text fontSize="lg" fontWeight="bold" mb={4}>チェーンごとの総デポジット</Text>
@@ -33,17 +56,20 @@ const TotalDepositsBox = () => {
             <Skeleton key={i} height="60px" />
           ))
         ) : (
-          data?.chains.map((chain) => (
+          chainTotals.map((chain) => (
             <Box
-              key={chain.id}
+              key={chain.chainName}
               p={4}
               borderRadius="md"
               bg={useColorModeValue('gray.50', 'gray.700')}
             >
               <Flex justify="space-between" align="center">
-                <Text fontWeight="medium">{chain.name}</Text>
+                <Box>
+                  <Text fontWeight="medium">{chain.chainName}</Text>
+                  <Text fontSize="sm" color="gray.500">取引回数: {chain.count.toLocaleString()}</Text>
+                </Box>
                 <Text fontSize="xl" fontWeight="bold">
-                  {parseFloat(chain.totalDeposits).toLocaleString()} ETH
+                  {chain.total.toLocaleString()} OAS
                 </Text>
               </Flex>
             </Box>

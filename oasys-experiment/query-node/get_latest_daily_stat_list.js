@@ -78,8 +78,8 @@ async function getDailyStatsList() {
       first: 1000,
       orderBy: "date",
       orderDirection: "desc",
-      startDate: "2022-12-20",
-      endDate: "2022-12-26"
+      startDate: "2025-01-20",
+      endDate: "2025-01-20"
     };
     
     // console.log("クエリ変数:", JSON.stringify(variables, null, 2));
@@ -106,7 +106,7 @@ function formatAmount(weiString) {
 // 6) メイン処理
 async function main() {
   // 単一ID取得のテスト
-  const dateStr = "2022-12-08";
+  const dateStr = "2025-01-01";
   const addr    = "0xa16517a9796bac73efa7d07269f9818b7978dc2a";
   const evt     = "DEPOSIT";
 
@@ -125,8 +125,8 @@ async function main() {
     console.log(`Date : ${record.date}`);
     console.log(`Event: ${record.eventType}`);
     console.log(`Count: ${record.count}`);
-    console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} ETH`);
-    console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} ETH`);
+    console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} OAS`);
+    console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} OAS`);
     console.log(`Block Time: ${new Date(Number(record.blockTime) * 1000).toISOString()}`);
   }
 
@@ -142,8 +142,8 @@ async function main() {
       console.log(`Date : ${record.date}`);
       console.log(`Event: ${record.eventType}`);
       console.log(`Count: ${record.count}`);
-      console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} ETH`);
-      console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} ETH`);
+      console.log(`Total: ${formatAmount(record.total_amount).toFixed(2)} OAS`);
+      console.log(`Accum: ${formatAmount(record.accumulated_amount).toFixed(2)} OAS`);
       console.log(`Block Time: ${new Date(Number(record.blockTime) * 1000).toISOString()}`);
     });
   }
