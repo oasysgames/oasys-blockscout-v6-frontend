@@ -6,6 +6,7 @@ import type { StatsIntervalIds } from 'types/client/stats';
 
 import { getChartsInfo } from './api/getChartsInfo';
 import { useApiData } from './useApiData';
+import config from 'configs/app';
 
 interface DailyBridgeStat {
   id: string;
@@ -66,11 +67,19 @@ function formatAmount(weiString: string): number {
   return weiNum / 1e18;
 }
 
-const createClient = () => new GraphQLClient('http://localhost:8000/subgraphs/name/oasys/bridge', {
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// BFF経由のGraphQLクライアントを作成
+const createClient = () => {
+  // 開発環境では相対パスを使用
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const url = `${baseUrl}/api/v1/graphql`;
+  console.log('GraphQL client URL:', url);
+  console.log('window.location:', typeof window !== 'undefined' ? window.location : 'SSR');
+  return new GraphQLClient(url, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 
 const DAILY_STATS_QUERY = gql`
   query GetDailyBridgeStats(
