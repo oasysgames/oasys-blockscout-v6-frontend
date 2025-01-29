@@ -33,6 +33,24 @@ interface VerseStats {
   latestBlockTime: string;
 }
 
+interface AccumulatedStats {
+  verseId: string;
+  chainName: string;
+  accumulated_amount: number;
+  latestBlockTime: string;
+  date: string;
+}
+
+interface ChartDataPoint {
+  date: string;
+  value: number;
+}
+
+interface ChainChartData {
+  chainName: string;
+  data: ChartDataPoint[];
+}
+
 function isSectionMatches(section: LineChartSection, currentSection: string): boolean {
   return currentSection === 'all' || section.id === currentSection;
 }
@@ -228,6 +246,87 @@ export default function useExperiment() {
     fetchData();
   }, [startDate, endDate, chainFilter, eventTypeFilter]);
 
+  // 日付ごとの最新accumulated_amountを計算
+  const dailyAccumulatedStats = useMemo(() => {
+    if (!data) return [];
+
+    // 日付とチェーンでグループ化
+    const groupedData = new Map<string, Map<string, DailyBridgeStat[]>>();
+    
+    data.forEach(item => {
+      const dateKey = item.date;
+      const chainKey = item.chainName;
+      
+      if (!groupedData.has(dateKey)) {
+        groupedData.set(dateKey, new Map());
+      }
+      
+      const chainMap = groupedData.get(dateKey)!;
+      if (!chainMap.has(chainKey)) {
+        chainMap.set(chainKey, []);
+      }
+      
+      chainMap.get(chainKey)!.push(item);
+    });
+
+    // 各日付・チェーンの最新データを取得
+    const result: AccumulatedStats[] = [];
+    
+    groupedData.forEach((chainMap, date) => {
+      chainMap.forEach((stats, chainName) => {
+        // blockTimeで並び替えて最新のものを取得
+        const latestStat = stats.reduce((latest, current) => {
+          return Number(current.blockTime) > Number(latest.blockTime) ? current : latest;
+        });
+
+        result.push({
+          verseId: latestStat.verseId,
+          chainName: latestStat.chainName,
+          accumulated_amount: formatAmount(latestStat.accumulated_amount),
+          latestBlockTime: latestStat.blockTime,
+          date: latestStat.date,
+        });
+      });
+    });
+
+    return result;
+  }, [data]);
+
+  // チェーンごとの最新accumulated_amount合計
+  const totalAccumulatedByChain = useMemo(() => {
+    const latestByChain = new Map<string, AccumulatedStats>();
+    
+    dailyAccumulatedStats.forEach(stat => {
+      const current = latestByChain.get(stat.chainName);
+      if (!current || Number(stat.latestBlockTime) > Number(current.latestBlockTime)) {
+        latestByChain.set(stat.chainName, stat);
+      }
+    });
+
+    return Array.from(latestByChain.values());
+  }, [dailyAccumulatedStats]);
+
+  // チャート用のデータ生成
+  const chainChartData = useMemo(() => {
+    const chainData = new Map<string, ChartDataPoint[]>();
+
+    dailyAccumulatedStats.forEach(stat => {
+      if (!chainData.has(stat.chainName)) {
+        chainData.set(stat.chainName, []);
+      }
+
+      chainData.get(stat.chainName)!.push({
+        date: stat.date,
+        value: stat.accumulated_amount,
+      });
+    });
+
+    return Array.from(chainData.entries()).map(([chainName, data]) => ({
+      chainName,
+      data: data.sort((a, b) => a.date.localeCompare(b.date)),
+    }));
+  }, [dailyAccumulatedStats]);
+
   return React.useMemo(() => ({
     sections: chartsData?.sections,
     sectionIds,
@@ -255,6 +354,8 @@ export default function useExperiment() {
     handleEndDateChange,
     handleChainFilterChange,
     handleEventTypeFilterChange,
+    totalAccumulatedByChain,
+    chainChartData,
   }), [
     chartsData,
     sectionIds,
@@ -281,5 +382,7 @@ export default function useExperiment() {
     handleEndDateChange,
     handleChainFilterChange,
     handleEventTypeFilterChange,
+    totalAccumulatedByChain,
+    chainChartData,
   ]);
 }

@@ -1,16 +1,13 @@
-import { Box, Select, Input, Grid, Text, VStack, HStack, Spinner } from '@chakra-ui/react';
+import { Box, Select, Input, Grid, Text, VStack, HStack, Spinner, SimpleGrid } from '@chakra-ui/react';
 import React from 'react';
 
 import config from 'configs/app';
 import PageTitle from 'ui/shared/Page/PageTitle';
-import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
-import ExperimentFilters from '../experiment/ExperimentFilters';
-import NumberWidgetsList from '../experiment/NumberWidgetsList';
+import ChartWidget from 'ui/shared/chart/ChartWidget';
 import useExperiment from '../experiment/useExperiment';
 
 const Experiment = () => {
   const {
-    data,
     isLoading,
     error,
     startDate,
@@ -23,16 +20,8 @@ const Experiment = () => {
     handleEndDateChange,
     handleChainFilterChange,
     handleEventTypeFilterChange,
-    isPlaceholderData,
-    isError,
-    sections,
-    currentSection,
-    handleSectionChange,
-    interval,
-    handleIntervalChange,
-    filterQuery,
-    handleFilterChange,
-    filteredSections,
+    totalAccumulatedByChain,
+    chainChartData,
   } = useExperiment();
 
   return (
@@ -87,33 +76,45 @@ const Experiment = () => {
         </Box>
       )}
 
-      {/* Verse別の統計データ */}
-      <Box mb={{ base: 6, sm: 8 }}>
-        <NumberWidgetsList />
-      </Box>
+      {/* チェーンごとの最新accumulated_amount */}
+      <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
+        {totalAccumulatedByChain.map((stat) => (
+          <Box
+            key={stat.chainName}
+            p={5}
+            bg="white"
+            borderRadius="lg"
+            boxShadow="sm"
+          >
+            <Text fontSize="lg" fontWeight="bold" mb={2}>
+              {stat.chainName}
+            </Text>
+            <Text fontSize="2xl" fontWeight="bold" color="blue.500">
+              {stat.accumulated_amount.toFixed(2)} ETH
+            </Text>
+            <Text fontSize="sm" color="gray.500">
+              最終更新: {new Date(Number(stat.latestBlockTime) * 1000).toLocaleString()}
+            </Text>
+          </Box>
+        ))}
+      </SimpleGrid>
 
-      {/* チャートセクション */}
-      <Box mb={{ base: 6, sm: 8 }}>
-        <ExperimentFilters
-          isLoading={ isPlaceholderData }
-          initialFilterValue=""
-          sections={ sections }
-          currentSection={ currentSection }
-          onSectionChange={ handleSectionChange }
-          interval={ interval }
-          onIntervalChange={ handleIntervalChange }
-          onFilterInputChange={ handleFilterChange }
-        />
-      </Box>
-
-      <ChartsWidgetsList
-        initialFilterQuery=""
-        filterQuery={ filterQuery }
-        isError={ isError }
-        isPlaceholderData={ isPlaceholderData }
-        interval={ interval }
-        charts={ filteredSections }
-      />
+      {/* チェーンごとのaccumulated_amountチャート */}
+      {chainChartData.map((chain) => (
+        <Box key={chain.chainName} mb={6}>
+          <ChartWidget
+            title={`${chain.chainName}の累積残高推移`}
+            description="日次の累積残高"
+            items={chain.data.map(item => ({
+              date: new Date(item.date),
+              value: item.value,
+            }))}
+            isLoading={isLoading}
+            isError={!!error}
+            units="ETH"
+          />
+        </Box>
+      ))}
     </>
   );
 };
