@@ -59,6 +59,13 @@ const Experiment = () => {
         </HStack>
       </Box>
 
+      {/* Total Deposit Heading */}
+      <Box mb={6}>
+        <Text fontSize="2xl" fontWeight="bold">
+          Total Deposit
+        </Text>
+      </Box>
+
       {/* Loading State */}
       {isLoading && (
         <Box textAlign="center" my={4}>
