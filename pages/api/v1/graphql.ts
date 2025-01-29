@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fetch from 'node-fetch';
 
+const THEGRAPH_API_URL = process.env.NEXT_PUBLIC_THEGRAPH_API_URL || 'http://localhost:8000/subgraphs/name/oasys/bridge';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.status(405).json({ message: 'Method not allowed' });
@@ -8,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const response = await fetch('http://localhost:8000/subgraphs/name/oasys/bridge', {
+    const response = await fetch(THEGRAPH_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
