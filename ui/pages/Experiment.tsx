@@ -26,11 +26,8 @@ const Experiment = () => {
 
   return (
     <>
-      <PageTitle
-        title={ config.meta.seo.enhancedDataEnabled ? `${ config.chain.name } statistic & data` : `${ config.chain.name } experiment` }
-      />
 
-      {/* フィルターセクション */}
+      {/* Filter Section */}
       <Box mb={6}>
         <HStack spacing={4}>
           <Input
@@ -62,21 +59,21 @@ const Experiment = () => {
         </HStack>
       </Box>
 
-      {/* ローディング状態の表示 */}
+      {/* Loading State */}
       {isLoading && (
         <Box textAlign="center" my={4}>
           <Spinner />
         </Box>
       )}
 
-      {/* エラーメッセージの表示 */}
+      {/* Error Message */}
       {error && (
         <Box bg="red.100" p={4} borderRadius="md" mb={4}>
           <Text color="red.600">{error.message}</Text>
         </Box>
       )}
 
-      {/* チェーンごとの最新accumulated_amount */}
+      {/* Latest Accumulated Amount by Chain */}
       <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
         {totalAccumulatedByChain.map((stat) => (
           <Box
@@ -90,28 +87,28 @@ const Experiment = () => {
               {stat.chainName}
             </Text>
             <Text fontSize="2xl" fontWeight="bold" color="blue.500">
-              {stat.accumulated_amount.toFixed(2)} ETH
+              {stat.accumulated_amount.toFixed(2)} OAS
             </Text>
             <Text fontSize="sm" color="gray.500">
-              最終更新: {new Date(Number(stat.latestBlockTime) * 1000).toLocaleString()}
+              Last Update: {new Date(Number(stat.latestBlockTime) * 1000).toLocaleString()}
             </Text>
           </Box>
         ))}
       </SimpleGrid>
 
-      {/* チェーンごとのaccumulated_amountチャート */}
+      {/* Accumulated Amount Chart by Chain */}
       {chainChartData.map((chain) => (
         <Box key={chain.chainName} mb={6}>
           <ChartWidget
-            title={`${chain.chainName}の累積残高推移`}
-            description="日次の累積残高"
+            title={`${chain.chainName} Total Deposit History`}
+            description="Daily total deposit"
             items={chain.data.map(item => ({
               date: new Date(item.date),
               value: item.value,
             }))}
             isLoading={isLoading}
             isError={!!error}
-            units="ETH"
+            units="OAS"
           />
         </Box>
       ))}
