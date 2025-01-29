@@ -32,29 +32,35 @@ export default function useExperiment() {
   const sectionIds = useMemo(() => data?.sections?.map(({ id }) => id), [ data ]);
 
   React.useEffect(() => {
-    if (!isPlaceholderData && !isError) {
+    if (!isPlaceholderData && !isError && data?.sections) {
       const chartId = getQueryParamString(router.query.chartId);
-      const chartName = data?.sections.map((section) => section.charts.find((chart) => chart.id === chartId)).filter(Boolean)[0]?.title;
+      const chartName = data.sections
+        .map((section) => section.charts.find((chart) => chart.id === chartId))
+        .filter(Boolean)[0]?.title;
       if (chartName) {
         setInitialFilterQuery(chartName);
         setFilterQuery(chartName);
         router.replace({ pathname: '/stats' }, undefined, { scroll: false });
       }
     }
-  // run only when data is loaded
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isPlaceholderData ]);
+  }, [ isPlaceholderData, isError, data, router ]);
 
   const displayedCharts = React.useMemo(() => {
-    return data?.sections
-      ?.map((section) => {
-        const charts = section.charts.filter((chart) => isSectionMatches(section, currentSection) && isChartNameMatches(filterQuery, chart));
+    if (!data?.sections) return [];
+    
+    return data.sections
+      .map((section) => {
+        const charts = section.charts.filter((chart) => 
+          isSectionMatches(section, currentSection) && 
+          isChartNameMatches(filterQuery, chart)
+        );
 
         return {
           ...section,
           charts,
         };
-      }).filter((section) => section.charts.length > 0);
+      })
+      .filter((section) => section.charts.length > 0);
   }, [ currentSection, data?.sections, filterQuery ]);
 
   const handleSectionChange = useCallback((newSection: string) => {
