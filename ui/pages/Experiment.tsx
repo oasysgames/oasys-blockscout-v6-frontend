@@ -5,8 +5,8 @@ import config from 'configs/app';
 import PageTitle from 'ui/shared/Page/PageTitle';
 
 import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
-import NumberWidgetsList from '../experiment/NumberWidgetsList';
 import ExperimentFilters from '../experiment/ExperimentFilters';
+import NumberWidgetsList from '../experiment/NumberWidgetsList';
 import useExperiment from '../experiment/useExperiment';
 
 const Experiment = () => {
@@ -18,10 +18,9 @@ const Experiment = () => {
     handleSectionChange,
     interval,
     handleIntervalChange,
-    handleFilterChange,
-    displayedCharts,
     filterQuery,
-    initialFilterQuery,
+    handleFilterChange,
+    filteredSections,
   } = useExperiment();
 
   return (
@@ -37,7 +36,7 @@ const Experiment = () => {
       <Box mb={{ base: 6, sm: 8 }}>
         <ExperimentFilters
           isLoading={ isPlaceholderData }
-          initialFilterValue={ initialFilterQuery }
+          initialFilterValue=""
           sections={ sections }
           currentSection={ currentSection }
           onSectionChange={ handleSectionChange }
@@ -46,6 +45,15 @@ const Experiment = () => {
           onFilterInputChange={ handleFilterChange }
         />
       </Box>
+
+      <ChartsWidgetsList
+        initialFilterQuery=""
+        filterQuery={ filterQuery }
+        isError={ isError }
+        isPlaceholderData={ isPlaceholderData }
+        interval={ interval }
+        charts={ filteredSections }
+      />
     </>
   );
 };

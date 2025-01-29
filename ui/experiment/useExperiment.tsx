@@ -1,51 +1,30 @@
-import { useRouter } from 'next/router';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import type * as stats from '@blockscout/stats-types';
+import type { LineChartInfo, LineChartSection } from '@blockscout/stats-types';
 import type { StatsIntervalIds } from 'types/client/stats';
 
-import useApiQuery from 'lib/api/useApiQuery';
-import getQueryParamString from 'lib/router/getQueryParamString';
-import { STATS_CHARTS } from 'stubs/stats';
+import { getChartsInfo } from './api/getChartsInfo';
+import { useApiData } from './useApiData';
 
-function isSectionMatches(section: stats.LineChartSection, currentSection: string): boolean {
+function isSectionMatches(section: LineChartSection, currentSection: string): boolean {
   return currentSection === 'all' || section.id === currentSection;
 }
 
-function isChartNameMatches(q: string, chart: stats.LineChartInfo) {
+function isChartNameMatches(q: string, chart: LineChartInfo) {
   return chart.title.toLowerCase().includes(q.toLowerCase());
 }
 
 export default function useExperiment() {
-  const router = useRouter();
-
-  const { data, isPlaceholderData, isError } = useApiQuery('stats_lines', {
-    queryOptions: {
-      placeholderData: STATS_CHARTS,
-    },
-  });
+  // get charts info
+  const { data, isPlaceholderData, isError } = useApiData(getChartsInfo, [], { sections: [] });
 
   const [ currentSection, setCurrentSection ] = useState('all');
   const [ filterQuery, setFilterQuery ] = useState('');
-  const [ initialFilterQuery, setInitialFilterQuery ] = React.useState('');
   const [ interval, setInterval ] = useState<StatsIntervalIds>('oneMonth');
   const sectionIds = useMemo(() => data?.sections?.map(({ id }) => id), [ data ]);
 
-  React.useEffect(() => {
-    if (!isPlaceholderData && !isError) {
-      const chartId = getQueryParamString(router.query.chartId);
-      const chartName = data?.sections.map((section) => section.charts.find((chart) => chart.id === chartId)).filter(Boolean)[0]?.title;
-      if (chartName) {
-        setInitialFilterQuery(chartName);
-        setFilterQuery(chartName);
-        router.replace({ pathname: '/stats' }, undefined, { scroll: false });
-      }
-    }
-  // run only when data is loaded
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ isPlaceholderData ]);
-
-  const displayedCharts = React.useMemo(() => {
+  // filtered sections
+  const filteredSections: Array<LineChartSection> = React.useMemo(() => {
     return data?.sections
       ?.map((section) => {
         const charts = section.charts.filter((chart) => isSectionMatches(section, currentSection) && isChartNameMatches(filterQuery, chart));
@@ -54,7 +33,7 @@ export default function useExperiment() {
           ...section,
           charts,
         };
-      }).filter((section) => section.charts.length > 0);
+      }).filter((section) => section.charts.length > 0) || [];
   }, [ currentSection, data?.sections, filterQuery ]);
 
   const handleSectionChange = useCallback((newSection: string) => {
@@ -74,26 +53,24 @@ export default function useExperiment() {
     sectionIds,
     isPlaceholderData,
     isError,
-    initialFilterQuery,
     filterQuery,
     currentSection,
     handleSectionChange,
     interval,
     handleIntervalChange,
     handleFilterChange,
-    displayedCharts,
+    filteredSections,
   }), [
     data,
     sectionIds,
     isPlaceholderData,
     isError,
-    initialFilterQuery,
     filterQuery,
     currentSection,
     handleSectionChange,
     interval,
     handleIntervalChange,
     handleFilterChange,
-    displayedCharts,
+    filteredSections,
   ]);
 }

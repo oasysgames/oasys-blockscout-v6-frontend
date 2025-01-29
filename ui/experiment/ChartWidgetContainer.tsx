@@ -1,14 +1,13 @@
 import { chakra } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import { Resolution } from '@blockscout/stats-types';
 import type { StatsIntervalIds } from 'types/client/stats';
 
 import type { Route } from 'nextjs-routes';
 
-import useChartQuery from 'ui/shared/chart/useChartQuery';
-
 import ChartWidget from '../shared/chart/ChartWidget';
+import { getVerseDailyAmount } from './api/getVerseDailyAmount';
+import { useApiData } from './useApiData';
 
 type Props = {
   id: string;
@@ -33,22 +32,23 @@ const ChartWidgetContainer = ({
   className,
   href,
 }: Props) => {
-  const { items, lineQuery } = useChartQuery(id, Resolution.DAY, interval, !isPlaceholderData);
+  const params = useMemo(() => [ id, interval ] as [ string, StatsIntervalIds ], [ id, interval ]);
+  const { data, isError } = useApiData(getVerseDailyAmount, params, []);
 
   useEffect(() => {
-    if (lineQuery.isError) {
+    if (isError) {
       onLoadingError();
     }
-  }, [ lineQuery.isError, onLoadingError ]);
+  }, [ isError, onLoadingError ]);
 
   return (
     <ChartWidget
-      isError={ lineQuery.isError }
-      items={ items }
+      isError={ isError }
+      items={ data }
       title={ title }
       units={ units }
       description={ description }
-      isLoading={ lineQuery.isPlaceholderData }
+      isLoading={ isPlaceholderData }
       minH="230px"
       className={ className }
       href={ href }

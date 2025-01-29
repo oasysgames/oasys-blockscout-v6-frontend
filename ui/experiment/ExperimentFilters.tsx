@@ -32,7 +32,7 @@ const ExperimentFilters = ({
 }: Props) => {
   const sectionsList = [ {
     id: 'all',
-    title: 'All stats',
+    title: 'All Verses',
   }, ... (sections || []) ];
 
   return (
@@ -74,7 +74,7 @@ const ExperimentFilters = ({
           key={ initialFilterValue }
           isLoading={ isLoading }
           onChange={ onFilterInputChange }
-          placeholder="Find chart, metric..."
+          placeholder="Find verse, chart..."
           initialValue={ initialFilterValue }
           size="xs"
         />
