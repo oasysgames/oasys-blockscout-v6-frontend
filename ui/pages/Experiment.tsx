@@ -1,11 +1,12 @@
-import { Box, Select, Input, Grid, Text, VStack } from '@chakra-ui/react';
+import { Box, Select, Input, Grid, Text, VStack, HStack, Spinner } from '@chakra-ui/react';
 import React from 'react';
 
 import config from 'configs/app';
 import PageTitle from 'ui/shared/Page/PageTitle';
+import ChartsWidgetsList from '../experiment/ChartsWidgetsList';
+import ExperimentFilters from '../experiment/ExperimentFilters';
+import NumberWidgetsList from '../experiment/NumberWidgetsList';
 import useExperiment from '../experiment/useExperiment';
-import TotalDepositsBox from '../experiment/TotalDepositsBox';
-import DepositHistoryChart from '../experiment/DepositHistoryChart';
 
 const Experiment = () => {
   const {
@@ -22,64 +23,97 @@ const Experiment = () => {
     handleEndDateChange,
     handleChainFilterChange,
     handleEventTypeFilterChange,
+    isPlaceholderData,
+    isError,
+    sections,
+    currentSection,
+    handleSectionChange,
+    interval,
+    handleIntervalChange,
+    filterQuery,
+    handleFilterChange,
+    filteredSections,
   } = useExperiment();
 
   return (
     <>
       <PageTitle
-        title={ `${ config.chain.name } Bridge Statistics` }
+        title={ config.meta.seo.enhancedDataEnabled ? `${ config.chain.name } statistic & data` : `${ config.chain.name } experiment` }
       />
 
-      <Box mb={{ base: 6, sm: 8 }}>
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} mb={4}>
-          <VStack align="start">
-            <Text>Start Date</Text>
-            <Input
-              type="date"
-              value={startDate}
-              onChange={(e) => handleStartDateChange(e.target.value)}
-            />
-          </VStack>
-          <VStack align="start">
-            <Text>End Date</Text>
-            <Input
-              type="date"
-              value={endDate}
-              onChange={(e) => handleEndDateChange(e.target.value)}
-            />
-          </VStack>
-          <VStack align="start">
-            <Text>Chain</Text>
-            <Select
-              value={chainFilter}
-              onChange={(e) => handleChainFilterChange(e.target.value)}
-            >
-              {uniqueChains.map(chain => (
-                <option key={chain} value={chain}>{chain}</option>
-              ))}
-            </Select>
-          </VStack>
-          <VStack align="start">
-            <Text>Event Type</Text>
-            <Select
-              value={eventTypeFilter}
-              onChange={(e) => handleEventTypeFilterChange(e.target.value)}
-            >
-              {uniqueEventTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </Select>
-          </VStack>
-        </Grid>
+      {/* フィルターセクション */}
+      <Box mb={6}>
+        <HStack spacing={4}>
+          <Input
+            type="date"
+            value={startDate}
+            onChange={(e) => handleStartDateChange(e.target.value)}
+          />
+          <Input
+            type="date"
+            value={endDate}
+            onChange={(e) => handleEndDateChange(e.target.value)}
+          />
+          <Select
+            value={chainFilter}
+            onChange={(e) => handleChainFilterChange(e.target.value)}
+          >
+            {uniqueChains.map(chain => (
+              <option key={chain} value={chain}>{chain}</option>
+            ))}
+          </Select>
+          <Select
+            value={eventTypeFilter}
+            onChange={(e) => handleEventTypeFilterChange(e.target.value)}
+          >
+            {uniqueEventTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </Select>
+        </HStack>
       </Box>
 
+      {/* ローディング状態の表示 */}
+      {isLoading && (
+        <Box textAlign="center" my={4}>
+          <Spinner />
+        </Box>
+      )}
+
+      {/* エラーメッセージの表示 */}
+      {error && (
+        <Box bg="red.100" p={4} borderRadius="md" mb={4}>
+          <Text color="red.600">{error.message}</Text>
+        </Box>
+      )}
+
+      {/* Verse別の統計データ */}
       <Box mb={{ base: 6, sm: 8 }}>
-        <TotalDepositsBox data={data} isLoading={isLoading} error={error} />
+        <NumberWidgetsList />
       </Box>
 
+      {/* チャートセクション */}
       <Box mb={{ base: 6, sm: 8 }}>
-        <DepositHistoryChart data={data} isLoading={isLoading} error={error} />
+        <ExperimentFilters
+          isLoading={ isPlaceholderData }
+          initialFilterValue=""
+          sections={ sections }
+          currentSection={ currentSection }
+          onSectionChange={ handleSectionChange }
+          interval={ interval }
+          onIntervalChange={ handleIntervalChange }
+          onFilterInputChange={ handleFilterChange }
+        />
       </Box>
+
+      <ChartsWidgetsList
+        initialFilterQuery=""
+        filterQuery={ filterQuery }
+        isError={ isError }
+        isPlaceholderData={ isPlaceholderData }
+        interval={ interval }
+        charts={ filteredSections }
+      />
     </>
   );
 };
