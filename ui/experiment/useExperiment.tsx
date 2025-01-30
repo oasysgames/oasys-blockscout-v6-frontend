@@ -1,12 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { GraphQLClient } from 'graphql-request';
 
 import type { LineChartInfo, LineChartSection } from '@blockscout/stats-types';
-import type { StatsIntervalIds } from 'types/client/stats';
-import type { DailyBridgeStat, BridgeStatsResponse } from './services/types';
+import type { DailyBridgeStat } from './services/types';
 
-import { getChartsInfo } from './api/getChartsInfo';
-import { useApiData } from './useApiData';
 import { useBridgeStats } from './services/useBridgeStats';
 
 interface VerseStats {
@@ -52,28 +48,8 @@ function formatAmount(weiString: string): number {
   return weiNum / 1e18;
 }
 
-// BFF経由のGraphQLクライアントを作成
-const createClient = () => {
-  // 開発環境では相対パスを使用
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const url = `${baseUrl}/api/v1/graphql`;
-  console.log('GraphQL client URL:', url);
-  console.log('window.location:', typeof window !== 'undefined' ? window.location : 'SSR');
-  return new GraphQLClient(url, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-};
-
 export default function useExperiment() {
-  // Charts info
-  const { data: chartsData, isPlaceholderData, isError } = useApiData(getChartsInfo, [], { sections: [] });
-
   // State
-  const [ currentSection, setCurrentSection ] = useState('all');
-  const [ filterQuery, setFilterQuery ] = useState('');
-  const [ interval, setInterval ] = useState<StatsIntervalIds>('oneMonth');
   const [ startDate, setStartDate ] = useState('2025-01-01');
   const [ endDate, setEndDate ] = useState('2025-01-31');
   const [ chainFilter, setChainFilter ] = useState('all');
@@ -88,7 +64,6 @@ export default function useExperiment() {
   });
 
   // Computed values
-  const sectionIds = useMemo(() => chartsData?.sections?.map(({ id }) => id), [ chartsData ]);
 
   const uniqueChains = useMemo(() => {
     const chains = new Set(['all', ...(data?.map(item => item.chainName) || [])]);
@@ -135,32 +110,6 @@ export default function useExperiment() {
 
     return Array.from(verseMap.values());
   }, [data]);
-
-  // Filtered sections
-  const filteredSections: Array<LineChartSection> = React.useMemo(() => {
-    return chartsData?.sections
-      ?.map((section) => {
-        const charts = section.charts.filter((chart) => isSectionMatches(section, currentSection) && isChartNameMatches(filterQuery, chart));
-
-        return {
-          ...section,
-          charts,
-        };
-      }).filter((section) => section.charts.length > 0) || [];
-  }, [ currentSection, chartsData?.sections, filterQuery ]);
-
-  // Event handlers
-  const handleSectionChange = useCallback((newSection: string) => {
-    setCurrentSection(newSection);
-  }, []);
-
-  const handleIntervalChange = useCallback((newInterval: StatsIntervalIds) => {
-    setInterval(newInterval);
-  }, []);
-
-  const handleFilterChange = useCallback((q: string) => {
-    setFilterQuery(q);
-  }, []);
 
   const handleStartDateChange = useCallback((date: string) => {
     setStartDate(date);
@@ -260,17 +209,6 @@ export default function useExperiment() {
   }, [dailyAccumulatedStats]);
 
   return React.useMemo(() => ({
-    sections: chartsData?.sections,
-    sectionIds,
-    isPlaceholderData,
-    isError,
-    filterQuery,
-    currentSection,
-    handleSectionChange,
-    interval,
-    handleIntervalChange,
-    handleFilterChange,
-    filteredSections,
     // GraphQLデータ関連
     data,
     isLoading,
@@ -289,17 +227,6 @@ export default function useExperiment() {
     totalAccumulatedByChain,
     chainChartData,
   }), [
-    chartsData,
-    sectionIds,
-    isPlaceholderData,
-    isError,
-    filterQuery,
-    currentSection,
-    handleSectionChange,
-    interval,
-    handleIntervalChange,
-    handleFilterChange,
-    filteredSections,
     data,
     isLoading,
     error,
