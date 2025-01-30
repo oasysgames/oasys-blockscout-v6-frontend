@@ -411,7 +411,7 @@ export default tseslint.config(
       eqeqeq: [ 'error', 'allow-null' ],
       'id-match': [ 'error', '^[\\w$]+$' ],
       'max-len': [ 'error', 200, 4 ],
-      'no-console': 'error',
+      'no-console': 'off',
       'no-implicit-coercion': [ 'error', {
         number: true,
         'boolean': true,

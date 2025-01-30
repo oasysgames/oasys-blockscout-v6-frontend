@@ -26,6 +26,7 @@ declare module "nextjs-routes" {
     | StaticRoute<"/api/monitoring/invalid-api-schema">
     | StaticRoute<"/api/proxy">
     | StaticRoute<"/api/sprite">
+    | StaticRoute<"/api/v1/graphql">
     | StaticRoute<"/api-docs">
     | DynamicRoute<"/apps/[id]", { "id": string }>
     | StaticRoute<"/apps">
@@ -42,6 +43,8 @@ declare module "nextjs-routes" {
     | StaticRoute<"/csv-export">
     | StaticRoute<"/deposits">
     | StaticRoute<"/dispute-games">
+    | DynamicRoute<"/experiment/[id]", { "id": string }>
+    | StaticRoute<"/experiment">
     | StaticRoute<"/gas-tracker">
     | StaticRoute<"/graphiql">
     | StaticRoute<"/">
@@ -57,8 +60,6 @@ declare module "nextjs-routes" {
     | StaticRoute<"/sprite">
     | DynamicRoute<"/stats/[id]", { "id": string }>
     | StaticRoute<"/stats">
-    | DynamicRoute<"/experiment/[id]", { "id": string }>
-    | StaticRoute<"/experiment">
     | DynamicRoute<"/token/[hash]", { "hash": string }>
     | DynamicRoute<"/token/[hash]/instance/[id]", { "hash": string; "id": string }>
     | StaticRoute<"/token-transfers">

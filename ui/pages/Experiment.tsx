@@ -110,10 +110,7 @@ const Experiment = () => {
       {/* Accumulated Amount Chart by Chain */}
       {chainChartData.map((chain) => {
         console.log('Rendering chart for chain:', chain.chainName);
-        console.log('Chart items:', chain.data.map(item => ({
-          date: new Date(item.date),
-          value: item.value,
-        })));
+
         return (
           <Box key={chain.chainName} mb={6}>
             <ChartWidget
