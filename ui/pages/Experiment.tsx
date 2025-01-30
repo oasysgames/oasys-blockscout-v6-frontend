@@ -33,7 +33,7 @@ const Experiment = () => {
       transformedDataPoint: {
         date: new Date(chainChartData[0].data[0].date),
         value: chainChartData[0].data[0].value,
-      }
+      },
     });
   }
 
@@ -114,7 +114,6 @@ const Experiment = () => {
           date: new Date(item.date),
           value: item.value,
         })));
-        
         return (
           <Box key={chain.chainName} mb={6}>
             <ChartWidget

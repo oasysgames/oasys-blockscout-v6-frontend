@@ -385,13 +385,13 @@ export default tseslint.config(
       '@stylistic/space-unary-ops': 'off',
       '@stylistic/template-curly-spacing': [ 'error', 'always' ],
       '@stylistic/wrap-iife': [ 'error', 'inside' ],
-      '@stylistic/max-len': ['error', { 
+      '@stylistic/max-len': [ 'error', {
         code: 200,
         ignoreUrls: true,
         ignoreStrings: true,
         ignoreTemplateLiterals: true,
-        ignoreRegExpLiterals: true
-      }]
+        ignoreRegExpLiterals: true,
+      } ]
     },
   },
 
