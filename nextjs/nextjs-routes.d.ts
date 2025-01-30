@@ -71,7 +71,8 @@ declare module "nextjs-routes" {
     | StaticRoute<"/validators">
     | StaticRoute<"/verified-contracts">
     | StaticRoute<"/visualize/sol2uml">
-    | StaticRoute<"/withdrawals">;
+    | StaticRoute<"/withdrawals">
+    | StaticRoute<"/api/experiment/experiment-graphql">;
 
   interface StaticRoute<Pathname> {
     pathname: Pathname;

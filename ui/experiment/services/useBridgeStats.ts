@@ -5,7 +5,7 @@ import { DAILY_STATS_QUERY } from './types';
 
 const createClient = () => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const url = `${ baseUrl }/api/v1/experiment-graphql`;
+  const url = `${ baseUrl }/api/experiment/experiment-graphql`;
   return new GraphQLClient(url, {
     headers: {
       'Content-Type': 'application/json',
