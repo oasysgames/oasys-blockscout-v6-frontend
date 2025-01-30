@@ -19,6 +19,7 @@ declare module "nextjs-routes" {
     | DynamicRoute<"/address/[hash]", { "hash": string }>
     | StaticRoute<"/api/config">
     | StaticRoute<"/api/csrf">
+    | StaticRoute<"/api/experiment/experiment-graphql">
     | StaticRoute<"/api/healthz">
     | StaticRoute<"/api/log">
     | StaticRoute<"/api/media-type">
@@ -26,8 +27,6 @@ declare module "nextjs-routes" {
     | StaticRoute<"/api/monitoring/invalid-api-schema">
     | StaticRoute<"/api/proxy">
     | StaticRoute<"/api/sprite">
-    | StaticRoute<"/api/v1/graphql">
-    | StaticRoute<"/api/v1/experiment-graphql">
     | StaticRoute<"/api-docs">
     | DynamicRoute<"/apps/[id]", { "id": string }>
     | StaticRoute<"/apps">
@@ -71,8 +70,7 @@ declare module "nextjs-routes" {
     | StaticRoute<"/validators">
     | StaticRoute<"/verified-contracts">
     | StaticRoute<"/visualize/sol2uml">
-    | StaticRoute<"/withdrawals">
-    | StaticRoute<"/api/experiment/experiment-graphql">;
+    | StaticRoute<"/withdrawals">;
 
   interface StaticRoute<Pathname> {
     pathname: Pathname;
