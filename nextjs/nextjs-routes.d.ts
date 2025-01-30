@@ -27,6 +27,7 @@ declare module "nextjs-routes" {
     | StaticRoute<"/api/proxy">
     | StaticRoute<"/api/sprite">
     | StaticRoute<"/api/v1/graphql">
+    | StaticRoute<"/api/v1/experiment-graphql">
     | StaticRoute<"/api-docs">
     | DynamicRoute<"/apps/[id]", { "id": string }>
     | StaticRoute<"/apps">
