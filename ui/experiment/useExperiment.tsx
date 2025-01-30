@@ -1,28 +1,13 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { GraphQLClient, gql } from 'graphql-request';
+import { GraphQLClient } from 'graphql-request';
 
 import type { LineChartInfo, LineChartSection } from '@blockscout/stats-types';
 import type { StatsIntervalIds } from 'types/client/stats';
+import type { DailyBridgeStat, BridgeStatsResponse } from './services/types';
 
 import { getChartsInfo } from './api/getChartsInfo';
 import { useApiData } from './useApiData';
-import config from 'configs/app';
-
-interface DailyBridgeStat {
-  id: string;
-  verseId: string;
-  chainName: string;
-  date: string;
-  eventType: string;
-  total_amount: string;
-  accumulated_amount: string;
-  count: string;
-  blockTime: string;
-}
-
-interface BridgeStatsResponse {
-  dailyBridgeStats: DailyBridgeStat[];
-}
+import { useBridgeStats } from './services/useBridgeStats';
 
 interface VerseStats {
   verseId: string;
@@ -81,36 +66,6 @@ const createClient = () => {
   });
 };
 
-const DAILY_STATS_QUERY = gql`
-  query GetDailyBridgeStats(
-    $first: Int!,
-    $orderBy: DailyBridgeStat_orderBy!,
-    $orderDirection: OrderDirection!,
-    $startDate: String!,
-    $endDate: String!
-  ) {
-    dailyBridgeStats(
-      first: $first
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: { 
-        date_gte: $startDate,
-        date_lte: $endDate
-      }
-    ) {
-      id
-      verseId
-      chainName
-      date
-      eventType
-      total_amount
-      accumulated_amount
-      count
-      blockTime
-    }
-  }
-`;
-
 export default function useExperiment() {
   // Charts info
   const { data: chartsData, isPlaceholderData, isError } = useApiData(getChartsInfo, [], { sections: [] });
@@ -123,9 +78,14 @@ export default function useExperiment() {
   const [ endDate, setEndDate ] = useState('2025-01-31');
   const [ chainFilter, setChainFilter ] = useState('all');
   const [ eventTypeFilter, setEventTypeFilter ] = useState('all');
-  const [ data, setData ] = useState<DailyBridgeStat[]>([]);
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ error, setError ] = useState<Error | null>(null);
+
+  // Bridge stats data
+  const { data, isLoading, error } = useBridgeStats({
+    startDate,
+    endDate,
+    chainFilter,
+    eventTypeFilter,
+  });
 
   // Computed values
   const sectionIds = useMemo(() => chartsData?.sections?.map(({ id }) => id), [ chartsData ]);
@@ -217,43 +177,6 @@ export default function useExperiment() {
   const handleEventTypeFilterChange = useCallback((type: string) => {
     setEventTypeFilter(type);
   }, []);
-
-  // GraphQLデータの取得
-  React.useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const client = createClient();
-        const response = await client.request<BridgeStatsResponse>(DAILY_STATS_QUERY, {
-          first: 1000,
-          orderBy: "date",
-          orderDirection: "desc",
-          startDate,
-          endDate,
-        });
-        
-        let filteredData = response.dailyBridgeStats;
-        
-        if (chainFilter !== 'all') {
-          filteredData = filteredData.filter(item => item.chainName === chainFilter);
-        }
-        
-        if (eventTypeFilter !== 'all') {
-          filteredData = filteredData.filter(item => item.eventType === eventTypeFilter);
-        }
-        
-        setData(filteredData);
-        setError(null);
-      } catch (err) {
-        console.error('GraphQL request failed:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [startDate, endDate, chainFilter, eventTypeFilter]);
 
   // 日付ごとの最新accumulated_amountを計算
   const dailyAccumulatedStats = useMemo(() => {
