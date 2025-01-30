@@ -391,7 +391,7 @@ export default tseslint.config(
         ignoreStrings: true,
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true,
-      } ]
+      } ],
     },
   },
 
