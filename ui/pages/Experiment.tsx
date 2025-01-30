@@ -24,9 +24,21 @@ const Experiment = () => {
     chainChartData,
   } = useExperiment();
 
+  // デバッグ用ログ
+  console.log('chainChartData:', chainChartData);
+  if (chainChartData && chainChartData.length > 0) {
+    console.log('First chain data example:', {
+      chainName: chainChartData[0].chainName,
+      firstDataPoint: chainChartData[0].data[0],
+      transformedDataPoint: {
+        date: new Date(chainChartData[0].data[0].date),
+        value: chainChartData[0].data[0].value,
+      }
+    });
+  }
+
   return (
     <>
-
       {/* Filter Section */}
       <Box mb={6}>
         <HStack spacing={4}>
@@ -46,14 +58,6 @@ const Experiment = () => {
           >
             {uniqueChains.map(chain => (
               <option key={chain} value={chain}>{chain}</option>
-            ))}
-          </Select>
-          <Select
-            value={eventTypeFilter}
-            onChange={(e) => handleEventTypeFilterChange(e.target.value)}
-          >
-            {uniqueEventTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
             ))}
           </Select>
         </HStack>
@@ -104,21 +108,29 @@ const Experiment = () => {
       </SimpleGrid>
 
       {/* Accumulated Amount Chart by Chain */}
-      {chainChartData.map((chain) => (
-        <Box key={chain.chainName} mb={6}>
-          <ChartWidget
-            title={`${chain.chainName} Total Deposit History`}
-            description="Daily total deposit"
-            items={chain.data.map(item => ({
-              date: new Date(item.date),
-              value: item.value,
-            }))}
-            isLoading={isLoading}
-            isError={!!error}
-            units="OAS"
-          />
-        </Box>
-      ))}
+      {chainChartData.map((chain) => {
+        console.log('Rendering chart for chain:', chain.chainName);
+        console.log('Chart items:', chain.data.map(item => ({
+          date: new Date(item.date),
+          value: item.value,
+        })));
+        
+        return (
+          <Box key={chain.chainName} mb={6}>
+            <ChartWidget
+              title={`${chain.chainName} Total Deposit History`}
+              description="Daily total deposit"
+              items={chain.data.map(item => ({
+                date: new Date(item.date),
+                value: item.value,
+              }))}
+              isLoading={isLoading}
+              isError={!!error}
+              units="OAS"
+            />
+          </Box>
+        );
+      })}
     </>
   );
 };
