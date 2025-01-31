@@ -4,7 +4,7 @@ import stripTrailingSlash from 'lib/stripTrailingSlash';
 
 import { getEnvValue } from '../utils';
 
-const apiEndpoint = getEnvValue('NEXT_PUBLIC_STATS_API_HOST');
+const apiEndpoint = getEnvValue('NEXT_PUBLIC_EXPERIMENT_API_URL');
 
 const title = 'Blockchain statistics';
 
@@ -15,7 +15,7 @@ const config: Feature<{ api: { endpoint: string; basePath: string } }> = (() => 
       isEnabled: true,
       api: {
         endpoint: apiEndpoint,
-        basePath: stripTrailingSlash(getEnvValue('NEXT_PUBLIC_STATS_API_BASE_PATH') || ''),
+        basePath: stripTrailingSlash(getEnvValue('NEXT_PUBLIC_EXPERIMENT_API_URL') || ''),
       },
     });
   }

@@ -50,9 +50,6 @@ async function main() {
   // Python版 build_daily_bridge_stats_id と同様
   const singleId = `${dateStr}-${addr}-${evt}`;
 
-  console.log("=== 単一IDで取得 ===");
-  console.log(`ID = ${singleId}`);
-
   // 単一IDからデータ取得
   const record = await getStatsForOneId(singleId);
   if (!record) {
