@@ -1,22 +1,30 @@
 import { NextResponse } from 'next/server';
 import type { GraphQLRequestBody } from './types';
 
-import { getFeaturePayload } from 'configs/app/features/types';
-import config from 'configs/app';
+import { getEnvValue } from 'configs/app/utils';
 
 interface GraphQLResponse {
   data?: unknown;
   errors?: Array<{ message: string }>;
 }
 
-const experimentFeature = getFeaturePayload(config.features.experiment);
-const THEGRAPH_API_URL = experimentFeature?.api?.endpoint || 'http://localhost:8000/subgraphs/name/oasys/bridge';
+const THEGRAPH_API_URL = getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL') || 'http://localhost:8000/subgraphs/name/oasys/bridge';
+
+console.log(`getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL')`, getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL'));
+
+console.log('[Backend] GraphQL API URL:', THEGRAPH_API_URL);
 
 export async function POST(request: Request) {
   const startTime = Date.now();
   try {
     const body = await request.json() as GraphQLRequestBody;
-    console.info('GraphQL request started', {
+    console.info('[Backend] Received GraphQL request:', {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      body,
+    });
+
+    console.info('[Backend] Forwarding request to TheGraph:', {
       url: THEGRAPH_API_URL,
       query: body.query,
       variables: body.variables,
@@ -32,6 +40,11 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
+      console.error('[Backend] TheGraph request failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
       throw new Error(`GraphQL request failed with status ${ response.status }`);
     }
 
@@ -39,14 +52,22 @@ export async function POST(request: Request) {
     const duration = Date.now() - startTime;
 
     if (data.errors) {
-      console.error('GraphQL response contains errors:', data.errors);
+      console.error('[Backend] TheGraph response contains errors:', {
+        errors: data.errors,
+        duration,
+      });
       throw new Error(data.errors[0]?.message || 'GraphQL query failed');
     }
+    console.info(`THEGRAPH_API_URL `, THEGRAPH_API_URL);
+    //  'http://localhost:8000'になるなぜ？
+    // 本来は、
 
-    console.info('GraphQL request successful', {
-      url: THEGRAPH_API_URL,
+    console.info('[Backend] TheGraph request successful', {
+      url: THEGRAPH_API_URL, // 'http://localhost:8000' なぜ？
       duration,
-      response: JSON.stringify(data),
+      responseSize: JSON.stringify(data).length,
+      hasData: Boolean(data.data),
+      response: data, // { message: 'Not found' }
     });
 
     return NextResponse.json(data, {
@@ -59,7 +80,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error('GraphQL request error', {
+    console.error('[Backend] GraphQL request error', {
       url: THEGRAPH_API_URL,
       duration,
       error: error instanceof Error ? {
