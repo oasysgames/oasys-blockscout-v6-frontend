@@ -282,7 +282,7 @@ export default tseslint.config(
       'import-helpers/order-imports': [
         'error',
         {
-          newlinesBetween: 'always',
+          newlinesBetween: 'ignore',
           groups: [
             'module',
             '/types/',

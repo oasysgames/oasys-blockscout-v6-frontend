@@ -19,7 +19,6 @@ declare module "nextjs-routes" {
     | DynamicRoute<"/address/[hash]", { "hash": string }>
     | StaticRoute<"/api/config">
     | StaticRoute<"/api/csrf">
-    | StaticRoute<"/api/experiment/experiment-graphql">
     | StaticRoute<"/api/healthz">
     | StaticRoute<"/api/log">
     | StaticRoute<"/api/media-type">

@@ -72,7 +72,6 @@ const TEMPLATE_MAP: Record<Route['pathname'], string> = {
   '/api/healthz': DEFAULT_TEMPLATE,
   '/api/config': DEFAULT_TEMPLATE,
   '/api/sprite': DEFAULT_TEMPLATE,
-  '/api/experiment/experiment-graphql': DEFAULT_TEMPLATE,
 };
 
 const TEMPLATE_MAP_ENHANCED: Partial<Record<Route['pathname'], string>> = {

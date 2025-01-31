@@ -5,7 +5,7 @@ import { DAILY_STATS_QUERY } from './types';
 
 const createClient = () => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const url = `${ baseUrl }/api/experiment/experiment-graphql`;
+  const url = `${ baseUrl }/experiment/api/experiment-graphql/`;
   return new GraphQLClient(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -41,6 +41,8 @@ export const useBridgeStats = ({
       try {
         setIsLoading(true);
         const client = createClient();
+        console.log('Fetching data with params:', { startDate, endDate, chainFilter, eventTypeFilter });
+        
         const response = await client.request<BridgeStatsResponse>(DAILY_STATS_QUERY, {
           first: 1000,
           orderBy: 'date',
@@ -48,6 +50,19 @@ export const useBridgeStats = ({
           startDate,
           endDate,
         });
+
+        console.log('GraphQL response:', response);
+
+        if ('message' in response) {
+          console.error('API returned an error:', response);
+          throw new Error(typeof response.message === 'string' ? response.message : 'API returned an error');
+        }
+
+        if (!response.dailyBridgeStats) {
+          console.error('Response does not contain dailyBridgeStats:', response);
+          setData([]);
+          return;
+        }
 
         let filteredData = response.dailyBridgeStats;
 
@@ -59,11 +74,13 @@ export const useBridgeStats = ({
           filteredData = filteredData.filter(item => item.eventType === eventTypeFilter);
         }
 
+        console.log('Filtered data:', filteredData);
         setData(filteredData);
         setError(null);
       } catch (err) {
         console.error('GraphQL request failed:', err);
-        setError(err instanceof Error ? err : new Error('Unknown error occurred'));
+        setError(err instanceof Error ? err : new Error('Failed to fetch bridge stats'));
+        setData([]);
       } finally {
         setIsLoading(false);
       }
