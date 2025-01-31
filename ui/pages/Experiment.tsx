@@ -24,19 +24,6 @@ const Experiment = () => {
     chainChartData,
   } = useExperiment();
 
-  // デバッグ用ログ
-  console.log('chainChartData:', chainChartData);
-  if (chainChartData && chainChartData.length > 0) {
-    console.log('First chain data example:', {
-      chainName: chainChartData[0].chainName,
-      firstDataPoint: chainChartData[0].data[0],
-      transformedDataPoint: {
-        date: new Date(chainChartData[0].data[0].date),
-        value: chainChartData[0].data[0].value,
-      },
-    });
-  }
-
   return (
     <>
       {/* Filter Section */}
@@ -109,8 +96,6 @@ const Experiment = () => {
 
       {/* Accumulated Amount Chart by Chain */}
       {chainChartData.map((chain) => {
-        console.log('Rendering chart for chain:', chain.chainName);
-
         return (
           <Box key={chain.chainName} mb={6}>
             <ChartWidget

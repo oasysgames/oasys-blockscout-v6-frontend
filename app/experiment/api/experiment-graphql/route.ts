@@ -8,11 +8,7 @@ interface GraphQLResponse {
   errors?: Array<{ message: string }>;
 }
 
-const THEGRAPH_API_URL = getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL') || 'http://localhost:8000/subgraphs/name/oasys/bridge';
-
-console.log(`getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL')`, getEnvValue('NEXT_PUBLIC_THEGRAPH_API_URL'));
-
-console.log('[Backend] GraphQL API URL:', THEGRAPH_API_URL);
+const THEGRAPH_API_URL = getEnvValue('NEXT_PUBLIC_EXPERIMENT_API_URL') || 'http://localhost:8000/subgraphs/name/oasys/bridge';
 
 export async function POST(request: Request) {
   const startTime = Date.now();

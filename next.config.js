@@ -49,7 +49,7 @@ const moduleExports = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; connect-src 'self' http://localhost:8000 ws://localhost:3000/_next/webpack-hmr; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
+            value: "default-src 'self'; connect-src 'self' https://bridge.explorer-v6-oasys.net ws://localhost:3000/_next/webpack-hmr; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
           }
         ]
       }

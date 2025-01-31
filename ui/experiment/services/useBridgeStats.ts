@@ -6,7 +6,6 @@ import { DAILY_STATS_QUERY } from './types';
 const createClient = () => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const url = `${ baseUrl }/experiment/api/experiment-graphql/`;
-  console.log('Creating GraphQL client with URL:', url);
   return new GraphQLClient(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -51,17 +50,7 @@ export const useBridgeStats = ({
           endDate,
         };
 
-        console.log('[Frontend] Sending GraphQL request:', {
-          query: DAILY_STATS_QUERY,
-          variables: requestParams,
-        });
-        
         const response = await client.request<BridgeStatsResponse>(DAILY_STATS_QUERY, requestParams);
-
-        console.log('[Frontend] Received GraphQL response:', {
-          status: 'success',
-          data: response,
-        });
 
         if ('message' in response) {
           console.error('[Frontend] API returned an error response:', response);
@@ -83,12 +72,6 @@ export const useBridgeStats = ({
         if (eventTypeFilter !== 'all') {
           filteredData = filteredData.filter(item => item.eventType === eventTypeFilter);
         }
-
-        console.log('[Frontend] Filtered data:', {
-          originalLength: response.dailyBridgeStats.length,
-          filteredLength: filteredData.length,
-          filters: { chainFilter, eventTypeFilter },
-        });
 
         setData(filteredData);
         setError(null);

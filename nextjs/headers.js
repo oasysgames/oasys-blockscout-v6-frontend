@@ -2,7 +2,7 @@ async function headers() {
   const cspDirectives = [
     'default-src \'self\'',
     'connect-src \'self\'',
-    'connect-src http://localhost:8000',
+    'connect-src https://bridge.explorer-v6-oasys.net',
     'connect-src ws://localhost:3000/_next/webpack-hmr',
     'script-src \'self\' \'unsafe-eval\' \'unsafe-inline\'',
   ].join('; ') + ';';
