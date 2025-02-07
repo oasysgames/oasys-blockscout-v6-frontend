@@ -5,7 +5,13 @@ import { DAILY_STATS_QUERY } from './types';
 
 const createClient = () => {
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  const url = `${ baseUrl }/experiment/api/experiment-graphql/`;
+  const url = `${baseUrl}/experiment/api/experiment-graphql/`;
+  
+  console.log('Creating GraphQL client', {
+    baseUrl,
+    url
+  });
+  
   return new GraphQLClient(url, {
     headers: {
       'Content-Type': 'application/json',
@@ -39,6 +45,7 @@ export const useBridgeStats = ({
   useEffect(() => {
     const fetchData = async() => {
       try {
+        console.log('Fetching bridge stats - Start', { query: DAILY_STATS_QUERY });
         setIsLoading(true);
         const client = createClient();
 
@@ -51,6 +58,7 @@ export const useBridgeStats = ({
         };
 
         const response = await client.request<BridgeStatsResponse>(DAILY_STATS_QUERY, requestParams);
+        console.log('GraphQL raw response:', response);
 
         if ('message' in response) {
           console.error('[Frontend] API returned an error response:', response);
@@ -75,13 +83,16 @@ export const useBridgeStats = ({
 
         setData(filteredData);
         setError(null);
+        console.log('Stats set successfully:', filteredData);
       } catch (err) {
-        console.error('[Frontend] GraphQL request failed:', {
+        console.error('Error fetching bridge stats:', {
           error: err instanceof Error ? {
             name: err.name,
             message: err.message,
             stack: err.stack,
           } : err,
+          errorMessage: err instanceof Error ? err.message : 'Unknown error',
+          errorStack: err instanceof Error ? err.stack : undefined
         });
         setError(err instanceof Error ? err : new Error('Failed to fetch bridge stats'));
         setData([]);

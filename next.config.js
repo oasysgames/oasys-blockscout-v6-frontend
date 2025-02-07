@@ -42,19 +42,7 @@ const moduleExports = {
   // https://github.com/blockscout/frontend/discussions/167
   rewrites,
   redirects,
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; connect-src 'self' https://bridge.explorer-v6-oasys.net ws://localhost:3000/_next/webpack-hmr; script-src 'self' 'unsafe-eval' 'unsafe-inline';"
-          }
-        ]
-      }
-    ];
-  },
+  headers,
   output: 'standalone',
   productionBrowserSourceMaps: true,
   experimental: {
