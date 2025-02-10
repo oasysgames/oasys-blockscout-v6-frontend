@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { getEnvValue } from 'configs/app/utils';
 import { useAppContext } from 'lib/contexts/app';
@@ -7,20 +7,12 @@ import * as cookies from 'lib/cookies';
 
 const Banner: React.FC = () => {
   const appProps = useAppContext();
-  const [ isNavBarCollapsed, setIsNavBarCollapsed ] = useState<boolean | null>(null);
-  const [ bannerImageUrl, setBannerImageUrl ] = useState<string | null>(null);
+  const cookiesString = appProps.cookies;
+  const isNavBarCollapsedCookie = cookies.get(cookies.NAMES.NAV_BAR_COLLAPSED, cookiesString);
+  const isNavBarCollapsed = isNavBarCollapsedCookie === 'true';
+  const bannerImageUrl = getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL') ?? null;
 
-  useEffect(() => {
-    const cookiesString = appProps.cookies;
-    const isNavBarCollapsedCookie = cookies.get(cookies.NAMES.NAV_BAR_COLLAPSED, cookiesString);
-    setIsNavBarCollapsed(isNavBarCollapsedCookie === 'true');
-
-    // 環境変数をクライアント側で確定
-    setBannerImageUrl(getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL') ?? null);
-  }, [ appProps.cookies ]);
-
-  // マウント前はレンダリングしない
-  if (isNavBarCollapsed === null || !bannerImageUrl) return null;
+  if (isNavBarCollapsed || !bannerImageUrl) return null;
 
   return (
     <div style={{
