@@ -18,22 +18,20 @@ const Banner: React.FC = () => {
   return (
     <div style={{
       width: '100%',
-      padding: '10px',
+      padding: '8px',
       display: 'flex',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.8)',
-      borderRadius: '8px',
-      marginTop: '10px',
+      backgroundColor: 'transparent',
     }}>
       <Image
         src={ bannerImageUrl }
         alt="Banner"
-        width={ 200 }
-        height={ 100 }
+        width={ 160 }
+        height={ 80 }
         style={{
-          maxWidth: '200px',
-          maxHeight: '100px',
+          maxWidth: '160px',
+          maxHeight: '80px',
           display: 'block',
         }}
       />

@@ -99,7 +99,6 @@ const NavigationDesktop = () => {
           }) }
         </VStack>
       </Box>
-      <Banner/>
       { isAuth && (
         <Box as="nav" borderTopWidth="1px" borderColor="divider" w="100%" mt={ 3 } pt={ 3 }>
           <VStack as="ul" spacing="1" alignItems="flex-start">
@@ -108,6 +107,9 @@ const NavigationDesktop = () => {
           </VStack>
         </Box>
       ) }
+      <Box mt="auto" mb={ 3 }>
+        <Banner/>
+      </Box>
       <IconSvg
         name="arrows/east-mini"
         width={ 6 }
