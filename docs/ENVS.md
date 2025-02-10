@@ -866,4 +866,4 @@ module.exports = {
 
 | Variable | Type| Description | Compulsoriness  | Default value | Example value | Version |
 | --- | --- | --- | --- | --- | --- | --- |
-| NEXT_PUBLIC_BANNER_IMAGE_URL | `string` | URL for custom banner image displayed in the bottom left corner. Recommended size: 200x100 pixels. Supported formats: image/jpeg, image/png. The image domain must be configured in next.config.js | Optional | - | `https://example.com/banner.png` | v1.0.x+ |
+| NEXT_PUBLIC_BANNER_IMAGE_URL | `string` | URL for custom banner image displayed in the bottom left corner. Recommended size: 200x100 pixels. Supported formats: image/jpeg, image/png. The image domain must be configured in next.config.js | Optional | - | `https://example.com/banner.png` | v1.36.x+ |
