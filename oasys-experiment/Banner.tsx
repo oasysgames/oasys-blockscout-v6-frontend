@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { getEnvValue } from 'configs/app/utils';
 import { useAppContext } from 'lib/contexts/app';
@@ -7,13 +7,20 @@ import * as cookies from 'lib/cookies';
 
 const Banner: React.FC = () => {
   const appProps = useAppContext();
-  const cookiesString = appProps.cookies;
-  const isNavBarCollapsedCookie = cookies.get(cookies.NAMES.NAV_BAR_COLLAPSED, cookiesString);
-  const isNavBarCollapsed = isNavBarCollapsedCookie === 'true';
+  const [ isNavBarCollapsed, setIsNavBarCollapsed ] = useState<boolean | null>(null);
+  const [ bannerImageUrl, setBannerImageUrl ] = useState<string | null>(null);
 
-  const bannerImageUrl = getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL');
+  useEffect(() => {
+    const cookiesString = appProps.cookies;
+    const isNavBarCollapsedCookie = cookies.get(cookies.NAMES.NAV_BAR_COLLAPSED, cookiesString);
+    setIsNavBarCollapsed(isNavBarCollapsedCookie === 'true');
 
-  if (!bannerImageUrl || isNavBarCollapsed) return null;
+    // 環境変数をクライアント側で確定
+    setBannerImageUrl(getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL'));
+  }, [ appProps.cookies ]);
+
+  // マウント前はレンダリングしない
+  if (isNavBarCollapsed === null || !bannerImageUrl) return null;
 
   return (
     <div style={{
@@ -29,6 +36,8 @@ const Banner: React.FC = () => {
         alt="Banner"
         width={ 160 }
         height={ 80 }
+        priority
+        unoptimized
         style={{
           maxWidth: '160px',
           maxHeight: '80px',
