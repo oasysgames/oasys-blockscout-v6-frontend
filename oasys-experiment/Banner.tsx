@@ -16,7 +16,7 @@ const Banner: React.FC = () => {
     setIsNavBarCollapsed(isNavBarCollapsedCookie === 'true');
 
     // 環境変数をクライアント側で確定
-    setBannerImageUrl(getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL'));
+    setBannerImageUrl(getEnvValue('NEXT_PUBLIC_BANNER_IMAGE_URL') ?? null);
   }, [ appProps.cookies ]);
 
   // マウント前はレンダリングしない
