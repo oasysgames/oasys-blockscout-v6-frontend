@@ -11,6 +11,7 @@ import useIsAuth from 'ui/snippets/auth/useIsAuth';
 import NetworkLogo from 'ui/snippets/networkMenu/NetworkLogo';
 import NetworkMenu from 'ui/snippets/networkMenu/NetworkMenu';
 
+import Banner from '../../../../oasys-experiment/Banner';
 import TestnetBadge from '../TestnetBadge';
 import NavLink from './NavLink';
 import NavLinkGroup from './NavLinkGroup';
@@ -98,6 +99,7 @@ const NavigationDesktop = () => {
           }) }
         </VStack>
       </Box>
+      <Banner/>
       { isAuth && (
         <Box as="nav" borderTopWidth="1px" borderColor="divider" w="100%" mt={ 3 } pt={ 3 }>
           <VStack as="ul" spacing="1" alignItems="flex-start">
