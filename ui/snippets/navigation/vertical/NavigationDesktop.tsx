@@ -65,7 +65,8 @@ const NavigationDesktop = () => {
       borderRight="1px solid"
       borderColor="divider"
       px={{ lg: isExpanded ? 6 : 4, xl: isCollapsed ? 4 : 6 }}
-      py={ 12 }
+      pt={ 12 }
+      pb={ 3 }
       width={{ lg: isExpanded ? '229px' : '92px', xl: isCollapsed ? '92px' : '229px' }}
       { ...getDefaultTransitionProps({ transitionProperty: 'width, padding' }) }
       onClick={ handleContainerClick }
@@ -107,7 +108,7 @@ const NavigationDesktop = () => {
           </VStack>
         </Box>
       ) }
-      <Box mt="auto" mb={ 3 }>
+      <Box mt="auto" mb={ 0 }>
         <Banner/>
       </Box>
       <IconSvg
