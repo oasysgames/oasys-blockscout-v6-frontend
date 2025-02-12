@@ -26,10 +26,11 @@ const Banner: React.FC = () => {
       margin: '0',
       padding: '0',
       display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-end',
       backgroundColor: 'transparent',
       lineHeight: '0',
+      marginTop: 'auto',
     }}>
       <a href={ bannerLinkUrl } target="_blank" rel="noopener noreferrer" style={{ display: 'block', lineHeight: '0' }}>
         <Image

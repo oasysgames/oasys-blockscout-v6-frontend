@@ -108,7 +108,7 @@ const NavigationDesktop = () => {
           </VStack>
         </Box>
       ) }
-      <Box mt="auto" mb={ 0 }>
+      <Box mt={ 6 }>
         <Banner/>
       </Box>
       <IconSvg
